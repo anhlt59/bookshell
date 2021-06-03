@@ -27,7 +27,7 @@ fi
 # DOCKER
 ./install-docker.sh
 
-# GIT ENABLED  q
+# GIT ENABLED
 ./git-prompt-install.sh
 
 echo -e "${GREEN}"
