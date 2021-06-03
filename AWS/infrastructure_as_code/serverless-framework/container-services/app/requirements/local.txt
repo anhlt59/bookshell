@@ -1,0 +1,7 @@
+-r base.txt
+
+pre-commit==2.7.1
+cfn-lint
+
+pytest==6.2.2
+pytest-cov==2.11.1

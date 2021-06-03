@@ -1,0 +1,465 @@
+ConsoleSignInWithoutMfaCount:
+  Type: AWS::Logs::MetricFilter
+  Properties:
+    LogGroupName: !Ref CloudTrailLogGroup
+    FilterPattern:
+      '{ $.eventName = "ConsoleLogin" && $.additionalEventData.MFAUsed = "No" }'
+    MetricTransformations:
+      - MetricNamespace: CloudTrailMetrics
+        MetricName: ConsoleSignInWithoutMfaCount
+        MetricValue: 1
+
+ConsoleSigninWithoutMfaAlarm:
+  Type: AWS::CloudWatch::Alarm
+  Properties:
+    AlarmActions:
+      - !Ref CloudTrailNotificationTopic
+    AlarmName: ${self:provider.tags.Owner}-console-signin-without-mfa-alarm
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    DatapointsToAlarm: 1
+    EvaluationPeriods: 1
+    MetricName: ConsoleSignInWithoutMfaCount
+    Namespace: CloudTrailMetrics
+    Period: 300
+    Statistic: Sum
+    Threshold: 10
+
+AuthorizationFailureCount:
+  Type: AWS::Logs::MetricFilter
+  Properties:
+    LogGroupName: !Ref CloudTrailLogGroup
+    FilterPattern:
+      '{ ($.errorCode = "*UnauthorizedOperation") || ($.errorCode = "AccessDenied*") }'
+    MetricTransformations:
+      - MetricNamespace: CloudTrailMetrics
+        MetricName: AuthorizationFailureCount
+        MetricValue: 1
+
+AuthorizationFailuresAlarm:
+  Type: AWS::CloudWatch::Alarm
+  Properties:
+    AlarmActions:
+      - !Ref CloudTrailNotificationTopic
+    AlarmName: ${self:provider.tags.Owner}-authorization-failures-alarm
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    DatapointsToAlarm: 1
+    EvaluationPeriods: 1
+    MetricName: AuthorizationFailureCount
+    Namespace: CloudTrailMetrics
+    Period: 300
+    Statistic: Sum
+    Threshold: 10
+
+IAMPolicyEventCount:
+  Type: AWS::Logs::MetricFilter
+  Properties:
+    LogGroupName: !Ref CloudTrailLogGroup
+    FilterPattern:
+      '{ ($.eventName = DeleteGroupPolicy) || ($.eventName = DeleteRolePolicy) || ($.eventName = DeleteUserPolicy) || ($.eventName = PutGroupPolicy) || ($.eventName = PutRolePolicy) || ($.eventName = PutUserPolicy) || ($.eventName = CreatePolicy) || ($.eventName = DeletePolicy) || ($.eventName = CreatePolicyVersion) || ($.eventName = DeletePolicyVersion) || ($.eventName = AttachRolePolicy) || ($.eventName = DetachRolePolicy) || ($.eventName = AttachUserPolicy) || ($.eventName = DetachUserPolicy) || ($.eventName = AttachGroupPolicy) || ($.eventName = DetachGroupPolicy) }'
+    MetricTransformations:
+      - MetricNamespace: CloudTrailMetrics
+        MetricName: IAMPolicyEventCount
+        MetricValue: 1
+
+IamPolicyChangesAlarm:
+  Type: AWS::CloudWatch::Alarm
+  Properties:
+    AlarmActions:
+      - !Ref CloudTrailNotificationTopic
+    AlarmName: ${self:provider.tags.Owner}-iam-policy-changes-alarm
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    DatapointsToAlarm: 1
+    EvaluationPeriods: 1
+    MetricName: IAMPolicyEventCount
+    Namespace: CloudTrailMetrics
+    Period: 300
+    Statistic: Sum
+    Threshold: 1
+
+S3BucketEventCount:
+  Type: AWS::Logs::MetricFilter
+  Properties:
+    LogGroupName: !Ref CloudTrailLogGroup
+    FilterPattern:
+      '{ ($.eventSource = s3.amazonaws.com) && (($.eventName = PutBucketAcl) || ($.eventName = PutBucketPolicy) || ($.eventName = PutBucketCors) || ($.eventName = PutBucketLifecycle) || ($.eventName = PutBucketReplication) || ($.eventName = DeleteBucketPolicy) || ($.eventName = DeleteBucketCors) || ($.eventName = DeleteBucketLifecycle) || ($.eventName = DeleteBucketReplication)) }'
+    MetricTransformations:
+      - MetricNamespace: CloudTrailMetrics
+        MetricName: S3BucketEventCount
+        MetricValue: 1
+
+S3BucketChangesAlarm:
+  Type: AWS::CloudWatch::Alarm
+  Properties:
+    AlarmActions:
+      - !Ref CloudTrailNotificationTopic
+    AlarmName: ${self:provider.tags.Owner}-s3-bucket-changes-alarm
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    DatapointsToAlarm: 1
+    EvaluationPeriods: 1
+    MetricName: S3BucketEventCount
+    Namespace: CloudTrailMetrics
+    Period: 300
+    Statistic: Sum
+    Threshold: 1
+
+ConsoleSigninFailureCount:
+  Type: AWS::Logs::MetricFilter
+  Properties:
+    LogGroupName: !Ref CloudTrailLogGroup
+    FilterPattern:
+      '{ ($.eventName = ConsoleLogin) && ($.errorMessage = "Failed authentication") }'
+    MetricTransformations:
+      - MetricNamespace: CloudTrailMetrics
+        MetricName: ConsoleSigninFailureCount
+        MetricValue: 1
+
+ConsoleSignInFailuresAlarm:
+  Type: AWS::CloudWatch::Alarm
+  Properties:
+    AlarmActions:
+      - !Ref CloudTrailNotificationTopic
+    AlarmName: ${self:provider.tags.Owner}-console-signin-failure-alarm
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    DatapointsToAlarm: 1
+    EvaluationPeriods: 1
+    MetricName: ConsoleSigninFailureCount
+    Namespace: CloudTrailMetrics
+    Period: 300
+    Statistic: Sum
+    Threshold: 3
+
+CloudTrailEventCount:
+  Type: AWS::Logs::MetricFilter
+  Properties:
+    LogGroupName: !Ref CloudTrailLogGroup
+    FilterPattern:
+      '{ ($.eventName = CreateTrail) || ($.eventName = UpdateTrail) || ($.eventName = DeleteTrail) || ($.eventName = StartLogging) || ($.eventName = StopLogging) }'
+    MetricTransformations:
+      - MetricNamespace: CloudTrailMetrics
+        MetricName: CloudTrailEventCount
+        MetricValue: 1
+
+CloudtrailChangesAlarm:
+  Type: AWS::CloudWatch::Alarm
+  Properties:
+    AlarmActions:
+      - !Ref CloudTrailNotificationTopic
+    AlarmName: ${self:provider.tags.Owner}-cloudtrail-changes-alarm
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    DatapointsToAlarm: 1
+    EvaluationPeriods: 1
+    MetricName: CloudTrailEventCount
+    Namespace: CloudTrailMetrics
+    Period: 300
+    Statistic: Sum
+    Threshold: 1
+
+CMKEventCount:
+  Type: AWS::Logs::MetricFilter
+  Properties:
+    LogGroupName: !Ref CloudTrailLogGroup
+    FilterPattern:
+      '{ ($.eventSource = kms.amazonaws.com) && (($.eventName = DisableKey) || ($.eventName = ScheduleKeyDeletion)) }'
+    MetricTransformations:
+      - MetricNamespace: CloudTrailMetrics
+        MetricName: CMKEventCount
+        MetricValue: 1
+
+CmkDisabledOrScheduledForDeletionAlarm:
+  Type: AWS::CloudWatch::Alarm
+  Properties:
+    AlarmActions:
+      - !Ref CloudTrailNotificationTopic
+    AlarmName: ${self:provider.tags.Owner}-cmk-disabled-or-scheduled-for-deletion-alarm
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    DatapointsToAlarm: 1
+    EvaluationPeriods: 1
+    MetricName: CMKEventCount
+    Namespace: CloudTrailMetrics
+    Period: 300
+    Statistic: Sum
+    Threshold: 1
+
+SecurityGroupEventCount:
+  Type: AWS::Logs::MetricFilter
+  Properties:
+    LogGroupName: !Ref CloudTrailLogGroup
+    FilterPattern:
+      '{ ($.eventName = AuthorizeSecurityGroupIngress) || ($.eventName = AuthorizeSecurityGroupEgress) || ($.eventName = RevokeSecurityGroupIngress) || ($.eventName = RevokeSecurityGroupEgress) || ($.eventName = CreateSecurityGroup) || ($.eventName = DeleteSecurityGroup) }'
+    MetricTransformations:
+      - MetricNamespace: CloudTrailMetrics
+        MetricName: SecurityGroupEventCount
+        MetricValue: 1
+
+SecuritygroupChangesAlarm:
+  Type: AWS::CloudWatch::Alarm
+  Properties:
+    AlarmActions:
+      - !Ref CloudTrailNotificationTopic
+    AlarmName: ${self:provider.tags.Owner}-securitygroup-changes-alarm
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    DatapointsToAlarm: 1
+    EvaluationPeriods: 1
+    MetricName: SecurityGroupEventCount
+    Namespace: CloudTrailMetrics
+    Period: 300
+    Statistic: Sum
+    Threshold: 1
+
+ConfigEventCount:
+  Type: AWS::Logs::MetricFilter
+  Properties:
+    LogGroupName: !Ref CloudTrailLogGroup
+    FilterPattern:
+      '{ ($.eventSource = config.amazonaws.com) && (($.eventName = StopConfigurationRecorder)||($.eventName = DeleteDeliveryChannel)||($.eventName = PutDeliveryChannel)||($.eventName = PutConfigurationRecorder)) }'
+    MetricTransformations:
+      - MetricNamespace: CloudTrailMetrics
+        MetricName: ConfigEventCount
+        MetricValue: 1
+
+ConfigChangesAlarm:
+  Type: AWS::CloudWatch::Alarm
+  Properties:
+    AlarmActions:
+      - !Ref CloudTrailNotificationTopic
+    AlarmName: ${self:provider.tags.Owner}-config-changes-alarm
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    DatapointsToAlarm: 1
+    EvaluationPeriods: 1
+    MetricName: ConfigEventCount
+    Namespace: CloudTrailMetrics
+    Period: 300
+    Statistic: Sum
+    Threshold: 1
+
+#AppsyncErrorMetric:
+#  Type: AWS::Logs::MetricFilter
+#  Properties:
+#    LogGroupName: !Ref GraphQlApiLogGroup
+#    FilterPattern:
+#      '{ ($.statusCode = 4* && $.statusCode != 403) || ($.statusCode = 5* && $.statusCode != 504) }'
+#    MetricTransformations:
+#      - MetricNamespace: PAW/Appsync
+#        MetricName: ${self:provider.tags.Owner}--AppsyncError
+#        MetricValue: 1
+#
+#AppsyncErrorAlarm:
+#  Type: AWS::CloudWatch::Alarm
+#  Properties:
+#    AlarmActions:
+#      - !Ref AppsyncNotificationTopic
+#    AlarmName: ${self:provider.tags.Owner}--appsync-error-alarms
+#    ComparisonOperator: GreaterThanOrEqualToThreshold
+#    DatapointsToAlarm: 1
+#    EvaluationPeriods: 1
+#    MetricName: ${self:provider.tags.Owner}--AppsyncError
+#    Namespace: PAW/Appsync
+#    Period: 3600
+#    Statistic: Sum
+#    Threshold: 1000
+
+NetworkAclEventCount:
+  Type: AWS::Logs::MetricFilter
+  Properties:
+    LogGroupName: !Ref CloudTrailLogGroup
+    FilterPattern:
+      '{ ($.eventName = CreateNetworkAcl) || ($.eventName = CreateNetworkAclEntry) || ($.eventName = DeleteNetworkAcl) || ($.eventName = DeleteNetworkAclEntry) || ($.eventName = ReplaceNetworkAclEntry) || ($.eventName = ReplaceNetworkAclAssociation) }'
+    MetricTransformations:
+      - MetricNamespace: CloudTrailMetrics
+        MetricName: NetworkAclEventCount
+        MetricValue: 1
+
+NetworkAclChangesAlarm:
+  Type: AWS::CloudWatch::Alarm
+  Properties:
+    AlarmActions:
+      - !Ref CloudTrailNotificationTopic
+    AlarmName: ${self:provider.tags.Owner}-network-acl-changes-alarm
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    DatapointsToAlarm: 1
+    EvaluationPeriods: 1
+    MetricName: NetworkAclEventCount
+    Namespace: CloudTrailMetrics
+    Period: 300
+    Statistic: Sum
+    Threshold: 1
+
+VpcEventCount:
+  Type: AWS::Logs::MetricFilter
+  Properties:
+    LogGroupName: !Ref CloudTrailLogGroup
+    FilterPattern:
+      '{ ($.eventName = CreateVpc) || ($.eventName = DeleteVpc) || ($.eventName = ModifyVpcAttribute) }'
+    MetricTransformations:
+      - MetricNamespace: CloudTrailMetrics
+        MetricName: VpcEventCount
+        MetricValue: 1
+
+VpcChangesAlarm:
+  Type: AWS::CloudWatch::Alarm
+  Properties:
+    AlarmActions:
+      - !Ref CloudTrailNotificationTopic
+    AlarmName: ${self:provider.tags.Owner}-vpc-changes-alarm
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    DatapointsToAlarm: 1
+    EvaluationPeriods: 1
+    MetricName: VpcEventCount
+    Namespace: CloudTrailMetrics
+    Period: 300
+    Statistic: Sum
+    Threshold: 1
+
+GatewayEventCount:
+  Type: AWS::Logs::MetricFilter
+  Properties:
+    LogGroupName: !Ref CloudTrailLogGroup
+    FilterPattern:
+      '{ ($.eventName = AttachInternetGateway) || ($.eventName = CreateInternetGateway) || ($.eventName = DeleteInternetGateway) || ($.eventName = DetachInternetGateway) }'
+    MetricTransformations:
+      - MetricNamespace: CloudTrailMetrics
+        MetricName: GatewayEventCount
+        MetricValue: 1
+
+GatewayChangesAlarm:
+  Type: AWS::CloudWatch::Alarm
+  Properties:
+    AlarmActions:
+      - !Ref CloudTrailNotificationTopic
+    AlarmName: ${self:provider.tags.Owner}-gateway-changes-alarm
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    DatapointsToAlarm: 1
+    EvaluationPeriods: 1
+    MetricName: GatewayEventCount
+    Namespace: CloudTrailMetrics
+    Period: 300
+    Statistic: Sum
+    Threshold: 1
+
+RouteTableEventCount:
+  Type: AWS::Logs::MetricFilter
+  Properties:
+    LogGroupName: !Ref CloudTrailLogGroup
+    FilterPattern:
+      '{ ($.eventName = CreateRoute) || ($.eventName = CreateRouteTable) || ($.eventName = ReplaceRoute) || ($.eventName = DeleteRouteTable) || ($.eventName = DeleteRoute) }'
+    MetricTransformations:
+      - MetricNamespace: CloudTrailMetrics
+        MetricName: RouteTableEventCount
+        MetricValue: 1
+
+RouteTableChangesAlarm:
+  Type: AWS::CloudWatch::Alarm
+  Properties:
+    AlarmActions:
+      - !Ref CloudTrailNotificationTopic
+    AlarmName: ${self:provider.tags.Owner}-route-table-changes-alarm
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    DatapointsToAlarm: 1
+    EvaluationPeriods: 1
+    MetricName: RouteTableEventCount
+    Namespace: CloudTrailMetrics
+    Period: 300
+    Statistic: Sum
+    Threshold: 1
+
+OrganizationEventCount:
+  Type: AWS::Logs::MetricFilter
+  Properties:
+    LogGroupName: !Ref CloudTrailLogGroup
+    FilterPattern:
+      '{ ($.eventSource = organizations.amazonaws.com) && ($.eventName = AcceptHandshake) || ($.eventName = AttachPolicy) || ($.eventName = CancelHandshake) || ($.eventName = CreateAccount) || ($.eventName = CreateOrganization) || ($.eventName = CreateOrganizationalUnit) || ($.eventName = CreatePolicy) || ($.eventName = DeclineHandshake) || ($.eventName = DeleteOrganization) || ($.eventName = DeleteOrganizationalUnit) || ($.eventName = DeletePolicy) || ($.eventName = EnableAllFeatures) || ($.eventName = EnablePolicyType) || ($.eventName = InviteAccountToOrganization) || ($.eventName = LeaveOrganization) || ($.eventName = DetachPolicy) || ($.eventName = DisablePolicyType) || ($.eventName = MoveAccount) || ($.eventName = RemoveAccountFromOrganization) || ($.eventName = UpdateOrganizationalUnit) || ($.eventName = UpdatePolicy) }'
+    MetricTransformations:
+      - MetricNamespace: CloudTrailMetrics
+        MetricName: OrganizationEventCount
+        MetricValue: 1
+
+OrganizationChangesAlarm:
+  Type: AWS::CloudWatch::Alarm
+  Properties:
+    AlarmActions:
+      - !Ref CloudTrailNotificationTopic
+    AlarmName: ${self:provider.tags.Owner}-organization-changes-alarm
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    DatapointsToAlarm: 1
+    EvaluationPeriods: 1
+    MetricName: OrganizationEventCount
+    Namespace: CloudTrailMetrics
+    Period: 300
+    Statistic: Sum
+    Threshold: 1
+
+EC2InstanceEventCount:
+  Type: AWS::Logs::MetricFilter
+  Properties:
+    LogGroupName: !Ref CloudTrailLogGroup
+    FilterPattern:
+      '{ ($.eventName = RunInstances) && (($.requestParameters.instanceType = *.8xlarge) || ($.requestParameters.instanceType = *.4xlarge)) }'
+    MetricTransformations:
+      - MetricNamespace: CloudTrailMetrics
+        MetricName: EC2InstanceEventCount
+        MetricValue: 1
+
+EC2InstanceChangesAlarm:
+  Type: AWS::CloudWatch::Alarm
+  Properties:
+    AlarmActions:
+      - !Ref CloudTrailNotificationTopic
+    AlarmName: ${self:provider.tags.Owner}-ec2-instance-changes-alarm
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    DatapointsToAlarm: 1
+    EvaluationPeriods: 1
+    MetricName: EC2InstanceEventCount
+    Namespace: CloudTrailMetrics
+    Period: 300
+    Statistic: Sum
+    Threshold: 1
+
+RootAccountUsageEventCount:
+  Type: AWS::Logs::MetricFilter
+  Properties:
+    LogGroupName: !Ref CloudTrailLogGroup
+    FilterPattern:
+      '{ ($.userIdentity.type = "Root") && ($.userIdentity.invokedBy NOT EXISTS) && ($.eventType != "AwsServiceEvent") }'
+    MetricTransformations:
+      - MetricNamespace: CloudTrailMetrics
+        MetricName: RootAccountUsageEventCount
+        MetricValue: 1
+
+RootAccountUsageChangesAlarm:
+  Type: AWS::CloudWatch::Alarm
+  Properties:
+    AlarmActions:
+      - !Ref CloudTrailNotificationTopic
+    AlarmName: ${self:provider.tags.Owner}-root-account-usage-changes-alarm
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    DatapointsToAlarm: 1
+    EvaluationPeriods: 1
+    MetricName: RootAccountUsageEventCount
+    Namespace: CloudTrailMetrics
+    Period: 300
+    Statistic: Sum
+    Threshold: 1
+
+#BatchErrorCount:
+#  Type: AWS::Logs::MetricFilter
+#  Properties:
+#    LogGroupName: !Ref BatchLogGroup
+#    FilterPattern: '?ERROR ?CRITICAL ?EXCEPTION ?Exception'
+#    MetricTransformations:
+#      - MetricNamespace: CloudTrailMetrics
+#        MetricName: BatchErrorCount
+#        MetricValue: 1
+#
+#BatchErrorAlarm:
+#  Type: AWS::CloudWatch::Alarm
+#  Properties:
+#    AlarmActions:
+#      - !ImportValue ${self:custom.cloudformation.InfraStack}:CloudwatchNotificationTopicArn
+#    AlarmName: ${self:provider.tags.Owner}-batch-error-alarm
+#    ComparisonOperator: GreaterThanOrEqualToThreshold
+#    MetricName: BatchErrorCount
+#    Namespace: CloudTrailMetrics
+#    Period: 3600
+#    EvaluationPeriods: 1
+#    Statistic: Sum
+#    Threshold: 100

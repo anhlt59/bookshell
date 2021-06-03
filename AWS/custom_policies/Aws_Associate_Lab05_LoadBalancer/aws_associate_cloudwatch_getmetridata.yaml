@@ -1,0 +1,9 @@
+Statement:
+- Action:
+  - cloudwatch:GetMetricData
+  - cloudwatch:ListMetrics
+  - cloudwatch:DescribeAlarms
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor0
+Version: '2012-10-17'

@@ -1,0 +1,176 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: ECS fargate stack
+
+Parameters:
+  Stage:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - prd
+  PrivateSubnetIds:
+    Default: subnet-5d94e006,subnet-48487201
+    Description: VPC Subnet Ids
+    Type: CommaDelimitedList
+  SecurityGroupIds:
+    Default: sg-0035a28854dd68fe4
+    Description: VPC Security Group Ids
+    Type: CommaDelimitedList
+  ECRRepository:
+    Default: dev
+    Description: ECR Repository name
+    Type: String
+  ImageTag:
+    Default: latest
+    Description: Image tag to deploy
+    Type: String
+  ECSTaskRoleArn:
+    Default: arn:aws:iam::***:role/ecs-task-role-dev
+    Description: ECS task role arn
+    Type: String
+  EventBrideRoleArn:
+    Default: arn:aws:iam::***:role/eventbridge-role-dev
+    Description: EventBride role arn
+    Type: String
+
+Resources:
+  FargateLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName:
+        Fn::Sub: "/ecs/${Stage}"
+      RetentionInDays: 90
+
+  FtpFetcherRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name:
+        Fn::Sub: ${Stage}-FtpFetcherRule
+      ScheduleExpression: cron(0/5 * * * ? *) # every 5 minutes
+      RoleArn:
+        Ref: EventBrideRoleArn
+      State: ENABLED
+      Targets:
+        - Id:
+            Fn::Sub: ${Stage}
+          Arn:
+            Fn::GetAtt: [ ECSBatchCluster, Arn ]
+          RoleArn:
+            Ref: EventBrideRoleArn
+          EcsParameters:
+            TaskDefinitionArn:
+              Ref: FtpFetcherTask
+            LaunchType: FARGATE
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: DISABLED
+                SecurityGroups:
+                  Ref: SecurityGroupIds
+                Subnets:
+                  Ref: PrivateSubnetIds
+            PlatformVersion: 1.4.0
+            TagList:
+              - Key: Owner
+                Value: anhlt
+
+  HttpFetcherRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name:
+        Fn::Sub: ${Stage}-HttpFetcherRule
+      ScheduleExpression: cron(0/5 * * * ? *) # every 5 minutes
+      RoleArn:
+        Ref: EventBrideRoleArn
+      State: ENABLED
+      Targets:
+        - Id:
+            Fn::Sub: ${Stage}
+          Arn:
+            Fn::GetAtt: [ ECSBatchCluster, Arn ]
+          RoleArn:
+            Ref: EventBrideRoleArn
+          EcsParameters:
+            TaskDefinitionArn:
+              Ref: HttpFetcherTask
+            LaunchType: FARGATE
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: DISABLED
+                SecurityGroups:
+                  Ref: SecurityGroupIds
+                Subnets:
+                  Ref: PrivateSubnetIds
+            PlatformVersion: 1.4.0
+            TagList:
+              - Key: Owner
+                Value: anhlt
+
+  ECSBatchCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      CapacityProviders:
+        - FARGATE_SPOT
+      ClusterName:
+        Fn::Sub: ${Stage}
+
+  FtpFetcherTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ContainerDefinitions:
+        - Command:
+            - python3
+            - src/handler/endless_ftp_fetch.py
+          Image:
+            Fn::Sub: "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/${ECRRepository}:${ImageTag}"
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group:
+                Fn::Sub: "/ecs/${Stage}"
+              awslogs-region:
+                Ref: AWS::Region
+              awslogs-stream-prefix: ftp_fetcher
+          Name:
+            Fn::Sub: ${Stage}
+          WorkingDirectory: "/"
+      Cpu: 256
+      ExecutionRoleArn:
+        Fn::Sub: "arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS"
+      Family: ftp_fetcher
+      Memory: 512
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      TaskRoleArn:
+        Ref: ECSTaskRoleArn
+
+  HttpFetcherTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ContainerDefinitions:
+        - Command:
+            - python3
+            - src/handler/endless_http_fetcher.py
+          Image:
+            Fn::Sub: "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/${ECRRepository}:${ImageTag}"
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group:
+                Fn::Sub: "/ecs/${Stage}"
+              awslogs-region:
+                Ref: AWS::Region
+              awslogs-stream-prefix: http_fetcher
+          Name:
+            Fn::Sub: ${Stage}
+          WorkingDirectory: "/"
+      Cpu: 256
+      ExecutionRoleArn:
+        Fn::Sub: "arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS"
+      Family: http_fetcher
+      Memory: 512
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      TaskRoleArn:
+        Ref: ECSTaskRoleArn

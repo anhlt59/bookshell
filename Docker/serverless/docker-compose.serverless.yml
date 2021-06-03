@@ -1,0 +1,44 @@
+version: 3
+
+services:
+  dynamodb:
+    image: amazone/dynamodb-local:1.16.0
+    container_name: dynamodb
+    ports:
+      - 8000:8000
+    entrypoint: java
+    command: -jar DynamoDBLocal.jar -shareDb
+
+  s3:
+    image: minio/minio
+    container_name: s3
+    ports:
+      - 9000:9000
+      - 44444:44444
+    command: minio server /mnt/data/storage --console-address :44444
+    environment:
+      - MINIO_ROOT_USER=root
+      - MINIO_ROOT_PASSWORD=abc@123456
+
+  serverless:
+    build:
+      context: .
+      dockerfile: ./serverless.Dockerfile
+    image: serverless
+    container_name: serverless
+    depends_on:
+      - dynamodb
+      - s3
+    ports:
+    - 3002:3002
+    - 5000:5000
+    - 8080:8080
+    environment:
+      - DEBUG=true
+    volumes:
+    - .:/serverless
+    command: >
+      bash -c "
+        cd /serverless &&
+        sls offline start --stage local
+      "

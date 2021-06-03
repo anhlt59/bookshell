@@ -1,0 +1,230 @@
+name: curation
+on:
+  push:
+    branches: [ dev ]
+permissions:
+  id-token: write
+  contents: read
+  issues: write
+
+jobs:
+  build_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Get build cache
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ hashFiles('Dockerfile') }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      - name: Build testing image
+        id: build_testing
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: Dockerfile
+          target: testing-stage
+          tags: testing:latest
+          push: false
+          load: true
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache
+      - name: Run pytest
+        uses: addnab/docker-run-action@v3
+        with:
+          image: testing:latest
+          run: python -m pytest ./tests/providers ./tests/articles ./tests/handler
+
+  build_dev:
+    runs-on: ubuntu-latest
+    needs: build_test
+    env:
+      GITHUB_SHA: ${{ github.sha }}
+      STAGE: dev
+      BUCKET_NAME: dev
+      ECR_REPO: dev
+      SECURITY_GROUPS: sg-0035a28854dd68fe4
+      SUBNETS: subnet-5d94e006,subnet-48487201
+      ECS_TASK_ROLE: arn:aws:iam::***:role/ecs-task-role-dev
+      ECS_EXECUTION_ROLE: arn:aws:iam::***:role/ecs-execution-role-dev
+      EVENT_BRIDGE_ROLE: arn:aws:iam::***:role/eventbridge-role-dev
+    steps:
+      - uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: manhdkneos,neos-nhattx
+          minimum-approvals: 1
+          issue-title: "[Github Actions - DEV]"
+      - uses: actions/checkout@v3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::***:role/least-privileged-ci-github_actions-dev
+          aws-region: ap-northeast-1
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Get build cache
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ hashFiles('Dockerfile') }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Deploy repository
+        run: |
+            aws cloudformation deploy \
+            --stack-name "${STAGE}-repository" \
+            --template-file template-repository.yaml \
+            --s3-bucket "$BUCKET_NAME" \
+            --parameter-overrides "Stage=${STAGE}"
+      - name: Build & push staging image
+        id: build_push_staging
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: Dockerfile
+          target: staging-stage
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO }}:${{ env.GITHUB_SHA }},
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO }}:latest
+          push: true
+          load: false
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache
+
+      - name: Deploy fargate
+        run: |
+          aws cloudformation deploy \
+            --stack-name "${STAGE}-fargate" \
+            --template-file template-fargate.yaml \
+            --s3-bucket "$BUCKET_NAME" \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --parameter-overrides Stage=${STAGE} \
+            "ECRRepository=${ECR_REPO}" \
+            "SecurityGroupIds=${SECURITY_GROUPS}" \
+            "PrivateSubnetIds=${SUBNETS}" \
+            "ECSTaskRoleArn=${ECS_TASK_ROLE}"
+
+      - name: Deploy functions
+        run: |
+          sh scripts/deploy_nikkei_dev.sh
+
+      - name: Notify Slack
+        id: slack
+        uses: slackapi/slack-github-action@v1.18.0
+        with:
+          payload: |
+            {
+              "text": "Github Actions: Deployed staging"
+            }
+        env:
+          SLACK_WEBHOOK_URL: https://hooks.slack.com/services/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
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
+  build_prod:
+    runs-on: ubuntu-latest
+    needs: build_dev
+    strategy:
+      matrix:
+        python-version: [ "3.7" ]
+    env:
+      STAGE: prod
+      BUCKET_NAME: nikkei.data
+      ECR_REPO: prod
+      SECURITY_GROUPS: sg-0a1844b920143e803
+      SUBNETS: subnet-cdeeab96,subnet-66eeab3d,subnet-28edf000
+      ECS_TASK_ROLE: arn:aws:iam::556975058824:role/ecs-task-role
+      ECS_EXECUTION_ROLE: arn:aws:iam::556975058824:role/ecs-execution-role
+      EVENT_BRIDGE_ROLE: arn:aws:iam::556975058824:role/eventbridge-role
+    steps:
+      - uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: manhdkneos,neos-nhattx
+          minimum-approvals: 1
+          issue-title: "[Github Actions - PROD]"
+      - uses: actions/checkout@v3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::556975058824:role/least-privileged-ci-github_actions
+          aws-region: ap-northeast-1
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Get build cache
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ hashFiles('Dockerfile') }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Deploy repository
+        run: |
+          aws cloudformation deploy \
+            --stack-name "${STAGE}-repository" \
+            --template-file template-repository.yaml \
+            --s3-bucket "$BUCKET_NAME" \
+            --parameter-overrides "Stage=$STAGE"
+      - name: Build & push production image
+        id: build_push_production
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: Dockerfile
+          target: production-stage
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO }}:${{ env.GITHUB_SHA }},
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO }}:latest
+          push: true
+          load: false
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache
+
+      - name: Deploy fargate
+        run: |
+          aws cloudformation deploy \
+            --stack-name "${STAGE}-fargate" \
+            --template-file template-fargate.yaml \
+            --s3-bucket "$BUCKET_NAME" \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --parameter-overrides Stage=${STAGE} \
+            "ECRRepository=${ECR_REPO}" \
+            "SecurityGroupIds=${SECURITY_GROUPS}" \
+            "PrivateSubnetIds=${SUBNETS}" \
+            "ECSTaskRoleArn=${ECS_TASK_ROLE}" \
+            "ECSExecutionRoleArn=${ECS_EXECUTION_ROLE}" \
+            "EventBrideRoleArn=${EVENT_BRIDGE_ROLE}"
+
+      - name: Deploy functions
+        run: |
+          sh scripts/deploy_nikkei_prod.sh
+
+      - name: Notify Slack
+        id: slack
+        uses: slackapi/slack-github-action@v1.18.0
+        with:
+          payload: |
+            {
+              "text": "Github Actions: Deployed product"
+            }
+        env:
+          SLACK_WEBHOOK_URL: https://hooks.slack.com/services/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
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK

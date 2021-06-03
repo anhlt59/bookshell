@@ -1,0 +1,7 @@
+Statement:
+- Action:
+  - s3:*
+  - s3-object-lambda:*
+  Effect: Allow
+  Resource: '*'
+Version: '2012-10-17'

@@ -1,0 +1,20 @@
+# serverless framework configuration
+
+function:
+  name: ${self:provider.tags.Owner}-${self:provider.tags.Stage}-CloudwatchAlarmTrigger
+  description: CloudwatchAlarmTrigger lambda function
+  handler: cloudwatch_alarm/index.lambdaHandler
+  memorySize: 128
+  timeout: 3
+  package:
+    patterns:
+      - '!./**'
+      - cloudwatch_alarm/*.js
+  events:
+    - eventBridge:
+        schedule: cron(0/5 * * * ? *)
+  tracing: Active
+  role: LambdaFunctionRole
+  environment:
+    SNS_TOPIC_ARN: !Ref NotificationTopic
+    INTERVAL: 300

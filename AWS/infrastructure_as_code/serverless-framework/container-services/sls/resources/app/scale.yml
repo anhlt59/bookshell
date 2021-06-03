@@ -1,0 +1,25 @@
+AutoScalingTarget:
+  Type: AWS::ApplicationAutoScaling::ScalableTarget
+  Properties:
+    MinCapacity: ${self:custom.AutoScaling.MinCapacity}
+    MaxCapacity: ${self:custom.AutoScaling.MaxCapacity}
+    ResourceId: !Join ["/", [service, !Ref ECSCluster, !GetAtt ECSService.Name]]
+    ScalableDimension: ecs:service:DesiredCount
+    ServiceNamespace: ecs
+    RoleARN: !GetAtt AutoScalingRole.Arn
+  Metadata: /${self:provider.stackName}/AutoScale/Resource
+
+
+AutoScalingPolicy:
+  Type: AWS::ApplicationAutoScaling::ScalingPolicy
+  Properties:
+    PolicyName: ${self:service}-${self:provider.stage}-AutoScalingPolicy
+    PolicyType: TargetTrackingScaling
+    ScalingTargetId: !Ref AutoScalingTarget
+    TargetTrackingScalingPolicyConfiguration:
+      PredefinedMetricSpecification:
+        PredefinedMetricType: ECSServiceAverageCPUUtilization
+      ScaleInCooldown: 100
+      ScaleOutCooldown: 100
+      TargetValue: ${self:custom.AutoScaling.TargetValue}
+  Metadata: /${self:provider.stackName}/AutoScale/Resource

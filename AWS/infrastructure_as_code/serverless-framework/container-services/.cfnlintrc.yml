@@ -1,0 +1,8 @@
+templates:
+  - ./.serverless/cloudformation-template*.json
+include_checks:
+  - I
+ignore_checks:
+  - W3005
+  - I1022
+  - I3011

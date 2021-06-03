@@ -1,0 +1,168 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  AWS CloudFormation template to create EC2 + jenkins server
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+  AmiId:
+    Type: String
+    Description: AMI ID for eu-central-1 region.
+    Default: ami-0233214e13e500f77
+  InstanceType:
+    Type: String
+    Default: t3.medium
+    ConstraintDescription: must be a valid EC2 instance type.
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instances
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: ssh-paw-fpt
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+Resources:
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Metadata:
+      AWS::CloudFormation::Init:
+        configSets:
+          jenkins_install:
+            - pre_jenkins
+            - setup_jenkins
+        pre_jenkins:
+          packages:
+            yum:
+              python3.8: []
+              java-1.8.0-openjdk-devel: []
+          commands:
+            01_remove_jdk7:
+              command: yum remove -y java-1.7.0-openjdk
+              ignoreErrors: true
+            02_update:
+              command: yum update -y
+            03_install_gcc:
+              command: yum install -y gcc-c++ make
+            04_add_nodejs_source:
+              command: curl -sL https://rpm.nodesource.com/setup_14.x | sudo -E bash -
+            05_install_nodejs:
+              command: yum install -y nodejs
+        setup_jenkins:
+          packages:
+            yum:
+              jenkins: []
+          services:
+            sysvinit:
+              jenkins:
+                enabled: true
+                ensureRunning: true
+          commands:
+            01_update:
+              command: yum update -y
+            02_add_jenkins_repo:
+              command: wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+            03_import_jenkins_key:
+              command: rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+            04_upgrade:
+              command: yum upgrade -y
+            05_install_jenkins:
+              command: yum install jenkins java-1.8.0-openjdk-devel -y
+            06_reload_service:
+              command: systemctl daemon-reload
+            07_enable_jenkins:
+              command: systemctl enable jenkins
+            08_start_jenkins:
+              command: systemctl start jenkins
+              test: systemctl status jenkins
+    Properties:
+      Tags:
+        - Key: stack
+          Value: !Ref Environment
+        - Key: app
+          Value: jenkins
+      SecurityGroups: [!Ref "InstanceSecurityGroup"]
+      KeyName: !Ref KeyName
+      ImageId: !Ref AmiId
+      InstanceType: !Ref InstanceType
+      UserData: !Base64
+        Fn::Join:
+          - ""
+          - - "IPAddress="
+            - !Ref "IPAddress"
+            - |
+              #!/bin/bash -xe
+            - |
+            - "/opt/aws/bin/resources-init -v "
+            - "         --stack "
+            - !Ref "AWS::StackName"
+            - "         --resource EC2Instance "
+            - "         --configsets jenkins_install "
+            - "         --region "
+            - !Ref "AWS::Region"
+            - |+
+  InstanceSecurityGroupPublic:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable access to HTTP port 8080 / SSH
+      Tags:
+        - Key: Name
+          Value: !Ref AWS::StackId
+        - Key: Reach
+          Value: public
+  InstanceSecurityGroupPublicSShFPT:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref InstanceSecurityGroupPublic
+      GroupDescription: Enable SSH access
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: "***/32"
+  InstanceSecurityGroupPublicSSHCINC:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref InstanceSecurityGroupPublic
+      GroupDescription: Enable SSH access
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: "***/25"
+  InstanceSecurityGroupPublic8080FPT:
+  Type: AWS::EC2::SecurityGroupIngress
+  Properties:
+    GroupId: !Ref InstanceSecurityGroupPublic
+    GroupDescription: Enable SSH access
+    SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 8080
+        ToPort: 8080
+        CidrIp: "***/32"
+InstanceSecurityGroupPublic8080CINC:
+  Type: AWS::EC2::SecurityGroupIngress
+  Properties:
+    GroupId: !Ref InstanceSecurityGroupPublic
+    GroupDescription: Enable SSH access
+    SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 8080
+        ToPort: 8080
+        CidrIp: "***/25"
+  IPAddress:
+    Type: AWS::EC2::EIP
+  IPAssoc:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      InstanceId: !Ref EC2Instance
+      EIP: !Ref IPAddress
+Outputs:
+  InstanceId:
+    Description: InstanceId of the newly created EC2 instance
+    Value: !Ref "EC2Instance"
+  InstanceIPAddress:
+    Description: IP address of the newly created EC2 instance
+    Value: !Ref "IPAddress"
+  PublicDNS:
+    Description: Public DNSName of the newly created EC2 instance
+    Value: !GetAtt [EC2Instance, PublicDnsName]
+  PublicIP:
+    Description: Public IP address of the newly created EC2 instance
+    Value: !GetAtt [EC2Instance, PublicIp]

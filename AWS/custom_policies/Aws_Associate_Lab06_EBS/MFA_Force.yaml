@@ -1,0 +1,79 @@
+Statement:
+- Action:
+  - iam:ListAccountAliases
+  - iam:ListUsers
+  - iam:GetAccountSummary
+  - iam:GetUser
+  Effect: Allow
+  Resource: '*'
+  Sid: AllowAllUsersToListAccounts
+- Action: codecommit:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - eu-central-1
+      - us-east-1
+      - us-west-2
+      - us-east-2
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor2
+- Action:
+  - iam:ChangePassword
+  - iam:CreateAccessKey
+  - iam:CreateLoginProfile
+  - iam:DeleteAccessKey
+  - iam:DeleteLoginProfile
+  - iam:GetAccountPasswordPolicy
+  - iam:GetLoginProfile
+  - iam:ListAccessKeys
+  - iam:UpdateAccessKey
+  - iam:UpdateLoginProfile
+  - iam:ListSigningCertificates
+  - iam:DeleteSigningCertificate
+  - iam:UpdateSigningCertificate
+  - iam:UploadSigningCertificate
+  - iam:ListSSHPublicKeys
+  - iam:GetSSHPublicKey
+  - iam:DeleteSSHPublicKey
+  - iam:UpdateSSHPublicKey
+  - iam:UploadSSHPublicKey
+  Effect: Allow
+  Resource:
+  - arn:aws:iam::***:mfa/*
+  - arn:aws:iam::***:user/${aws:username}
+  Sid: AllowIndividualUserToSeeAndManageTheirOwnAccountInformation
+- Action:
+  - iam:ListVirtualMFADevices
+  - iam:ListMFADevices
+  Effect: Allow
+  Resource:
+  - arn:aws:iam::***:mfa/*
+  - arn:aws:iam::***:user/${aws:username}
+  Sid: AllowIndividualUserToListTheirOwnMFA
+- Action:
+  - iam:CreateVirtualMFADevice
+  - iam:DeactivateMFADevice
+  - iam:DeleteVirtualMFADevice
+  - iam:RequestSmsMfaRegistration
+  - iam:FinalizeSmsMfaRegistration
+  - iam:EnableMFADevice
+  - iam:ResyncMFADevice
+  Effect: Allow
+  Resource:
+  - arn:aws:iam::***:mfa/*
+  - arn:aws:iam::***:user/${aws:username}
+  Sid: AllowIndividualUserToManageTheirOwnMFA
+- Condition:
+    BoolIfExists:
+      aws:MultiFactorAuthPresent: 'false'
+  Effect: Deny
+  NotAction:
+  - sts:GetSessionToken
+  - iam:*
+  - codecommit:*
+  - ecr:*
+  Resource:
+  - '*'
+  Sid: BlockAnyAccessOtherThanAboveUnlessSignedInWithMFA
+Version: '2012-10-17'

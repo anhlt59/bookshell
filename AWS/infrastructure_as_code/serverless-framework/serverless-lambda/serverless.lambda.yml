@@ -1,0 +1,73 @@
+# __author__ = "AnhLT59"
+# __version__ = "1.0"
+# __created_date__ = "2021/03/03"
+#
+# Defined AWS Services
+# - IAM
+# - Lambda
+
+service: demo-lambda
+
+provider:
+  name: aws
+  stage: ${opt:stage, "development"}
+  region: ${opt:region, self:custom.default.region}
+  stackName: ${self:service}-${self:provider.stage}
+
+  # default tags for all resources
+  tags:
+    Owner: ${self:service}
+    Stage: ${self:provider.stage}
+  stackTags:
+    Owner: ${self:service}
+    Stage: ${self:provider.stage}
+
+  # S3 bucket where the artifact is stored
+  deploymentBucket: ${file(./resources/.configs/${self:provider.stage}.yml):S3.deployment_bucket}
+
+  # config lambda functions
+  runtime: python3.8
+  environment:
+    REGION: ${self:provider.region}
+    STAGE: ${self:provider.stage}
+    LOG_LEVEL: ${self:custom.default.log_level}
+
+plugins:
+  - serverless-layers
+  - serverless-s3-local
+  - serverless-offline-sqs
+  - serverless-offline-sns
+  - serverless-offline
+
+custom:
+  default: ${file(./resources/.configs/${self:provider.stage}.yml):default}
+
+package:
+  individually: true
+  excludeDevDependencies: true
+  patterns:
+    - '!./**'
+
+functions:
+  # Lambda functions
+  LambdaExample: ${file(./lambda/handlers/LambdaExample/function.yml):function}
+
+resources:
+  Parameters:
+    VpcId:
+      Default: ${cf:${self:custom.NetworkStack}.VpcId}
+      Description: VPC Id
+      Type: String
+    VpcAppSubnetIds:
+      Default: ${cf:${self:custom.NetworkStack}.AppSubnet1Id},${cf:${self:custom.NetworkStack}.AppSubnet2Id}
+      Description: VPC Subnet Ids
+      Type: CommaDelimitedList
+    VpcPublicSubnetIds:
+      Default: ${cf:${self:custom.NetworkStack}.PublicSubnet1Id},${cf:${self:custom.NetworkStack}.PublicSubnet2Id}
+      Description: VPC Subnet Ids
+      Type: CommaDelimitedList
+
+  Resources:
+    # IAM
+    LambdaFunctionRole: ${file(./resources/lambda/iam.yml):LambdaFunctionRole}
+    LambdaFunctionPolicy: ${file(./resources/lambda/iam.yml):LambdaFunctionPolicy}

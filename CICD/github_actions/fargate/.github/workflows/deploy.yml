@@ -1,0 +1,80 @@
+name: Continuous Deployment
+on:
+  push:
+    branches: [develop, testing, main, staging]
+    paths-ignore: ['docs/**', 'data/**', '_templates/**']
+
+jobs:
+  linter:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - run: cd app && npm install
+      - run: cd app && npm run lint
+
+  Deployment:
+    runs-on: ubuntu-latest
+    needs: linter
+    strategy:
+      matrix:
+        node-version: [16]
+    env:
+      GITHUB_REF: ${{ github.base_ref }}
+    steps:
+      - name: setup environment variables
+        run: |
+          if [ ${GITHUB_REF##*/} = develop ]; then echo "STAGE=development" >> $GITHUB_ENV; fi
+          if [ ${GITHUB_REF##*/} = testing ]; then echo "STAGE=testing" >> $GITHUB_ENV; fi
+          if [ ${GITHUB_REF##*/} = main ]; then echo "STAGE=production" >> $GITHUB_ENV; fi
+          if [ ${GITHUB_REF##*/} = staging ]; then echo "STAGE=staging" >> $GITHUB_ENV; fi
+      - uses: actions/checkout@v3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Build, tag, and push docker image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPO: materially-app-${{ env.STAGE }}
+          IMAGE_TAG: ${{ github.sha }}
+          SSM_IMAGE_TAG_KEY: /materially-app/${{ env.STAGE }}/ImageTag
+        run: |
+          docker build ./app -t ${ECR_REGISTRY}/${ECR_REPO}:${IMAGE_TAG} -t ${ECR_REGISTRY}/${ECR_REPO}:latest --target production
+          docker push ${ECR_REGISTRY}/${ECR_REPO} --all-tags
+          aws ssm put-parameter --name $SSM_IMAGE_TAG_KEY --value $IMAGE_TAG --type String --overwrite
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - run: npm install
+      - name: Deploy app
+        run: npx sls deploy -s $STAGE -c serverless.app.yml
+      - name: Deploy lambda
+        run: npx sls deploy -s $STAGE -c serverless.lambda.yml
+  notify:
+    name: Notify Slack
+    runs-on: ubuntu-latest
+    needs: Deployment
+    steps:
+      - name: Slack Notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
+        if: success()

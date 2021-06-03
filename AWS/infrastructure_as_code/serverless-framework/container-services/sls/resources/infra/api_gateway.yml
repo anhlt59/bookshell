@@ -1,0 +1,158 @@
+AGW:
+  Type: AWS::ApiGateway::RestApi
+  Properties:
+    EndpointConfiguration:
+      Types:
+      - REGIONAL
+    Name: ${self:provider.tags.Owner}-agw
+    Policy: "*"
+    Tags:
+      - Key: Owner
+        Value: ${self:provider.tags.Owner}
+
+
+AGWCustomDomain:
+  Type: AWS::ApiGateway::DomainName
+  Properties:
+    DomainName: ${self:custom.api_gateway.CustomDomain.DomainName}
+    RegionalCertificateArn: ${self:custom.api_gateway.CustomDomain.CertificateArn}
+    EndpointConfiguration:
+      Types:
+        - REGIONAL
+    SecurityPolicy: TLS_1_2
+    Tags:
+      - Key: Owner
+        Value: ${self:provider.tags.Owner}
+
+
+AGWMapping:
+  Type: AWS::ApiGateway::BasePathMapping
+  DependsOn:
+    - AGWCustomDomain
+    - ApiGatewayRestApi
+  Properties:
+    BasePath: ""
+    DomainName: !Ref AGWCustomDomain
+    RestApiId: !Ref ApiGatewayRestApi
+    Stage: ${self:provider.stage}
+
+
+AGWGraphqlResource:
+  Type: AWS::ApiGateway::Resource
+  Properties:
+    ParentId: !ImportValue ${self:custom.cloudformation.InfraStack}:ApiGatewayRootResourceID
+    PathPart: graphql
+    RestApiId: !ImportValue ${self:custom.cloudformation.InfraStack}:ApiGatewayRestApiID
+
+
+AGWGraphqlPostMethod:
+  Type: AWS::ApiGateway::Method
+  Properties:
+    HttpMethod: POST
+    ResourceId: !Ref AGWGraphqlResource
+    RestApiId: !ImportValue ${self:custom.cloudformation.InfraStack}:ApiGatewayRestApiID
+    ApiKeyRequired: false
+    AuthorizationType: NONE
+    RequestParameters:
+      method.request.header.authorization: true
+    MethodResponses:
+      - StatusCode: 200
+        ResponseParameters:
+          method.response.header.Access-Control-Allow-Origin: true
+      - StatusCode: 400
+        ResponseParameters:
+          method.response.header.Access-Control-Allow-Origin: true
+      - StatusCode: 401
+        ResponseParameters:
+          method.response.header.Access-Control-Allow-Origin: true
+      - StatusCode: 403
+        ResponseParameters:
+          method.response.header.Access-Control-Allow-Origin: true
+      - StatusCode: 500
+        ResponseParameters:
+          method.response.header.Access-Control-Allow-Origin: true
+    Integration:
+      IntegrationHttpMethod: POST
+      Type: AWS
+      Credentials: !ImportValue ${self:custom.cloudformation.InfraStack}:AGWGraphqlRoleArn
+      Uri:
+        !Sub
+         - "arn:${Partition}:apigateway:${Region}:${GraphQLUrl}.appsync-api:path/graphql"
+         - GraphQLUrl: !Select [ 0, !Split [ ".",  !Select [ 2, !Split [ "/", !GetAtt GraphQlApi.GraphQLUrl ] ] ] ]
+           Partition: !Ref AWS::Partition
+           Region: !Ref AWS::Region
+      PassthroughBehavior: WHEN_NO_MATCH
+      RequestParameters:
+        integration.request.header.authorization: method.request.header.authorization
+      IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: "'${self:custom.cloudfront.url}'"
+          ResponseTemplates: {}
+        - StatusCode: 400
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: "'${self:custom.cloudfront.url}'"
+          ResponseTemplates: {}
+          SelectionPattern: 400
+        - StatusCode: 401
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: "'${self:custom.cloudfront.url}'"
+          ResponseTemplates: {}
+          SelectionPattern: 401
+        - StatusCode: 403
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: "'${self:custom.cloudfront.url}'"
+          ResponseTemplates: {}
+          SelectionPattern: 403
+        - StatusCode: 500
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: "'${self:custom.cloudfront.url}'"
+          ResponseTemplates: {}
+          SelectionPattern: 5\d{2}
+
+AGWGraphqlOptionsMethod:
+  Type: AWS::ApiGateway::Method
+  Properties:
+    AuthorizationType: NONE
+    HttpMethod: OPTIONS
+    MethodResponses:
+    - StatusCode: '200'
+      ResponseParameters:
+        method.response.header.Access-Control-Allow-Origin: true
+        method.response.header.Access-Control-Allow-Headers: true
+        method.response.header.Access-Control-Allow-Methods: true
+      ResponseModels: {}
+    RequestParameters: {}
+    Integration:
+      Type: MOCK
+      RequestTemplates:
+        application/json: "{statusCode:200}"
+      ContentHandling: CONVERT_TO_TEXT
+      IntegrationResponses:
+      - StatusCode: '200'
+        ResponseParameters:
+          method.response.header.Access-Control-Allow-Origin: "'${self:custom.cloudfront.url}'"
+          method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,Set-Cookie,Cookie'"
+          method.response.header.Access-Control-Allow-Methods: "'OPTIONS,POST'"
+        ResponseTemplates:
+          application/json: "#set($origin = $input.params(\"Origin\"))\n#if($origin == \"\") #set($origin = $input.params(\"origin\")) #end\n#if($origin.matches(\"https://posterartist[.]canon\") || $origin.matches(\"https://.+posterartist[.]canon\")) #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin) #end"
+    ResourceId: !Ref AGWGraphqlResource
+    RestApiId: !ImportValue ${self:custom.cloudformation.InfraStack}:ApiGatewayRestApiID
+
+
+ApiRegionalHealthCheck:
+  Type: AWS::Route53::HealthCheck
+  Properties:
+    HealthCheckConfig:
+      Type: HTTPS
+      ResourcePath: /${opt:stage}/healthcheck
+      FullyQualifiedDomainName:
+        !Join
+          - ''
+          - - !Ref ApiGatewayRestApi
+            - '.execute-api.'
+            - !Ref AWS::Region
+            - '.amazonaws.com'
+      RequestInterval: 30
+      FailureThreshold: 3
+      Regions: [us-east-1, eu-central-1, ap-northeast-1]

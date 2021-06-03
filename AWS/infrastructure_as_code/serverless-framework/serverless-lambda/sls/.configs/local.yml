@@ -1,0 +1,4 @@
+default:
+  stage: local
+  region: us-east-1
+  log_level: DEBUG

@@ -1,0 +1,28 @@
+function:
+  name: ${self:provider.tags.Owner}-${self:provider.tags.Stage}-LoadDailyOrders
+  description: LoadDailyOrders lambda function
+  handler: src/handlers/loadDailyOrders/main.lambda_handler
+  memorySize: 256
+  timeout: 300
+  package:
+    patterns:
+      - '!./**'
+      - src/common/s3.js
+      - src/requests/*.js
+      - src/models/*.js
+      - src/repositories/*.js
+      - src/handlers/loadDailyOrders/*.js
+  events:
+    - s3:
+        bucket: ${self:custom.S3.silvi_bucket.name}
+        existing: true
+        event: s3:ObjectCreated:*
+        rules:
+          - prefix: silvi-DailyOrders/
+          - suffix: .json
+  vpc:
+    securityGroupIds:
+      - !Ref VpcSecurityGroupId
+    subnetIds: !Ref VpcSubnetIds
+  tracing: Active
+  role: LambdaFunctionRole

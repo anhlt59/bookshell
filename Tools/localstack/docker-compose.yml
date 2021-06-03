@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  dynamodb-local:
+    image: amazon/dynamodb-local:1.19.0
+    container_name: dynamodb-local
+    ports:
+      - "8000:8000"
+    restart: always
+    volumes:
+      - ./localstack/.data/dynamodb:/home/dynamodblocal/data
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data/"
+
+  dynamodb-gui:
+    image: aaronshaf/dynamodb-admin:4.4.0
+    container_name: dynamodb-gui
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./.env.local
+    environment:
+      DYNAMO_ENDPOINT: http://dynamodb-local:8000
+    depends_on:
+      - dynamodb-local
+
+  localstack:
+    container_name: localstack
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=sns,sqs,ssm,secretsmanager,s3
+      - DEBUG=1
+      - DEFAULT_REGION=${AWS_DEFAULT_REGION}
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - HOSTNAME_EXTERNAL=localstack
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./localstack/.data/localstack:/var/lib/localstack
+      - ./localstack/bootstrap:/etc/localstack/init/ready.d
+      - ./config:/home/data/s3/config
+      - ./data:/home/data/s3/data
+
+  postgres:
+    image: postgres:14.5
+    container_name: rds-local
+    volumes:
+      - ./localstack/.data/rds:/var/lib/postgresql/data
+    env_file:
+      - ./.env.local
+    ports:
+      - '5432:5432'
+
+#  di2-staging:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      target: staging-stage
+#    image: di2-staging
+#    container_name: di2-staging
+#    env_file:
+#      - ./.env.local
+#    volumes:
+#      - ./src:/app/src
+#    network_mode: host
+#    command: [ 'tail', '-f', 'src/fargate.py']
+
+#  di2-testing:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      target: testing-stage
+#    image: di2-testing
+#    container_name: di2-testing
+#    volumes:
+#      - ./src:/app/src
+#    network_mode: host

@@ -1,0 +1,40 @@
+Statement:
+- Action: cloudformation:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-east-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor6
+- Action: s3:*
+  Effect: Allow
+  Resource:
+  - arn:aws:s3:::cf-templates-1n5bpgcrcsbig-us-east-1/*
+  - arn:aws:s3:::cf-templates-1n5bpgcrcsbig-us-east-1
+  Sid: VisualEditor8
+- Action: sns:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-east-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor4
+- Action: events:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-east-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor7
+- Action:
+  - lambda:InvokeAsync
+  - lambda:InvokeFunction
+  - lambda:GetFunction
+  Effect: Allow
+  Resource:
+  - '*'
+  Sid: invokeFunction
+Version: '2012-10-17'

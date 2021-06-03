@@ -1,0 +1,63 @@
+# __author__ = "AnhLT59"
+# __version__ = "1.0"
+# __created_date__ = "2021/03/03"
+#
+# Defined AWS Services
+# - VPC
+#
+# Prerequisites for other stacks (except security stack).
+# Need to deploy first.
+
+service: demo-network
+
+provider:
+  name: aws
+  stage: ${opt:stage, "development"}
+  region: ${opt:region, self:custom.default.region}
+  stackName: ${self:service}-${self:provider.stage}
+
+  # default tags for all resources
+  tags:
+    Owner: ${self:service}
+    Stage: ${self:provider.stage}
+  stackTags:
+    Owner: ${self:service}
+    Stage: ${self:provider.stage}
+
+  # S3 bucket where the artifact is stored
+  deploymentBucket: ${file(./resources/.configs/${self:provider.stage}.yml):S3.deployment_bucket}
+
+plugins:
+  - serverless-vpc-plugin
+
+custom:
+  # config plugin
+  vpcConfig: ${file(./resources/.configs/${self:provider.stage}.yml):VPC}
+
+resources:
+  Outputs:
+    # VPC ID
+    VpcId:
+      Value: !Ref VPC
+    # NAT IP
+    NatGateway1Ip:
+      Value: !Ref EIP1
+    NatGateway2Ip:
+      Value: !Ref EIP2
+    # Subnet ID
+    PublicSubnet1Id:
+      Value: !Ref PublicSubnet1
+    PublicSubnet2Id:
+      Value: !Ref PublicSubnet2
+    AppSubnet1Id:
+      Value: !Ref AppSubnet1
+    AppSubnet2Id:
+      Value: !Ref AppSubnet2
+    AppSecurityGroupId:
+      Value: !GetAtt AppSecurityGroup.GroupId
+    RdsSubnet1Id:
+      Value: !Ref DBSubnet1
+    RdsSubnet2Id:
+      Value: !Ref DBSubnet2
+    RdsSecurityGroupId:
+      Value: !GetAtt RDSSubnetGroup.Group:ID

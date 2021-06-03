@@ -1,0 +1,161 @@
+CINCIPSet:
+  Type: AWS::WAFv2::IPSet
+  Properties:
+    Addresses: ${self:custom.ipset_allow.cinc}
+    Description: Allow CINC
+    IPAddressVersion: IPV4
+    Name: ${self:provider.tags.Owner}-allow-cinc
+    Scope: REGIONAL
+    Tags:
+      - Key: Owner
+        Value: ${self:provider.tags.Owner}
+
+ProxyIPSet:
+  Type: AWS::WAFv2::IPSet
+  Properties:
+    Addresses: ${self:custom.ipset_allow.multi_region_proxy}
+    Description: Allow Proxy
+    IPAddressVersion: IPV4
+    Name: ${self:provider.tags.Owner}-allow-proxy
+    Scope: REGIONAL
+    Tags:
+      - Key: Owner
+        Value: ${self:provider.tags.Owner}
+
+CINCIPv6Set:
+  Type: AWS::WAFv2::IPSet
+  Properties:
+    Addresses: ${self:custom.ipv6set_allow.cinc}
+    Description: Allow CINC
+    IPAddressVersion: IPV6
+    Name: ${self:provider.tags.Owner}-allow-cinc-ipv6
+    Scope: REGIONAL
+    Tags:
+      - Key: Owner
+        Value: ${self:provider.tags.Owner}
+
+FPTIPSet:
+  Type: AWS::WAFv2::IPSet
+  Properties:
+    Addresses: ${self:custom.ipset_allow.fpt}
+    Description: Allow FPT Developers
+    IPAddressVersion: IPV4
+    Name: ${self:provider.tags.Owner}-allow-fpt
+    Scope: REGIONAL
+    Tags:
+      - Key: Owner
+        Value: ${self:provider.tags.Owner}
+
+AWSResourcesIPSet:
+  Type: AWS::WAFv2::IPSet
+  Properties:
+    Addresses:
+      - !Sub ${ VpcPublicIP }/32
+    Description: Allow AWS resources such as NAT Gateway, VPC endpoint
+    IPAddressVersion: IPV4
+    Name: ${self:provider.tags.Owner}-allow-aws-resources
+    Scope: REGIONAL
+    Tags:
+      - Key: Owner
+        Value: ${self:provider.tags.Owner}
+
+WAFWebACL:
+  Type: AWS::WAFv2::WebACL
+  Properties:
+    Description: ${self:provider.tags.Owner} appsync acl
+    Name: ${self:provider.tags.Owner}-appsync-acl
+    DefaultAction:
+      Block: { }
+    Rules:
+      - Name: ${self:provider.tags.Owner}-block-introspection
+        Priority: 0
+        Action:
+          Block: { }
+        VisibilityConfig:
+          SampledRequestsEnabled: true
+          CloudWatchMetricsEnabled: true
+          MetricName: ${self:provider.tags.Owner}-block-introspection
+        Statement:
+          ByteMatchStatement:
+            FieldToMatch:
+              Body: {}
+            PositionalConstraint: CONTAINS
+            SearchString: __schema
+            TextTransformations:
+              - Type: NONE
+                Priority: 0
+      - Name: ${self:provider.tags.Owner}-allow-cinc
+        Priority: 1
+        Statement:
+          IPSetReferenceStatement:
+            Arn: !GetAtt [CINCIPSet, Arn]
+        Action:
+          Allow: { }
+        VisibilityConfig:
+          SampledRequestsEnabled: true
+          CloudWatchMetricsEnabled: true
+          MetricName: ${self:provider.tags.Owner}-allow-cinc
+      - Name: ${self:provider.tags.Owner}-allow-fpt
+        Priority: 3
+        Statement:
+          IPSetReferenceStatement:
+            Arn: !GetAtt [FPTIPSet, Arn]
+        Action:
+          Allow: { }
+        VisibilityConfig:
+          SampledRequestsEnabled: true
+          CloudWatchMetricsEnabled: true
+          MetricName: ${self:provider.tags.Owner}-allow-fpt
+      - Name: ${self:provider.tags.Owner}-allow-aws-resources
+        Priority: 4
+        Statement:
+          IPSetReferenceStatement:
+            Arn: !GetAtt [AWSResourcesIPSet, Arn]
+        Action:
+          Allow: { }
+        VisibilityConfig:
+          SampledRequestsEnabled: true
+          CloudWatchMetricsEnabled: true
+          MetricName: ${self:provider.tags.Owner}-aws-resources
+      - Name: ${self:provider.tags.Owner}-allow-proxy
+        Priority: 5
+        Statement:
+          IPSetReferenceStatement:
+            Arn: !GetAtt [ProxyIPSet, Arn]
+        Action:
+          Allow: { }
+        VisibilityConfig:
+          SampledRequestsEnabled: true
+          CloudWatchMetricsEnabled: true
+          MetricName: ${self:provider.tags.Owner}-proxy
+      - Name: ${self:provider.tags.Owner}-allow-cinc-ipv6
+        Priority: 6
+        Statement:
+          IPSetReferenceStatement:
+            Arn: !GetAtt [CINCIPv6Set, Arn]
+        Action:
+          Allow: { }
+        VisibilityConfig:
+          SampledRequestsEnabled: true
+          CloudWatchMetricsEnabled: true
+          MetricName: ${self:provider.tags.Owner}-allow-cinc-ipv6
+    Scope: REGIONAL
+    VisibilityConfig:
+      SampledRequestsEnabled: true
+      CloudWatchMetricsEnabled: true
+      MetricName: ${self:provider.tags.Owner}-appsync-allow
+    Tags:
+      - Key: Owner
+        Value: ${self:provider.tags.Owner}
+
+AppsyncWAFAclAssociation:
+  Type: AWS::WAFv2::WebACLAssociation
+  Properties:
+    ResourceArn: !GetAtt [GraphQlApi, Arn]
+    WebACLArn: !GetAtt [WAFWebACL, Arn]
+
+APIGatewayWAFAclAssociation:
+  Type: AWS::WAFv2::WebACLAssociation
+  Properties:
+    ResourceArn: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}::/restapis/${ApiGatewayRestApi}/stages/${self:provider.stage}
+    WebACLArn: !GetAtt WAFWebACL.Arn

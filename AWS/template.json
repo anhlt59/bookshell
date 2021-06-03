@@ -1,0 +1,3734 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "The AWS CloudFormation template for this Serverless application",
+  "Resources": {
+    "BMGExtractorPlantsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/materially-development-BMG-ExtractorPlants",
+        "RetentionInDays": 30
+      }
+    },
+    "BMGExtractorJobsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/materially-development-BMG-ExtractorJobs",
+        "RetentionInDays": 30
+      }
+    },
+    "BMGExtractorLoadsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/materially-development-BMG-ExtractorLoads",
+        "RetentionInDays": 30
+      }
+    },
+    "BMGExtractorShipmentsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/materially-development-BMG-ExtractorShipments",
+        "RetentionInDays": 30
+      }
+    },
+    "BMGExtractorTicketsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/materially-development-BMG-ExtractorTickets",
+        "RetentionInDays": 30
+      }
+    },
+    "BMGExtractorCustomersLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/materially-development-BMG-ExtractorCustomers",
+        "RetentionInDays": 30
+      }
+    },
+    "BMGExtractorFleetsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/materially-development-BMG-ExtractorFleets",
+        "RetentionInDays": 30
+      }
+    },
+    "BMGExtractorTrucksLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/materially-development-BMG-ExtractorTrucks",
+        "RetentionInDays": 30
+      }
+    },
+    "BMGExtractorDriversLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/materially-development-BMG-ExtractorDrivers",
+        "RetentionInDays": 30
+      }
+    },
+    "BMGLoaderPlantsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/materially-development-BMG-LoaderPlants",
+        "RetentionInDays": 30
+      }
+    },
+    "BMGLoaderJobsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/materially-development-BMG-LoaderJobs",
+        "RetentionInDays": 30
+      }
+    },
+    "BMGLoaderShipmentsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/materially-development-BMG-LoaderShipments",
+        "RetentionInDays": 30
+      }
+    },
+    "BMGLoaderTicketsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/materially-development-BMG-LoaderTickets",
+        "RetentionInDays": 30
+      }
+    },
+    "BMGLoaderLoadsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/materially-development-BMG-LoaderLoads",
+        "RetentionInDays": 30
+      }
+    },
+    "BMGLoaderFleetsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/materially-development-BMG-LoaderFleets",
+        "RetentionInDays": 30
+      }
+    },
+    "BMGLoaderTrucksLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/materially-development-BMG-LoaderTrucks",
+        "RetentionInDays": 30
+      }
+    },
+    "BMGLoaderDriversLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/materially-development-BMG-LoaderDrivers",
+        "RetentionInDays": 30
+      }
+    },
+    "BMGLoaderCustomersLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/materially-development-BMG-LoaderCustomers",
+        "RetentionInDays": 30
+      }
+    },
+    "ProcessOrdersLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/materially-development-BMG-ProcessOrders",
+        "RetentionInDays": 30
+      }
+    },
+    "RemappingOrdersLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/materially-development-RemapOrdersAndTickets",
+        "RetentionInDays": 30
+      }
+    },
+    "BMGExtractorPlantsLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "materially-deployment-bucket",
+          "S3Key": "serverless/materially/development/1681048343714-2023-04-09T13:52:23.714Z/BMGExtractorPlants.zip"
+        },
+        "Handler": "src/handlers/extractors/plants/index.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "materially-development-BMG-ExtractorPlants",
+        "MemorySize": 256,
+        "Timeout": 300,
+        "Description": "BMG ExtractorPlants lambda function",
+        "Tags": [
+          {
+            "Key": "Owner",
+            "Value": "materially"
+          },
+          {
+            "Key": "Stage",
+            "Value": "development"
+          }
+        ],
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Environment": {
+          "Variables": {
+            "REGION": "us-east-1",
+            "STAGE": "development",
+            "LOG_LEVEL": "DEBUG",
+            "TABLE_NAME": "materially-development-table",
+            "BUCKET_NAME": "bridge-app-development",
+            "EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/send",
+            "LAMBDA_SIGNATURE": "K1thbQbOcrKcqiiLOUWQeO1LjczgLqoS",
+            "ORDER_STATUS_EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/order-status",
+            "OPENSEARCH_PROTOCOL": "https",
+            "OPENSEARCH_AUTH": "admin:Admin1%403",
+            "OPENSEARCH_HOST": "search-materially-app-development-3rks4mqb6cmji6utd6et4lhjzm.us-east-1.es.amazonaws.com",
+            "OPENSEARCH_PORT": "443",
+            "DATABASE_HOST": "{{resolve:secretsmanager:silvi-prod:SecretString:host}}",
+            "DATABASE_PORT": "{{resolve:secretsmanager:silvi-prod:SecretString:port}}",
+            "DATABASE_NAME": "{{resolve:secretsmanager:silvi-prod:SecretString:dbname}}",
+            "DATABASE_USERNAME": "{{resolve:secretsmanager:silvi-prod:SecretString:username}}",
+            "DATABASE_PASSWORD": "{{resolve:secretsmanager:silvi-prod:SecretString:password}}",
+            "sqsQueueUrl": {
+              "Ref": "PlantQueue"
+            },
+            "companyId": "COMPANY#01GN9-WFDNM-8FF6E-8N8PE-6HZWG5",
+            "lastDateParameter": "/Lambdas/development/BMG/ExtractorPlants/lastDate",
+            "bucket": {
+              "Ref": "BridgeAppBucketName"
+            },
+            "ticketingSystem": "BMG",
+            "Module": "Plants",
+            "extractorQuery": "SELECT\n    @COMPANYID + '||' + PlantID as PK,\n    'PLANT||BMG' as SK,\n    PlantID,\n    [Description],\n    Addr1,\n    Addr2,\n    City,\n    State,\n    Zip,\n    Phone,\n    IsActive,\n    CreatedDateTime,\n    ModifiedDateTime,\n    UniqueID\nFROM\n    Plant\nWHERE\n    ModifiedDateTime >= @LAST_DATE\nORDER BY\n    ModifiedDateTime DESC"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaFunctionRole",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-05debc9ed8433827e"
+          ],
+          "SubnetIds": [
+            "subnet-0dfcbea0201dc2df2"
+          ]
+        },
+        "Layers": [
+          "arn:aws:lambda:us-east-1:251623506909:layer:materially-development-bridge-app-nodejs-common:25"
+        ]
+      },
+      "DependsOn": [
+        "BMGExtractorPlantsLogGroup",
+        "LambdaFunctionRole"
+      ]
+    },
+    "BMGExtractorJobsLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "materially-deployment-bucket",
+          "S3Key": "serverless/materially/development/1681048343714-2023-04-09T13:52:23.714Z/BMGExtractorJobs.zip"
+        },
+        "Handler": "src/handlers/extractors/jobs/index.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "materially-development-BMG-ExtractorJobs",
+        "MemorySize": 256,
+        "Timeout": 300,
+        "Description": "BMG ExtractorJobs lambda function",
+        "Tags": [
+          {
+            "Key": "Owner",
+            "Value": "materially"
+          },
+          {
+            "Key": "Stage",
+            "Value": "development"
+          }
+        ],
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Environment": {
+          "Variables": {
+            "REGION": "us-east-1",
+            "STAGE": "development",
+            "LOG_LEVEL": "DEBUG",
+            "TABLE_NAME": "materially-development-table",
+            "BUCKET_NAME": "bridge-app-development",
+            "EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/send",
+            "LAMBDA_SIGNATURE": "K1thbQbOcrKcqiiLOUWQeO1LjczgLqoS",
+            "ORDER_STATUS_EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/order-status",
+            "OPENSEARCH_PROTOCOL": "https",
+            "OPENSEARCH_AUTH": "admin:Admin1%403",
+            "OPENSEARCH_HOST": "search-materially-app-development-3rks4mqb6cmji6utd6et4lhjzm.us-east-1.es.amazonaws.com",
+            "OPENSEARCH_PORT": "443",
+            "DATABASE_HOST": "{{resolve:secretsmanager:silvi-prod:SecretString:host}}",
+            "DATABASE_PORT": "{{resolve:secretsmanager:silvi-prod:SecretString:port}}",
+            "DATABASE_NAME": "{{resolve:secretsmanager:silvi-prod:SecretString:dbname}}",
+            "DATABASE_USERNAME": "{{resolve:secretsmanager:silvi-prod:SecretString:username}}",
+            "DATABASE_PASSWORD": "{{resolve:secretsmanager:silvi-prod:SecretString:password}}",
+            "sqsQueueUrl": {
+              "Ref": "JobQueue"
+            },
+            "companyId": "COMPANY#01GN9-WFDNM-8FF6E-8N8PE-6HZWG5",
+            "lastDateParameter": "/Lambdas/development/BMG/ExtractorJobs/lastDate",
+            "bucket": {
+              "Ref": "BridgeAppBucketName"
+            },
+            "ticketingSystem": "BMG",
+            "Module": "Jobs",
+            "extractorQuery": "SELECT\n    @COMPANYID + '||' + JobId as PK,\n    'SALESORDER||BMG' as SK,\n    JobId,\n    ProdId,\n    CustomerId,\n    Customerjobname as [Description],\n    IsActive,\n    DeliveryType,\n    OrderDate,\n    ActivationDate,\n    ExpirationDate,\n    CreatedDateTime,\n    ModifiedDateTime,\n    UniqueId\nFROM\n    SalesOrder\nWHERE\n    1=1\n    AND     ModifiedDateTime >= @LAST_DATE\nORDER BY\n    JobId"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaFunctionRole",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-05debc9ed8433827e"
+          ],
+          "SubnetIds": [
+            "subnet-0dfcbea0201dc2df2"
+          ]
+        },
+        "Layers": [
+          "arn:aws:lambda:us-east-1:251623506909:layer:materially-development-bridge-app-nodejs-common:25"
+        ]
+      },
+      "DependsOn": [
+        "BMGExtractorJobsLogGroup",
+        "LambdaFunctionRole"
+      ]
+    },
+    "BMGExtractorLoadsLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "materially-deployment-bucket",
+          "S3Key": "serverless/materially/development/1681048343714-2023-04-09T13:52:23.714Z/BMGExtractorLoads.zip"
+        },
+        "Handler": "src/handlers/extractors/loads/index.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "materially-development-BMG-ExtractorLoads",
+        "MemorySize": 256,
+        "Timeout": 300,
+        "Description": "BMG ExtractorLoads lambda function",
+        "Tags": [
+          {
+            "Key": "Owner",
+            "Value": "materially"
+          },
+          {
+            "Key": "Stage",
+            "Value": "development"
+          }
+        ],
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Environment": {
+          "Variables": {
+            "REGION": "us-east-1",
+            "STAGE": "development",
+            "LOG_LEVEL": "DEBUG",
+            "TABLE_NAME": "materially-development-table",
+            "BUCKET_NAME": "bridge-app-development",
+            "EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/send",
+            "LAMBDA_SIGNATURE": "K1thbQbOcrKcqiiLOUWQeO1LjczgLqoS",
+            "ORDER_STATUS_EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/order-status",
+            "OPENSEARCH_PROTOCOL": "https",
+            "OPENSEARCH_AUTH": "admin:Admin1%403",
+            "OPENSEARCH_HOST": "search-materially-app-development-3rks4mqb6cmji6utd6et4lhjzm.us-east-1.es.amazonaws.com",
+            "OPENSEARCH_PORT": "443",
+            "DATABASE_HOST": "{{resolve:secretsmanager:silvi-prod:SecretString:host}}",
+            "DATABASE_PORT": "{{resolve:secretsmanager:silvi-prod:SecretString:port}}",
+            "DATABASE_NAME": "{{resolve:secretsmanager:silvi-prod:SecretString:dbname}}",
+            "DATABASE_USERNAME": "{{resolve:secretsmanager:silvi-prod:SecretString:username}}",
+            "DATABASE_PASSWORD": "{{resolve:secretsmanager:silvi-prod:SecretString:password}}",
+            "sqsQueueUrl": {
+              "Ref": "LoadQueue"
+            },
+            "companyId": "COMPANY#01GN9-WFDNM-8FF6E-8N8PE-6HZWG5",
+            "lastDateParameter": "/Lambdas/development/BMG/ExtractorLoads/lastDate",
+            "bucket": {
+              "Ref": "BridgeAppBucketName"
+            },
+            "ticketingSystem": "BMG",
+            "Module": "Loads",
+            "extractorQuery": "SELECT @COMPANYID + '||' + a.OrderID + '||' + a.ProdID + '||' + CONVERT(CHAR (8), ScheduleDate, 112) as PK,\n       'LOAD||' + a.DailyOrderID + '||' + CONVERT(\"VARCHAR\", b.SLOADSEQNO) + '||BMG'                 as SK,\n       a.OrderID,\n       a.ProdID,\n       a.ScheduleDate,\n       a.DailyOrderID,\n       b.SLOADSEQNO,\n       b.LoadID,\n       a.CustID as CustomerID,\n       b.PlantID,\n       b.TicketID,\n       b.HTID,\n       b.TruckID,\n       b.ProdQty,\n       b.LSTATUS,\n       b.StartDate,\n       b.StartTime,\n       b.RUNDATE,\n       b.ASSIGNDATE,\n       b.CreatedDateTime,\n       b.ModifiedDateTime,\n       b.UniqueID\nFROM dbo.DailyOrder a\n         LEFT OUTER JOIN dbo.DailyOrderLoad b\n                         ON a.DailyOrderID = b.DailyOrderID\n                             AND a.ScheduleDate = b.StartDate\nWHERE 1 = 1\n  AND a.ScheduleDate between @BEGIN_DATE and @END_DATE\n  AND a.OrderID IS NOT NULL\nUNION SELECT @COMPANYID + '||' + a.OrderID + '||' + a.ProdID + '||' + CONVERT(CHAR (8), ScheduleDate, 112) as PK,\n       'LOAD||' + a.DailyOrderID + '||' + CONVERT(\"VARCHAR\", b.SLOADSEQNO) + '||BMG'                 as SK,\n       a.OrderID,\n       a.ProdID,\n       a.ScheduleDate,\n       a.DailyOrderID,\n       b.SLOADSEQNO,\n       b.LoadID,\n       a.CustID as CustomerID,\n       b.PlantID,\n       b.TicketID,\n       b.HTID,\n       b.TruckID,\n       b.ProdQty,\n       b.LSTATUS,\n       b.StartDate,\n       b.StartTime,\n       b.RUNDATE,\n       b.ASSIGNDATE,\n       b.CreatedDateTime,\n       b.ModifiedDateTime,\n       b.UniqueID\nFROM dbo.DailyOrder a\n         LEFT OUTER JOIN dbo.DailyOrderLoad b\n                         ON a.DailyOrderID = b.DailyOrderID\n                             AND a.ScheduleDate = b.StartDate\nWHERE 1 = 1\n  AND b.ModifiedDateTime between @BEGIN_DATE and @END_DATE\n  AND a.OrderID IS NOT NULL\nORDER BY a.OrderID,\n         a.ProdID,\n         a.ScheduleDate,\n         a.DailyOrderID,\n         b.SLOADSEQNO"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaFunctionRole",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-05debc9ed8433827e"
+          ],
+          "SubnetIds": [
+            "subnet-0dfcbea0201dc2df2"
+          ]
+        },
+        "Layers": [
+          "arn:aws:lambda:us-east-1:251623506909:layer:materially-development-bridge-app-nodejs-common:25"
+        ]
+      },
+      "DependsOn": [
+        "BMGExtractorLoadsLogGroup",
+        "LambdaFunctionRole"
+      ]
+    },
+    "BMGExtractorShipmentsLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "materially-deployment-bucket",
+          "S3Key": "serverless/materially/development/1681048343714-2023-04-09T13:52:23.714Z/BMGExtractorShipments.zip"
+        },
+        "Handler": "src/handlers/extractors/shipments/index.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "materially-development-BMG-ExtractorShipments",
+        "MemorySize": 256,
+        "Timeout": 300,
+        "Description": "BMG ExtractorShipments lambda function",
+        "Tags": [
+          {
+            "Key": "Owner",
+            "Value": "materially"
+          },
+          {
+            "Key": "Stage",
+            "Value": "development"
+          }
+        ],
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Environment": {
+          "Variables": {
+            "REGION": "us-east-1",
+            "STAGE": "development",
+            "LOG_LEVEL": "DEBUG",
+            "TABLE_NAME": "materially-development-table",
+            "BUCKET_NAME": "bridge-app-development",
+            "EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/send",
+            "LAMBDA_SIGNATURE": "K1thbQbOcrKcqiiLOUWQeO1LjczgLqoS",
+            "ORDER_STATUS_EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/order-status",
+            "OPENSEARCH_PROTOCOL": "https",
+            "OPENSEARCH_AUTH": "admin:Admin1%403",
+            "OPENSEARCH_HOST": "search-materially-app-development-3rks4mqb6cmji6utd6et4lhjzm.us-east-1.es.amazonaws.com",
+            "OPENSEARCH_PORT": "443",
+            "DATABASE_HOST": "{{resolve:secretsmanager:silvi-prod:SecretString:host}}",
+            "DATABASE_PORT": "{{resolve:secretsmanager:silvi-prod:SecretString:port}}",
+            "DATABASE_NAME": "{{resolve:secretsmanager:silvi-prod:SecretString:dbname}}",
+            "DATABASE_USERNAME": "{{resolve:secretsmanager:silvi-prod:SecretString:username}}",
+            "DATABASE_PASSWORD": "{{resolve:secretsmanager:silvi-prod:SecretString:password}}",
+            "sqsQueueUrl": {
+              "Ref": "ShipmentQueue"
+            },
+            "companyId": "COMPANY#01GN9-WFDNM-8FF6E-8N8PE-6HZWG5",
+            "lastDateParameter": "/Lambdas/development/BMG/ExtractorShipments/lastDate",
+            "bucket": {
+              "Ref": "BridgeAppBucketName"
+            },
+            "ticketingSystem": "BMG",
+            "Module": "Shipments",
+            "extractorQuery": "SELECT distinct\n    @COMPANYID + '||' + OrderID + '||' + ProdId + '||' + CONVERT(CHAR(8), ScheduleDate,112) as PK,\n    'SHIPMENT||' + DailyOrderID + '||BMG'  AS SK,\n    a.OrderID,\n    a.ProdID,\n    a.ScheduleDate,\n    a.DailyOrderID,\n    a.CustID as CustomerID,\n    a.PitID as PlantID,\n    a.NumberOfLoads,\n    a.LoadSize,\n    a.NumberOfLoads * LoadSize as OrderQty,\n    a.CreatedDateTime,\n    a.ModifiedDateTime,\n    a.UniqueID\nFROM\n    DailyOrder a\nWHERE\n    1=1\n    AND     a.ScheduleDate = @LAST_DATE\n    AND     a.OrderID IS NOT NULL\nORDER BY\n    OrderID,\n    ProdID,\n    ScheduleDate,\n    DailyOrderID"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaFunctionRole",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-05debc9ed8433827e"
+          ],
+          "SubnetIds": [
+            "subnet-0dfcbea0201dc2df2"
+          ]
+        },
+        "Layers": [
+          "arn:aws:lambda:us-east-1:251623506909:layer:materially-development-bridge-app-nodejs-common:25"
+        ]
+      },
+      "DependsOn": [
+        "BMGExtractorShipmentsLogGroup",
+        "LambdaFunctionRole"
+      ]
+    },
+    "BMGExtractorTicketsLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "materially-deployment-bucket",
+          "S3Key": "serverless/materially/development/1681048343714-2023-04-09T13:52:23.714Z/BMGExtractorTickets.zip"
+        },
+        "Handler": "src/handlers/extractors/tickets/index.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "materially-development-BMG-ExtractorTickets",
+        "MemorySize": 256,
+        "Timeout": 300,
+        "Description": "BMG ExtractorTickets lambda function",
+        "Tags": [
+          {
+            "Key": "Owner",
+            "Value": "materially"
+          },
+          {
+            "Key": "Stage",
+            "Value": "development"
+          }
+        ],
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Environment": {
+          "Variables": {
+            "REGION": "us-east-1",
+            "STAGE": "development",
+            "LOG_LEVEL": "DEBUG",
+            "TABLE_NAME": "materially-development-table",
+            "BUCKET_NAME": "bridge-app-development",
+            "EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/send",
+            "LAMBDA_SIGNATURE": "K1thbQbOcrKcqiiLOUWQeO1LjczgLqoS",
+            "ORDER_STATUS_EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/order-status",
+            "OPENSEARCH_PROTOCOL": "https",
+            "OPENSEARCH_AUTH": "admin:Admin1%403",
+            "OPENSEARCH_HOST": "search-materially-app-development-3rks4mqb6cmji6utd6et4lhjzm.us-east-1.es.amazonaws.com",
+            "OPENSEARCH_PORT": "443",
+            "DATABASE_HOST": "{{resolve:secretsmanager:silvi-prod:SecretString:host}}",
+            "DATABASE_PORT": "{{resolve:secretsmanager:silvi-prod:SecretString:port}}",
+            "DATABASE_NAME": "{{resolve:secretsmanager:silvi-prod:SecretString:dbname}}",
+            "DATABASE_USERNAME": "{{resolve:secretsmanager:silvi-prod:SecretString:username}}",
+            "DATABASE_PASSWORD": "{{resolve:secretsmanager:silvi-prod:SecretString:password}}",
+            "sqsQueueUrl": {
+              "Ref": "TicketQueue"
+            },
+            "companyId": "COMPANY#01GN9-WFDNM-8FF6E-8N8PE-6HZWG5",
+            "lastDateParameter": "/Lambdas/development/BMG/ExtractorTickets/lastDate",
+            "bucket": {
+              "Ref": "BridgeAppBucketName"
+            },
+            "ticketingSystem": "BMG",
+            "Module": "Tickets",
+            "extractorQuery": "SELECT\n        @COMPANYID + '||' + OrderID + '||' + ProdID + '||'+ CONVERT(CHAR(8), RunDate,112) as PK,\n        'TICKET||' + DailyOrderID + '||' + CONVERT(\"VARCHAR\", SLOADSEQNO) + '||' + TicketID + '||' + 'BMG' as SK,\n        OrderID,\n        ProdID,\n        RunDate,\n        DailyOrderID,\n        SLOADSEQNO,\n        TicketID,\n        CustID as CustomerID,\n        PlantID,\n        LoadID,\n        WeighMaster,\n        PlantName,\n        TKTDate,\n        LineID,\n        SiteID,\n        CustName,\n        HTID,\n        HTName,\n        TruckID,\n        DriverName,\n        HTKHaulRate,\n        JobID,\n        JobName,\n        ProdQty,\n        GrossWT,\n        TareWT,\n        NetWT,\n        TngUnit,\n        UnitID,\n        CreatedDateTime,\n        MODIFIEDDATE,\n        MODIFIEDTIME,\n        UniqueId,\n        PRODDESC,\n        DEPARTUREDATE,\n        DEPARTURETIME\nFROM\n        Ticket\nWHERE\n        1=1\nAND     RUNDate = @LAST_DATE ORDER BY\n        OrderID,\n        ProdID,\n        RUNDATE,\n        DailyOrderID,\n        SLOADSEQNO,\n        TicketID"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaFunctionRole",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-05debc9ed8433827e"
+          ],
+          "SubnetIds": [
+            "subnet-0dfcbea0201dc2df2"
+          ]
+        },
+        "Layers": [
+          "arn:aws:lambda:us-east-1:251623506909:layer:materially-development-bridge-app-nodejs-common:25"
+        ]
+      },
+      "DependsOn": [
+        "BMGExtractorTicketsLogGroup",
+        "LambdaFunctionRole"
+      ]
+    },
+    "BMGExtractorCustomersLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "materially-deployment-bucket",
+          "S3Key": "serverless/materially/development/1681048343714-2023-04-09T13:52:23.714Z/BMGExtractorCustomers.zip"
+        },
+        "Handler": "src/handlers/extractors/customers/index.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "materially-development-BMG-ExtractorCustomers",
+        "MemorySize": 256,
+        "Timeout": 300,
+        "Description": "BMG ExtractorCustomers lambda function",
+        "Tags": [
+          {
+            "Key": "Owner",
+            "Value": "materially"
+          },
+          {
+            "Key": "Stage",
+            "Value": "development"
+          }
+        ],
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Environment": {
+          "Variables": {
+            "REGION": "us-east-1",
+            "STAGE": "development",
+            "LOG_LEVEL": "DEBUG",
+            "TABLE_NAME": "materially-development-table",
+            "BUCKET_NAME": "bridge-app-development",
+            "EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/send",
+            "LAMBDA_SIGNATURE": "K1thbQbOcrKcqiiLOUWQeO1LjczgLqoS",
+            "ORDER_STATUS_EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/order-status",
+            "OPENSEARCH_PROTOCOL": "https",
+            "OPENSEARCH_AUTH": "admin:Admin1%403",
+            "OPENSEARCH_HOST": "search-materially-app-development-3rks4mqb6cmji6utd6et4lhjzm.us-east-1.es.amazonaws.com",
+            "OPENSEARCH_PORT": "443",
+            "DATABASE_HOST": "{{resolve:secretsmanager:silvi-prod:SecretString:host}}",
+            "DATABASE_PORT": "{{resolve:secretsmanager:silvi-prod:SecretString:port}}",
+            "DATABASE_NAME": "{{resolve:secretsmanager:silvi-prod:SecretString:dbname}}",
+            "DATABASE_USERNAME": "{{resolve:secretsmanager:silvi-prod:SecretString:username}}",
+            "DATABASE_PASSWORD": "{{resolve:secretsmanager:silvi-prod:SecretString:password}}",
+            "sqsQueueUrl": {
+              "Ref": "CustomerQueue"
+            },
+            "companyId": "COMPANY#01GN9-WFDNM-8FF6E-8N8PE-6HZWG5",
+            "lastDateParameter": "/Lambdas/development/BMG/ExtractorCustomers/lastDate",
+            "bucket": {
+              "Ref": "BridgeAppBucketName"
+            },
+            "ticketingSystem": "BMG",
+            "Module": "Customers",
+            "extractorQuery": "SELECT\n        @COMPANYID + '||' + CUSTID as PK,\n        'CUSTOMER||BMG' as SK,\n        CustID as CustomerID,\n        CustName,\n        CustAddr1,\n        CustAddr2,\n        CustCity,\n        CustState,\n        CustZip,\n        Phone,\n        EmailAddr,\n        Discount,\n        DiscountType,\n        IsActive\n        ModifiedDateTime,\n        uniqueid as UniqueId\nFROM\n        Customer\nWHERE\n        ModifiedDateTime >= @LAST_DATE\nORDER BY\n        ModifiedDateTime DESC"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaFunctionRole",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-05debc9ed8433827e"
+          ],
+          "SubnetIds": [
+            "subnet-0dfcbea0201dc2df2"
+          ]
+        },
+        "Layers": [
+          "arn:aws:lambda:us-east-1:251623506909:layer:materially-development-bridge-app-nodejs-common:25"
+        ]
+      },
+      "DependsOn": [
+        "BMGExtractorCustomersLogGroup",
+        "LambdaFunctionRole"
+      ]
+    },
+    "BMGExtractorFleetsLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "materially-deployment-bucket",
+          "S3Key": "serverless/materially/development/1681048343714-2023-04-09T13:52:23.714Z/BMGExtractorFleets.zip"
+        },
+        "Handler": "src/handlers/extractors/fleets/index.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "materially-development-BMG-ExtractorFleets",
+        "MemorySize": 256,
+        "Timeout": 300,
+        "Description": "BMG ExtractorFleets lambda function",
+        "Tags": [
+          {
+            "Key": "Owner",
+            "Value": "materially"
+          },
+          {
+            "Key": "Stage",
+            "Value": "development"
+          }
+        ],
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Environment": {
+          "Variables": {
+            "REGION": "us-east-1",
+            "STAGE": "development",
+            "LOG_LEVEL": "DEBUG",
+            "TABLE_NAME": "materially-development-table",
+            "BUCKET_NAME": "bridge-app-development",
+            "EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/send",
+            "LAMBDA_SIGNATURE": "K1thbQbOcrKcqiiLOUWQeO1LjczgLqoS",
+            "ORDER_STATUS_EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/order-status",
+            "OPENSEARCH_PROTOCOL": "https",
+            "OPENSEARCH_AUTH": "admin:Admin1%403",
+            "OPENSEARCH_HOST": "search-materially-app-development-3rks4mqb6cmji6utd6et4lhjzm.us-east-1.es.amazonaws.com",
+            "OPENSEARCH_PORT": "443",
+            "DATABASE_HOST": "{{resolve:secretsmanager:silvi-prod:SecretString:host}}",
+            "DATABASE_PORT": "{{resolve:secretsmanager:silvi-prod:SecretString:port}}",
+            "DATABASE_NAME": "{{resolve:secretsmanager:silvi-prod:SecretString:dbname}}",
+            "DATABASE_USERNAME": "{{resolve:secretsmanager:silvi-prod:SecretString:username}}",
+            "DATABASE_PASSWORD": "{{resolve:secretsmanager:silvi-prod:SecretString:password}}",
+            "sqsQueueUrl": {
+              "Ref": "FleetQueue"
+            },
+            "companyId": "COMPANY#01GN9-WFDNM-8FF6E-8N8PE-6HZWG5",
+            "lastDateParameter": "/Lambdas/development/BMG/ExtractorFleets/lastDate",
+            "bucket": {
+              "Ref": "BridgeAppBucketName"
+            },
+            "ticketingSystem": "BMG",
+            "Module": "Fleets",
+            "extractorQuery": "SELECT\n        @COMPANYID + '||' + HTID as PK,\n        'FLEET||BMG' as SK,\n        HTID,\n        HTName,\n        HTPhone,\n        HTAddr1,\n        HTAddr2,\n        HTAddr3,\n        City,\n        State,\n        Zip,\n        CompanyOwn,\n        PickUpOnly,\n        DeliveryOnly,\n        HaulRateRequired,\n        IsActive,\n        CreatedDateTime,\n        ModifiedDateTime\nFROM\n        HiredTruck\nWHERE\n        1=1\nAND     ModifiedDateTime >= @LAST_DATE ORDER BY\n        HTID"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaFunctionRole",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-05debc9ed8433827e"
+          ],
+          "SubnetIds": [
+            "subnet-0dfcbea0201dc2df2"
+          ]
+        },
+        "Layers": [
+          "arn:aws:lambda:us-east-1:251623506909:layer:materially-development-bridge-app-nodejs-common:25"
+        ]
+      },
+      "DependsOn": [
+        "BMGExtractorFleetsLogGroup",
+        "LambdaFunctionRole"
+      ]
+    },
+    "BMGExtractorTrucksLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "materially-deployment-bucket",
+          "S3Key": "serverless/materially/development/1681048343714-2023-04-09T13:52:23.714Z/BMGExtractorTrucks.zip"
+        },
+        "Handler": "src/handlers/extractors/trucks/index.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "materially-development-BMG-ExtractorTrucks",
+        "MemorySize": 256,
+        "Timeout": 300,
+        "Description": "BMG ExtractorTrucks lambda function",
+        "Tags": [
+          {
+            "Key": "Owner",
+            "Value": "materially"
+          },
+          {
+            "Key": "Stage",
+            "Value": "development"
+          }
+        ],
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Environment": {
+          "Variables": {
+            "REGION": "us-east-1",
+            "STAGE": "development",
+            "LOG_LEVEL": "DEBUG",
+            "TABLE_NAME": "materially-development-table",
+            "BUCKET_NAME": "bridge-app-development",
+            "EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/send",
+            "LAMBDA_SIGNATURE": "K1thbQbOcrKcqiiLOUWQeO1LjczgLqoS",
+            "ORDER_STATUS_EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/order-status",
+            "OPENSEARCH_PROTOCOL": "https",
+            "OPENSEARCH_AUTH": "admin:Admin1%403",
+            "OPENSEARCH_HOST": "search-materially-app-development-3rks4mqb6cmji6utd6et4lhjzm.us-east-1.es.amazonaws.com",
+            "OPENSEARCH_PORT": "443",
+            "DATABASE_HOST": "{{resolve:secretsmanager:silvi-prod:SecretString:host}}",
+            "DATABASE_PORT": "{{resolve:secretsmanager:silvi-prod:SecretString:port}}",
+            "DATABASE_NAME": "{{resolve:secretsmanager:silvi-prod:SecretString:dbname}}",
+            "DATABASE_USERNAME": "{{resolve:secretsmanager:silvi-prod:SecretString:username}}",
+            "DATABASE_PASSWORD": "{{resolve:secretsmanager:silvi-prod:SecretString:password}}",
+            "sqsQueueUrl": {
+              "Ref": "TruckQueue"
+            },
+            "companyId": "COMPANY#01GN9-WFDNM-8FF6E-8N8PE-6HZWG5",
+            "lastDateParameter": "/Lambdas/development/BMG/ExtractorTrucks/lastDate",
+            "bucket": {
+              "Ref": "BridgeAppBucketName"
+            },
+            "ticketingSystem": "BMG",
+            "Module": "Trucks",
+            "extractorQuery": "SELECT\n        @COMPANYID + '||' + LTRIM(RTRIM(TruckID)) as PK,\n        'TRUCK||BMG' as SK,\n        HTID,\n        TruckID,\n        TruckDescr,\n        DriverID,\n        DriverName,\n        TareWt,\n        MaxGVW,\n        EquipmentType,\n        TkLic1,\n        TkLic2,\n        TkLic3,\n        InsuranceExpiration,\n        CreatedDateTime,\n        ModifiedDateTime\nFROM\n        Truck\nWHERE\n        ModifiedDateTime >= @LAST_DATE\nORDER BY\n        TruckID"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaFunctionRole",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-05debc9ed8433827e"
+          ],
+          "SubnetIds": [
+            "subnet-0dfcbea0201dc2df2"
+          ]
+        },
+        "Layers": [
+          "arn:aws:lambda:us-east-1:251623506909:layer:materially-development-bridge-app-nodejs-common:25"
+        ]
+      },
+      "DependsOn": [
+        "BMGExtractorTrucksLogGroup",
+        "LambdaFunctionRole"
+      ]
+    },
+    "BMGExtractorDriversLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "materially-deployment-bucket",
+          "S3Key": "serverless/materially/development/1681048343714-2023-04-09T13:52:23.714Z/BMGExtractorDrivers.zip"
+        },
+        "Handler": "src/handlers/extractors/drivers/index.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "materially-development-BMG-ExtractorDrivers",
+        "MemorySize": 256,
+        "Timeout": 300,
+        "Description": "BMG ExtractorDrivers lambda function",
+        "Tags": [
+          {
+            "Key": "Owner",
+            "Value": "materially"
+          },
+          {
+            "Key": "Stage",
+            "Value": "development"
+          }
+        ],
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Environment": {
+          "Variables": {
+            "REGION": "us-east-1",
+            "STAGE": "development",
+            "LOG_LEVEL": "DEBUG",
+            "TABLE_NAME": "materially-development-table",
+            "BUCKET_NAME": "bridge-app-development",
+            "EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/send",
+            "LAMBDA_SIGNATURE": "K1thbQbOcrKcqiiLOUWQeO1LjczgLqoS",
+            "ORDER_STATUS_EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/order-status",
+            "OPENSEARCH_PROTOCOL": "https",
+            "OPENSEARCH_AUTH": "admin:Admin1%403",
+            "OPENSEARCH_HOST": "search-materially-app-development-3rks4mqb6cmji6utd6et4lhjzm.us-east-1.es.amazonaws.com",
+            "OPENSEARCH_PORT": "443",
+            "DATABASE_HOST": "{{resolve:secretsmanager:silvi-prod:SecretString:host}}",
+            "DATABASE_PORT": "{{resolve:secretsmanager:silvi-prod:SecretString:port}}",
+            "DATABASE_NAME": "{{resolve:secretsmanager:silvi-prod:SecretString:dbname}}",
+            "DATABASE_USERNAME": "{{resolve:secretsmanager:silvi-prod:SecretString:username}}",
+            "DATABASE_PASSWORD": "{{resolve:secretsmanager:silvi-prod:SecretString:password}}",
+            "sqsQueueUrl": {
+              "Ref": "DriverQueue"
+            },
+            "companyId": "COMPANY#01GN9-WFDNM-8FF6E-8N8PE-6HZWG5",
+            "lastDateParameter": "/Lambdas/development/BMG/ExtractorDrivers/lastDate",
+            "bucket": {
+              "Ref": "BridgeAppBucketName"
+            },
+            "ticketingSystem": "BMG",
+            "Module": "Drivers",
+            "extractorQuery": "SELECT\n        @COMPANYID + '||' + LTRIM(RTRIM(BADGEID)) AS PK,\n        'DRIVER||BMG' as SK,\n        HTID,\n        BADGEID,\n        DATEISSUED,\n        ISACTIVE,\n        EXPIREDATE,\n        MODIFIEDDATETIME\nFROM\n        IDCard a\nWHERE\n        ModifiedDateTime >= @LAST_DATE\nORDER BY\n        ModifiedDateTime DESC"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaFunctionRole",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-05debc9ed8433827e"
+          ],
+          "SubnetIds": [
+            "subnet-0dfcbea0201dc2df2"
+          ]
+        },
+        "Layers": [
+          "arn:aws:lambda:us-east-1:251623506909:layer:materially-development-bridge-app-nodejs-common:25"
+        ]
+      },
+      "DependsOn": [
+        "BMGExtractorDriversLogGroup",
+        "LambdaFunctionRole"
+      ]
+    },
+    "BMGLoaderPlantsLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "materially-deployment-bucket",
+          "S3Key": "serverless/materially/development/1681048343714-2023-04-09T13:52:23.714Z/BMGLoaderPlants.zip"
+        },
+        "Handler": "src/handlers/loaders/plants/index.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "materially-development-BMG-LoaderPlants",
+        "MemorySize": 256,
+        "Timeout": 300,
+        "Description": "BMG LoaderPlants lambda function",
+        "Tags": [
+          {
+            "Key": "Owner",
+            "Value": "materially"
+          },
+          {
+            "Key": "Stage",
+            "Value": "development"
+          }
+        ],
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Environment": {
+          "Variables": {
+            "REGION": "us-east-1",
+            "STAGE": "development",
+            "LOG_LEVEL": "DEBUG",
+            "TABLE_NAME": "materially-development-table",
+            "BUCKET_NAME": "bridge-app-development",
+            "EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/send",
+            "LAMBDA_SIGNATURE": "K1thbQbOcrKcqiiLOUWQeO1LjczgLqoS",
+            "ORDER_STATUS_EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/order-status",
+            "OPENSEARCH_PROTOCOL": "https",
+            "OPENSEARCH_AUTH": "admin:Admin1%403",
+            "OPENSEARCH_HOST": "search-materially-app-development-3rks4mqb6cmji6utd6et4lhjzm.us-east-1.es.amazonaws.com",
+            "OPENSEARCH_PORT": "443",
+            "DATABASE_HOST": "{{resolve:secretsmanager:silvi-prod:SecretString:host}}",
+            "DATABASE_PORT": "{{resolve:secretsmanager:silvi-prod:SecretString:port}}",
+            "DATABASE_NAME": "{{resolve:secretsmanager:silvi-prod:SecretString:dbname}}",
+            "DATABASE_USERNAME": "{{resolve:secretsmanager:silvi-prod:SecretString:username}}",
+            "DATABASE_PASSWORD": "{{resolve:secretsmanager:silvi-prod:SecretString:password}}"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaFunctionRole",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-05debc9ed8433827e"
+          ],
+          "SubnetIds": [
+            "subnet-0dfcbea0201dc2df2"
+          ]
+        },
+        "ReservedConcurrentExecutions": 1,
+        "Layers": [
+          "arn:aws:lambda:us-east-1:251623506909:layer:materially-development-bridge-app-nodejs-common:25"
+        ]
+      },
+      "DependsOn": [
+        "BMGLoaderPlantsLogGroup",
+        "LambdaFunctionRole"
+      ]
+    },
+    "BMGLoaderJobsLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "materially-deployment-bucket",
+          "S3Key": "serverless/materially/development/1681048343714-2023-04-09T13:52:23.714Z/BMGLoaderJobs.zip"
+        },
+        "Handler": "src/handlers/loaders/jobs/index.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "materially-development-BMG-LoaderJobs",
+        "MemorySize": 256,
+        "Timeout": 300,
+        "Description": "BMG LoaderJobs lambda function",
+        "Tags": [
+          {
+            "Key": "Owner",
+            "Value": "materially"
+          },
+          {
+            "Key": "Stage",
+            "Value": "development"
+          }
+        ],
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Environment": {
+          "Variables": {
+            "REGION": "us-east-1",
+            "STAGE": "development",
+            "LOG_LEVEL": "DEBUG",
+            "TABLE_NAME": "materially-development-table",
+            "BUCKET_NAME": "bridge-app-development",
+            "EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/send",
+            "LAMBDA_SIGNATURE": "K1thbQbOcrKcqiiLOUWQeO1LjczgLqoS",
+            "ORDER_STATUS_EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/order-status",
+            "OPENSEARCH_PROTOCOL": "https",
+            "OPENSEARCH_AUTH": "admin:Admin1%403",
+            "OPENSEARCH_HOST": "search-materially-app-development-3rks4mqb6cmji6utd6et4lhjzm.us-east-1.es.amazonaws.com",
+            "OPENSEARCH_PORT": "443",
+            "DATABASE_HOST": "{{resolve:secretsmanager:silvi-prod:SecretString:host}}",
+            "DATABASE_PORT": "{{resolve:secretsmanager:silvi-prod:SecretString:port}}",
+            "DATABASE_NAME": "{{resolve:secretsmanager:silvi-prod:SecretString:dbname}}",
+            "DATABASE_USERNAME": "{{resolve:secretsmanager:silvi-prod:SecretString:username}}",
+            "DATABASE_PASSWORD": "{{resolve:secretsmanager:silvi-prod:SecretString:password}}"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaFunctionRole",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-05debc9ed8433827e"
+          ],
+          "SubnetIds": [
+            "subnet-0dfcbea0201dc2df2"
+          ]
+        },
+        "ReservedConcurrentExecutions": 1,
+        "Layers": [
+          "arn:aws:lambda:us-east-1:251623506909:layer:materially-development-bridge-app-nodejs-common:25"
+        ]
+      },
+      "DependsOn": [
+        "BMGLoaderJobsLogGroup",
+        "LambdaFunctionRole"
+      ]
+    },
+    "BMGLoaderShipmentsLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "materially-deployment-bucket",
+          "S3Key": "serverless/materially/development/1681048343714-2023-04-09T13:52:23.714Z/BMGLoaderShipments.zip"
+        },
+        "Handler": "src/handlers/loaders/shipments/index.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "materially-development-BMG-LoaderShipments",
+        "MemorySize": 256,
+        "Timeout": 300,
+        "Description": "BMG LoaderShipments lambda function",
+        "Tags": [
+          {
+            "Key": "Owner",
+            "Value": "materially"
+          },
+          {
+            "Key": "Stage",
+            "Value": "development"
+          }
+        ],
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Environment": {
+          "Variables": {
+            "REGION": "us-east-1",
+            "STAGE": "development",
+            "LOG_LEVEL": "DEBUG",
+            "TABLE_NAME": "materially-development-table",
+            "BUCKET_NAME": "bridge-app-development",
+            "EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/send",
+            "LAMBDA_SIGNATURE": "K1thbQbOcrKcqiiLOUWQeO1LjczgLqoS",
+            "ORDER_STATUS_EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/order-status",
+            "OPENSEARCH_PROTOCOL": "https",
+            "OPENSEARCH_AUTH": "admin:Admin1%403",
+            "OPENSEARCH_HOST": "search-materially-app-development-3rks4mqb6cmji6utd6et4lhjzm.us-east-1.es.amazonaws.com",
+            "OPENSEARCH_PORT": "443",
+            "DATABASE_HOST": "{{resolve:secretsmanager:silvi-prod:SecretString:host}}",
+            "DATABASE_PORT": "{{resolve:secretsmanager:silvi-prod:SecretString:port}}",
+            "DATABASE_NAME": "{{resolve:secretsmanager:silvi-prod:SecretString:dbname}}",
+            "DATABASE_USERNAME": "{{resolve:secretsmanager:silvi-prod:SecretString:username}}",
+            "DATABASE_PASSWORD": "{{resolve:secretsmanager:silvi-prod:SecretString:password}}"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaFunctionRole",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-05debc9ed8433827e"
+          ],
+          "SubnetIds": [
+            "subnet-0dfcbea0201dc2df2"
+          ]
+        },
+        "ReservedConcurrentExecutions": 1,
+        "Layers": [
+          "arn:aws:lambda:us-east-1:251623506909:layer:materially-development-bridge-app-nodejs-common:25"
+        ]
+      },
+      "DependsOn": [
+        "BMGLoaderShipmentsLogGroup",
+        "LambdaFunctionRole"
+      ]
+    },
+    "BMGLoaderTicketsLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "materially-deployment-bucket",
+          "S3Key": "serverless/materially/development/1681048343714-2023-04-09T13:52:23.714Z/BMGLoaderTickets.zip"
+        },
+        "Handler": "src/handlers/loaders/tickets/index.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "materially-development-BMG-LoaderTickets",
+        "MemorySize": 256,
+        "Timeout": 300,
+        "Description": "BMG LoaderTickets lambda function",
+        "Tags": [
+          {
+            "Key": "Owner",
+            "Value": "materially"
+          },
+          {
+            "Key": "Stage",
+            "Value": "development"
+          }
+        ],
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Environment": {
+          "Variables": {
+            "REGION": "us-east-1",
+            "STAGE": "development",
+            "LOG_LEVEL": "DEBUG",
+            "TABLE_NAME": "materially-development-table",
+            "BUCKET_NAME": "bridge-app-development",
+            "EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/send",
+            "LAMBDA_SIGNATURE": "K1thbQbOcrKcqiiLOUWQeO1LjczgLqoS",
+            "ORDER_STATUS_EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/order-status",
+            "OPENSEARCH_PROTOCOL": "https",
+            "OPENSEARCH_AUTH": "admin:Admin1%403",
+            "OPENSEARCH_HOST": "search-materially-app-development-3rks4mqb6cmji6utd6et4lhjzm.us-east-1.es.amazonaws.com",
+            "OPENSEARCH_PORT": "443",
+            "DATABASE_HOST": "{{resolve:secretsmanager:silvi-prod:SecretString:host}}",
+            "DATABASE_PORT": "{{resolve:secretsmanager:silvi-prod:SecretString:port}}",
+            "DATABASE_NAME": "{{resolve:secretsmanager:silvi-prod:SecretString:dbname}}",
+            "DATABASE_USERNAME": "{{resolve:secretsmanager:silvi-prod:SecretString:username}}",
+            "DATABASE_PASSWORD": "{{resolve:secretsmanager:silvi-prod:SecretString:password}}"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaFunctionRole",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-05debc9ed8433827e"
+          ],
+          "SubnetIds": [
+            "subnet-0dfcbea0201dc2df2"
+          ]
+        },
+        "Layers": [
+          "arn:aws:lambda:us-east-1:251623506909:layer:materially-development-bridge-app-nodejs-common:25"
+        ]
+      },
+      "DependsOn": [
+        "BMGLoaderTicketsLogGroup",
+        "LambdaFunctionRole"
+      ]
+    },
+    "BMGLoaderLoadsLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "materially-deployment-bucket",
+          "S3Key": "serverless/materially/development/1681048343714-2023-04-09T13:52:23.714Z/BMGLoaderLoads.zip"
+        },
+        "Handler": "src/handlers/loaders/loads/index.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "materially-development-BMG-LoaderLoads",
+        "MemorySize": 256,
+        "Timeout": 300,
+        "Description": "BMG LoaderLoads lambda function",
+        "Tags": [
+          {
+            "Key": "Owner",
+            "Value": "materially"
+          },
+          {
+            "Key": "Stage",
+            "Value": "development"
+          }
+        ],
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Environment": {
+          "Variables": {
+            "REGION": "us-east-1",
+            "STAGE": "development",
+            "LOG_LEVEL": "DEBUG",
+            "TABLE_NAME": "materially-development-table",
+            "BUCKET_NAME": "bridge-app-development",
+            "EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/send",
+            "LAMBDA_SIGNATURE": "K1thbQbOcrKcqiiLOUWQeO1LjczgLqoS",
+            "ORDER_STATUS_EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/order-status",
+            "OPENSEARCH_PROTOCOL": "https",
+            "OPENSEARCH_AUTH": "admin:Admin1%403",
+            "OPENSEARCH_HOST": "search-materially-app-development-3rks4mqb6cmji6utd6et4lhjzm.us-east-1.es.amazonaws.com",
+            "OPENSEARCH_PORT": "443",
+            "DATABASE_HOST": "{{resolve:secretsmanager:silvi-prod:SecretString:host}}",
+            "DATABASE_PORT": "{{resolve:secretsmanager:silvi-prod:SecretString:port}}",
+            "DATABASE_NAME": "{{resolve:secretsmanager:silvi-prod:SecretString:dbname}}",
+            "DATABASE_USERNAME": "{{resolve:secretsmanager:silvi-prod:SecretString:username}}",
+            "DATABASE_PASSWORD": "{{resolve:secretsmanager:silvi-prod:SecretString:password}}"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaFunctionRole",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-05debc9ed8433827e"
+          ],
+          "SubnetIds": [
+            "subnet-0dfcbea0201dc2df2"
+          ]
+        },
+        "Layers": [
+          "arn:aws:lambda:us-east-1:251623506909:layer:materially-development-bridge-app-nodejs-common:25"
+        ]
+      },
+      "DependsOn": [
+        "BMGLoaderLoadsLogGroup",
+        "LambdaFunctionRole"
+      ]
+    },
+    "BMGLoaderFleetsLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "materially-deployment-bucket",
+          "S3Key": "serverless/materially/development/1681048343714-2023-04-09T13:52:23.714Z/BMGLoaderFleets.zip"
+        },
+        "Handler": "src/handlers/loaders/fleets/index.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "materially-development-BMG-LoaderFleets",
+        "MemorySize": 256,
+        "Timeout": 300,
+        "Description": "BMG LoaderFleets lambda function",
+        "Tags": [
+          {
+            "Key": "Owner",
+            "Value": "materially"
+          },
+          {
+            "Key": "Stage",
+            "Value": "development"
+          }
+        ],
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Environment": {
+          "Variables": {
+            "REGION": "us-east-1",
+            "STAGE": "development",
+            "LOG_LEVEL": "DEBUG",
+            "TABLE_NAME": "materially-development-table",
+            "BUCKET_NAME": "bridge-app-development",
+            "EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/send",
+            "LAMBDA_SIGNATURE": "K1thbQbOcrKcqiiLOUWQeO1LjczgLqoS",
+            "ORDER_STATUS_EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/order-status",
+            "OPENSEARCH_PROTOCOL": "https",
+            "OPENSEARCH_AUTH": "admin:Admin1%403",
+            "OPENSEARCH_HOST": "search-materially-app-development-3rks4mqb6cmji6utd6et4lhjzm.us-east-1.es.amazonaws.com",
+            "OPENSEARCH_PORT": "443",
+            "DATABASE_HOST": "{{resolve:secretsmanager:silvi-prod:SecretString:host}}",
+            "DATABASE_PORT": "{{resolve:secretsmanager:silvi-prod:SecretString:port}}",
+            "DATABASE_NAME": "{{resolve:secretsmanager:silvi-prod:SecretString:dbname}}",
+            "DATABASE_USERNAME": "{{resolve:secretsmanager:silvi-prod:SecretString:username}}",
+            "DATABASE_PASSWORD": "{{resolve:secretsmanager:silvi-prod:SecretString:password}}"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaFunctionRole",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-05debc9ed8433827e"
+          ],
+          "SubnetIds": [
+            "subnet-0dfcbea0201dc2df2"
+          ]
+        },
+        "ReservedConcurrentExecutions": 1,
+        "Layers": [
+          "arn:aws:lambda:us-east-1:251623506909:layer:materially-development-bridge-app-nodejs-common:25"
+        ]
+      },
+      "DependsOn": [
+        "BMGLoaderFleetsLogGroup",
+        "LambdaFunctionRole"
+      ]
+    },
+    "BMGLoaderTrucksLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "materially-deployment-bucket",
+          "S3Key": "serverless/materially/development/1681048343714-2023-04-09T13:52:23.714Z/BMGLoaderTrucks.zip"
+        },
+        "Handler": "src/handlers/loaders/trucks/index.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "materially-development-BMG-LoaderTrucks",
+        "MemorySize": 256,
+        "Timeout": 300,
+        "Description": "BMG LoaderTrucks lambda function",
+        "Tags": [
+          {
+            "Key": "Owner",
+            "Value": "materially"
+          },
+          {
+            "Key": "Stage",
+            "Value": "development"
+          }
+        ],
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Environment": {
+          "Variables": {
+            "REGION": "us-east-1",
+            "STAGE": "development",
+            "LOG_LEVEL": "DEBUG",
+            "TABLE_NAME": "materially-development-table",
+            "BUCKET_NAME": "bridge-app-development",
+            "EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/send",
+            "LAMBDA_SIGNATURE": "K1thbQbOcrKcqiiLOUWQeO1LjczgLqoS",
+            "ORDER_STATUS_EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/order-status",
+            "OPENSEARCH_PROTOCOL": "https",
+            "OPENSEARCH_AUTH": "admin:Admin1%403",
+            "OPENSEARCH_HOST": "search-materially-app-development-3rks4mqb6cmji6utd6et4lhjzm.us-east-1.es.amazonaws.com",
+            "OPENSEARCH_PORT": "443",
+            "DATABASE_HOST": "{{resolve:secretsmanager:silvi-prod:SecretString:host}}",
+            "DATABASE_PORT": "{{resolve:secretsmanager:silvi-prod:SecretString:port}}",
+            "DATABASE_NAME": "{{resolve:secretsmanager:silvi-prod:SecretString:dbname}}",
+            "DATABASE_USERNAME": "{{resolve:secretsmanager:silvi-prod:SecretString:username}}",
+            "DATABASE_PASSWORD": "{{resolve:secretsmanager:silvi-prod:SecretString:password}}"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaFunctionRole",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-05debc9ed8433827e"
+          ],
+          "SubnetIds": [
+            "subnet-0dfcbea0201dc2df2"
+          ]
+        },
+        "ReservedConcurrentExecutions": 1,
+        "Layers": [
+          "arn:aws:lambda:us-east-1:251623506909:layer:materially-development-bridge-app-nodejs-common:25"
+        ]
+      },
+      "DependsOn": [
+        "BMGLoaderTrucksLogGroup",
+        "LambdaFunctionRole"
+      ]
+    },
+    "BMGLoaderDriversLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "materially-deployment-bucket",
+          "S3Key": "serverless/materially/development/1681048343714-2023-04-09T13:52:23.714Z/BMGLoaderDrivers.zip"
+        },
+        "Handler": "src/handlers/loaders/drivers/index.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "materially-development-BMG-LoaderDrivers",
+        "MemorySize": 256,
+        "Timeout": 300,
+        "Description": "BMG LoaderDrivers lambda function",
+        "Tags": [
+          {
+            "Key": "Owner",
+            "Value": "materially"
+          },
+          {
+            "Key": "Stage",
+            "Value": "development"
+          }
+        ],
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Environment": {
+          "Variables": {
+            "REGION": "us-east-1",
+            "STAGE": "development",
+            "LOG_LEVEL": "DEBUG",
+            "TABLE_NAME": "materially-development-table",
+            "BUCKET_NAME": "bridge-app-development",
+            "EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/send",
+            "LAMBDA_SIGNATURE": "K1thbQbOcrKcqiiLOUWQeO1LjczgLqoS",
+            "ORDER_STATUS_EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/order-status",
+            "OPENSEARCH_PROTOCOL": "https",
+            "OPENSEARCH_AUTH": "admin:Admin1%403",
+            "OPENSEARCH_HOST": "search-materially-app-development-3rks4mqb6cmji6utd6et4lhjzm.us-east-1.es.amazonaws.com",
+            "OPENSEARCH_PORT": "443",
+            "DATABASE_HOST": "{{resolve:secretsmanager:silvi-prod:SecretString:host}}",
+            "DATABASE_PORT": "{{resolve:secretsmanager:silvi-prod:SecretString:port}}",
+            "DATABASE_NAME": "{{resolve:secretsmanager:silvi-prod:SecretString:dbname}}",
+            "DATABASE_USERNAME": "{{resolve:secretsmanager:silvi-prod:SecretString:username}}",
+            "DATABASE_PASSWORD": "{{resolve:secretsmanager:silvi-prod:SecretString:password}}"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaFunctionRole",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-05debc9ed8433827e"
+          ],
+          "SubnetIds": [
+            "subnet-0dfcbea0201dc2df2"
+          ]
+        },
+        "ReservedConcurrentExecutions": 1,
+        "Layers": [
+          "arn:aws:lambda:us-east-1:251623506909:layer:materially-development-bridge-app-nodejs-common:25"
+        ]
+      },
+      "DependsOn": [
+        "BMGLoaderDriversLogGroup",
+        "LambdaFunctionRole"
+      ]
+    },
+    "BMGLoaderCustomersLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "materially-deployment-bucket",
+          "S3Key": "serverless/materially/development/1681048343714-2023-04-09T13:52:23.714Z/BMGLoaderCustomers.zip"
+        },
+        "Handler": "src/handlers/loaders/customers/index.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "materially-development-BMG-LoaderCustomers",
+        "MemorySize": 256,
+        "Timeout": 300,
+        "Description": "BMG LoaderCustomers lambda function",
+        "Tags": [
+          {
+            "Key": "Owner",
+            "Value": "materially"
+          },
+          {
+            "Key": "Stage",
+            "Value": "development"
+          }
+        ],
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Environment": {
+          "Variables": {
+            "REGION": "us-east-1",
+            "STAGE": "development",
+            "LOG_LEVEL": "DEBUG",
+            "TABLE_NAME": "materially-development-table",
+            "BUCKET_NAME": "bridge-app-development",
+            "EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/send",
+            "LAMBDA_SIGNATURE": "K1thbQbOcrKcqiiLOUWQeO1LjczgLqoS",
+            "ORDER_STATUS_EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/order-status",
+            "OPENSEARCH_PROTOCOL": "https",
+            "OPENSEARCH_AUTH": "admin:Admin1%403",
+            "OPENSEARCH_HOST": "search-materially-app-development-3rks4mqb6cmji6utd6et4lhjzm.us-east-1.es.amazonaws.com",
+            "OPENSEARCH_PORT": "443",
+            "DATABASE_HOST": "{{resolve:secretsmanager:silvi-prod:SecretString:host}}",
+            "DATABASE_PORT": "{{resolve:secretsmanager:silvi-prod:SecretString:port}}",
+            "DATABASE_NAME": "{{resolve:secretsmanager:silvi-prod:SecretString:dbname}}",
+            "DATABASE_USERNAME": "{{resolve:secretsmanager:silvi-prod:SecretString:username}}",
+            "DATABASE_PASSWORD": "{{resolve:secretsmanager:silvi-prod:SecretString:password}}",
+            "ticketingSystem": "BMG"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaFunctionRole",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-05debc9ed8433827e"
+          ],
+          "SubnetIds": [
+            "subnet-0dfcbea0201dc2df2"
+          ]
+        },
+        "ReservedConcurrentExecutions": 1,
+        "Layers": [
+          "arn:aws:lambda:us-east-1:251623506909:layer:materially-development-bridge-app-nodejs-common:25"
+        ]
+      },
+      "DependsOn": [
+        "BMGLoaderCustomersLogGroup",
+        "LambdaFunctionRole"
+      ]
+    },
+    "ProcessOrdersLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "materially-deployment-bucket",
+          "S3Key": "serverless/materially/development/1681048343714-2023-04-09T13:52:23.714Z/ProcessOrders.zip"
+        },
+        "Handler": "src/handlers/processOrders/index.lambdaHandler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "materially-development-BMG-ProcessOrders",
+        "MemorySize": 256,
+        "Timeout": 300,
+        "Description": "BMG Process Materially orders and Update them on a daily basis",
+        "Tags": [
+          {
+            "Key": "Owner",
+            "Value": "materially"
+          },
+          {
+            "Key": "Stage",
+            "Value": "development"
+          }
+        ],
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Environment": {
+          "Variables": {
+            "REGION": "us-east-1",
+            "STAGE": "development",
+            "LOG_LEVEL": "DEBUG",
+            "TABLE_NAME": "materially-development-table",
+            "BUCKET_NAME": "bridge-app-development",
+            "EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/send",
+            "LAMBDA_SIGNATURE": "K1thbQbOcrKcqiiLOUWQeO1LjczgLqoS",
+            "ORDER_STATUS_EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/order-status",
+            "OPENSEARCH_PROTOCOL": "https",
+            "OPENSEARCH_AUTH": "admin:Admin1%403",
+            "OPENSEARCH_HOST": "search-materially-app-development-3rks4mqb6cmji6utd6et4lhjzm.us-east-1.es.amazonaws.com",
+            "OPENSEARCH_PORT": "443",
+            "DATABASE_HOST": "{{resolve:secretsmanager:silvi-prod:SecretString:host}}",
+            "DATABASE_PORT": "{{resolve:secretsmanager:silvi-prod:SecretString:port}}",
+            "DATABASE_NAME": "{{resolve:secretsmanager:silvi-prod:SecretString:dbname}}",
+            "DATABASE_USERNAME": "{{resolve:secretsmanager:silvi-prod:SecretString:username}}",
+            "DATABASE_PASSWORD": "{{resolve:secretsmanager:silvi-prod:SecretString:password}}"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaFunctionRole",
+            "Arn"
+          ]
+        },
+        "Layers": [
+          "arn:aws:lambda:us-east-1:251623506909:layer:materially-development-bridge-app-nodejs-common:25"
+        ]
+      },
+      "DependsOn": [
+        "ProcessOrdersLogGroup",
+        "LambdaFunctionRole"
+      ]
+    },
+    "RemappingOrdersLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "materially-deployment-bucket",
+          "S3Key": "serverless/materially/development/1681048343714-2023-04-09T13:52:23.714Z/RemappingOrders.zip"
+        },
+        "Handler": "src/handlers/remapOrdersAndTickets/index.lambdaHandler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "materially-development-RemapOrdersAndTickets",
+        "MemorySize": 256,
+        "Timeout": 300,
+        "Description": "RemapOrdersAndTickets lambda function",
+        "Tags": [
+          {
+            "Key": "Owner",
+            "Value": "materially"
+          },
+          {
+            "Key": "Stage",
+            "Value": "development"
+          }
+        ],
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Environment": {
+          "Variables": {
+            "REGION": "us-east-1",
+            "STAGE": "development",
+            "LOG_LEVEL": "DEBUG",
+            "TABLE_NAME": "materially-development-table",
+            "BUCKET_NAME": "bridge-app-development",
+            "EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/send",
+            "LAMBDA_SIGNATURE": "K1thbQbOcrKcqiiLOUWQeO1LjczgLqoS",
+            "ORDER_STATUS_EMAIL_ENDPOINT": "https://dev-app.materially.com/v1/email/order-status",
+            "OPENSEARCH_PROTOCOL": "https",
+            "OPENSEARCH_AUTH": "admin:Admin1%403",
+            "OPENSEARCH_HOST": "search-materially-app-development-3rks4mqb6cmji6utd6et4lhjzm.us-east-1.es.amazonaws.com",
+            "OPENSEARCH_PORT": "443",
+            "DATABASE_HOST": "{{resolve:secretsmanager:silvi-prod:SecretString:host}}",
+            "DATABASE_PORT": "{{resolve:secretsmanager:silvi-prod:SecretString:port}}",
+            "DATABASE_NAME": "{{resolve:secretsmanager:silvi-prod:SecretString:dbname}}",
+            "DATABASE_USERNAME": "{{resolve:secretsmanager:silvi-prod:SecretString:username}}",
+            "DATABASE_PASSWORD": "{{resolve:secretsmanager:silvi-prod:SecretString:password}}",
+            "DAILY_ORDER_PREFIX": "silvi-DailyOrders",
+            "OPEN_SEARCH_TOPIC": "arn:aws:sns:us-east-1:251623506909:materially-app-development-BridgeApp",
+            "BACKEND_ENDPOINT": "https://dev-app.materially.com/v1"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaFunctionRole",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-0530e1021b60f697d"
+          ],
+          "SubnetIds": [
+            "subnet-0cc1ceee21215957a",
+            "subnet-02c15a4c49e1446f2",
+            "subnet-06f52cab28235a6e6"
+          ]
+        },
+        "Layers": [
+          "arn:aws:lambda:us-east-1:251623506909:layer:materially-development-bridge-app-nodejs-common:25"
+        ]
+      },
+      "DependsOn": [
+        "RemappingOrdersLogGroup",
+        "LambdaFunctionRole"
+      ]
+    },
+    "BMGExtractorJobsLambdaVersionLIQyNX8tSWfvoikFSLoHaXWxo9ECTGbby4On3xKn9g": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "BMGExtractorJobsLambdaFunction"
+        },
+        "CodeSha256": "chmrgAqQMfrqWXKdoTUxcGbg3smlo38wulLTum/+/5o=",
+        "Description": "BMG ExtractorJobs lambda function"
+      }
+    },
+    "BMGExtractorTicketsLambdaVersionLZj1E0Dl8nBIDcnHYueJS3BwdrfuQp4KErznEsIms": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "BMGExtractorTicketsLambdaFunction"
+        },
+        "CodeSha256": "6t/HcRpA0ncF2op2QpIJaxlOdv/kiN0gg8zj2+zzMek=",
+        "Description": "BMG ExtractorTickets lambda function"
+      }
+    },
+    "BMGExtractorPlantsLambdaVersionPyRI0tBlwMtvJcb2b9yw4KqamBzq28U5XSmW6bY": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "BMGExtractorPlantsLambdaFunction"
+        },
+        "CodeSha256": "Z+/aeF7unNLX7ZR8RWWJTcTR4GypwyOrkcT3+sAyUOM=",
+        "Description": "BMG ExtractorPlants lambda function"
+      }
+    },
+    "BMGExtractorLoadsLambdaVersionTNmT4VtAq5kZ4nioqUj1Yin9R5whIckEVpgohxSEE": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "BMGExtractorLoadsLambdaFunction"
+        },
+        "CodeSha256": "Z2uqHgOb3iWs+49uMRpyFUdtUgMVgPCvn0BxJdkmgYU=",
+        "Description": "BMG ExtractorLoads lambda function"
+      }
+    },
+    "BMGExtractorCustomersLambdaVersions0ijgfFmJchQGyCmSFN785As7Gqve2BNX1jwhWRKWs": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "BMGExtractorCustomersLambdaFunction"
+        },
+        "CodeSha256": "bNZGq/e+vBw5Wlw3pkc9j+RiPyLeRZ/4yT/iZiexido=",
+        "Description": "BMG ExtractorCustomers lambda function"
+      }
+    },
+    "BMGExtractorTrucksLambdaVersion2r3YQmFgUbkFKu44BUeJ95uY5EyMEbJ9y5ayLWHtc": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "BMGExtractorTrucksLambdaFunction"
+        },
+        "CodeSha256": "TT8XbiOXHqr7A7lrrT7/HBiZtPGzx1XrXty3RCze42w=",
+        "Description": "BMG ExtractorTrucks lambda function"
+      }
+    },
+    "BMGExtractorDriversLambdaVersionCnLjjCRU1crv61bnh1KwwwiurJF3TbJ5cBUpY3pTW0": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "BMGExtractorDriversLambdaFunction"
+        },
+        "CodeSha256": "w/EhRFnxV+k5tgBvScUjgxBAwmZ9ozJ1R9fGLOSZo4M=",
+        "Description": "BMG ExtractorDrivers lambda function"
+      }
+    },
+    "BMGLoaderShipmentsLambdaVersionhW3ciQLfyDQKD1C6aVsXIfgHARjInCt9d5UjwrkM": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "BMGLoaderShipmentsLambdaFunction"
+        },
+        "CodeSha256": "hBr/FRNOCTE6ewmt5ohdTrf+6CAINyJpwgd5dKJd+z0=",
+        "Description": "BMG LoaderShipments lambda function"
+      }
+    },
+    "BMGExtractorShipmentsLambdaVersionXz3uV2ZbobcTm5yA9BjDIdFyuXz9efPlD37eLkZ5wc": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "BMGExtractorShipmentsLambdaFunction"
+        },
+        "CodeSha256": "/3zyq8PYfjUGm7d61141o1chrUi+CWNzsLNRyaQto60=",
+        "Description": "BMG ExtractorShipments lambda function"
+      }
+    },
+    "BMGLoaderPlantsLambdaVersionBpajZHeEE8IvKQXp2nJ3oD9P5LJuktCIzJVBJ1Nw": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "BMGLoaderPlantsLambdaFunction"
+        },
+        "CodeSha256": "VcJBggbPbZzKe/XEyYRDQsxjprsfXVeatkpK6Px4neg=",
+        "Description": "BMG LoaderPlants lambda function"
+      }
+    },
+    "BMGLoaderJobsLambdaVersionVagFeeeBmxp0OjVASaCa1HcQHkBwWVfjXfVOIjJE": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "BMGLoaderJobsLambdaFunction"
+        },
+        "CodeSha256": "C3oRNN7SNDu9zjhawX08ReoD2tR/chPMlnOLRl19Ukk=",
+        "Description": "BMG LoaderJobs lambda function"
+      }
+    },
+    "BMGLoaderLoadsLambdaVersionvuT9A2GqYPmDKIlaqIqnnZVfsjhWcd27pN945fWs7n4": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "BMGLoaderLoadsLambdaFunction"
+        },
+        "CodeSha256": "YtKA2m665tJrKpqNdnGQ7nLNTv5LTsXA59c/a2WHvRo=",
+        "Description": "BMG LoaderLoads lambda function"
+      }
+    },
+    "BMGExtractorFleetsLambdaVersionXs33QlTRXrsegp5P3ybeqtxXhB0mUQWxI3GYMVqIK68": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "BMGExtractorFleetsLambdaFunction"
+        },
+        "CodeSha256": "+xL626L65PwRT22vea1znoLCt2bwHcicDawRMwTbjfA=",
+        "Description": "BMG ExtractorFleets lambda function"
+      }
+    },
+    "BMGLoaderFleetsLambdaVersion4HQRd1rckJRylpL4FpMHnEVkTQC75BChBmDrfp151o": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "BMGLoaderFleetsLambdaFunction"
+        },
+        "CodeSha256": "avmi+junGS+PRbuYTo58Nnt8d6/7glN1ZitOn2hCaIg=",
+        "Description": "BMG LoaderFleets lambda function"
+      }
+    },
+    "BMGLoaderTrucksLambdaVersion5STLi91AHKPwidZt8qLmSnUYIJBNBQm897LFzdmqA": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "BMGLoaderTrucksLambdaFunction"
+        },
+        "CodeSha256": "2nEjZ1aKY/MfM5iXjmKmKiZAGekVeGDaf/CWPsMzBUE=",
+        "Description": "BMG LoaderTrucks lambda function"
+      }
+    },
+    "ProcessOrdersLambdaVersiono0ierW3ezq9r6SWLRn4j7javAYyw0VIBa4oBdzrk4": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProcessOrdersLambdaFunction"
+        },
+        "CodeSha256": "Q4xg9LHeAG4NQFkhrCoXQc2alwp/44Q7fxrWiLRwJ0o=",
+        "Description": "BMG Process Materially orders and Update them on a daily basis"
+      }
+    },
+    "BMGLoaderCustomersLambdaVersionjHera2I7TvYKrAWVwDcdTs4rMMY258CS7IazT8VcU": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "BMGLoaderCustomersLambdaFunction"
+        },
+        "CodeSha256": "acHTM/MRgibk5PejZZm3qSBEDCuHUkOqZX/MmuCafiY=",
+        "Description": "BMG LoaderCustomers lambda function"
+      }
+    },
+    "BMGLoaderDriversLambdaVersionbHIAhyWssYxMuWtMDmR5bb6NRJ8WgDtO65Wr1SKmbuY": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "BMGLoaderDriversLambdaFunction"
+        },
+        "CodeSha256": "a7KtMnvArqo/reab4MKT98c15qecbiK1diPfXTSxLoM=",
+        "Description": "BMG LoaderDrivers lambda function"
+      }
+    },
+    "BMGLoaderTicketsLambdaVersion8kWEbRHNeU4UZ5w9XExoe3QnG6pSara178XTLNMacp4": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "BMGLoaderTicketsLambdaFunction"
+        },
+        "CodeSha256": "1ONnXqSqh2aiqOk+q8huU5/FG1q3LeDFfki8GHWKJ4s=",
+        "Description": "BMG LoaderTickets lambda function"
+      }
+    },
+    "RemappingOrdersLambdaVersionldy1zfTVNCveoTiuaRFUqRXsWv5mjB9Mko0DddDGf4": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "RemappingOrdersLambdaFunction"
+        },
+        "CodeSha256": "CYyssCncZu3NpRkMbrCUaGocDELh/3CCqs/fbwIOwrQ=",
+        "Description": "RemapOrdersAndTickets lambda function"
+      }
+    },
+    "MateriallydevelopmentBMGExtractorPlantsrule1EventBridgeRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "materially-development-BMG-ExtractorPlants-rule-1",
+        "ScheduleExpression": "cron(0/5 * * * ? *)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "BMGExtractorPlantsLambdaFunction",
+                "Arn"
+              ]
+            },
+            "Id": "materially-development-BMG-ExtractorPlants-rule-1-target"
+          }
+        ]
+      }
+    },
+    "BMGExtractorPlantsEventBridgeLambdaPermission1": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "BMGExtractorPlantsLambdaFunction"
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            ":",
+            [
+              "arn",
+              {
+                "Ref": "AWS::Partition"
+              },
+              "events",
+              {
+                "Ref": "AWS::Region"
+              },
+              {
+                "Ref": "AWS::AccountId"
+              },
+              {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "rule",
+                    "materially-development-BMG-ExtractorPlants-rule-1"
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "MateriallydevelopmentBMGExtractorJobsrule1EventBridgeRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "materially-development-BMG-ExtractorJobs-rule-1",
+        "ScheduleExpression": "cron(0/5 * * * ? *)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "BMGExtractorJobsLambdaFunction",
+                "Arn"
+              ]
+            },
+            "Id": "materially-development-BMG-ExtractorJobs-rule-1-target"
+          }
+        ]
+      }
+    },
+    "BMGExtractorJobsEventBridgeLambdaPermission1": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "BMGExtractorJobsLambdaFunction"
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            ":",
+            [
+              "arn",
+              {
+                "Ref": "AWS::Partition"
+              },
+              "events",
+              {
+                "Ref": "AWS::Region"
+              },
+              {
+                "Ref": "AWS::AccountId"
+              },
+              {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "rule",
+                    "materially-development-BMG-ExtractorJobs-rule-1"
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "MateriallydevelopmentBMGExtractorLoadsrule1EventBridgeRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "materially-development-BMG-ExtractorLoads-rule-1",
+        "ScheduleExpression": "cron(0/15 * * * ? *)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "BMGExtractorLoadsLambdaFunction",
+                "Arn"
+              ]
+            },
+            "Id": "materially-development-BMG-ExtractorLoads-rule-1-target"
+          }
+        ]
+      }
+    },
+    "BMGExtractorLoadsEventBridgeLambdaPermission1": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "BMGExtractorLoadsLambdaFunction"
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            ":",
+            [
+              "arn",
+              {
+                "Ref": "AWS::Partition"
+              },
+              "events",
+              {
+                "Ref": "AWS::Region"
+              },
+              {
+                "Ref": "AWS::AccountId"
+              },
+              {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "rule",
+                    "materially-development-BMG-ExtractorLoads-rule-1"
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "MateriallydevelopmentBMGExtractorShipmentsrule1EventBridgeRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "materially-development-BMG-ExtractorShipments-rule-1",
+        "ScheduleExpression": "cron(0/5 * * * ? *)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "BMGExtractorShipmentsLambdaFunction",
+                "Arn"
+              ]
+            },
+            "Id": "materially-development-BMG-ExtractorShipments-rule-1-target"
+          }
+        ]
+      }
+    },
+    "BMGExtractorShipmentsEventBridgeLambdaPermission1": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "BMGExtractorShipmentsLambdaFunction"
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            ":",
+            [
+              "arn",
+              {
+                "Ref": "AWS::Partition"
+              },
+              "events",
+              {
+                "Ref": "AWS::Region"
+              },
+              {
+                "Ref": "AWS::AccountId"
+              },
+              {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "rule",
+                    "materially-development-BMG-ExtractorShipments-rule-1"
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "MateriallydevelopmentBMGExtractorTicketsrule1EventBridgeRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "materially-development-BMG-ExtractorTickets-rule-1",
+        "ScheduleExpression": "cron(0/5 * * * ? *)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "BMGExtractorTicketsLambdaFunction",
+                "Arn"
+              ]
+            },
+            "Id": "materially-development-BMG-ExtractorTickets-rule-1-target"
+          }
+        ]
+      }
+    },
+    "BMGExtractorTicketsEventBridgeLambdaPermission1": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "BMGExtractorTicketsLambdaFunction"
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            ":",
+            [
+              "arn",
+              {
+                "Ref": "AWS::Partition"
+              },
+              "events",
+              {
+                "Ref": "AWS::Region"
+              },
+              {
+                "Ref": "AWS::AccountId"
+              },
+              {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "rule",
+                    "materially-development-BMG-ExtractorTickets-rule-1"
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "MateriallydevelopmentBMGExtractorCustomersrule1EventBridgeRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "materially-development-BMG-ExtractorCustomers-rule-1",
+        "ScheduleExpression": "cron(0/5 * * * ? *)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "BMGExtractorCustomersLambdaFunction",
+                "Arn"
+              ]
+            },
+            "Id": "materially-development-BMG-ExtractorCustomers-rule-1-target"
+          }
+        ]
+      }
+    },
+    "BMGExtractorCustomersEventBridgeLambdaPermission1": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "BMGExtractorCustomersLambdaFunction"
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            ":",
+            [
+              "arn",
+              {
+                "Ref": "AWS::Partition"
+              },
+              "events",
+              {
+                "Ref": "AWS::Region"
+              },
+              {
+                "Ref": "AWS::AccountId"
+              },
+              {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "rule",
+                    "materially-development-BMG-ExtractorCustomers-rule-1"
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "MateriallydevelopmentBMGExtractorFleetsrule1EventBridgeRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "materially-development-BMG-ExtractorFleets-rule-1",
+        "ScheduleExpression": "cron(0/5 * * * ? *)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "BMGExtractorFleetsLambdaFunction",
+                "Arn"
+              ]
+            },
+            "Id": "materially-development-BMG-ExtractorFleets-rule-1-target"
+          }
+        ]
+      }
+    },
+    "BMGExtractorFleetsEventBridgeLambdaPermission1": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "BMGExtractorFleetsLambdaFunction"
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            ":",
+            [
+              "arn",
+              {
+                "Ref": "AWS::Partition"
+              },
+              "events",
+              {
+                "Ref": "AWS::Region"
+              },
+              {
+                "Ref": "AWS::AccountId"
+              },
+              {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "rule",
+                    "materially-development-BMG-ExtractorFleets-rule-1"
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "MateriallydevelopmentBMGExtractorTrucksrule1EventBridgeRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "materially-development-BMG-ExtractorTrucks-rule-1",
+        "ScheduleExpression": "cron(0/5 * * * ? *)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "BMGExtractorTrucksLambdaFunction",
+                "Arn"
+              ]
+            },
+            "Id": "materially-development-BMG-ExtractorTrucks-rule-1-target"
+          }
+        ]
+      }
+    },
+    "BMGExtractorTrucksEventBridgeLambdaPermission1": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "BMGExtractorTrucksLambdaFunction"
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            ":",
+            [
+              "arn",
+              {
+                "Ref": "AWS::Partition"
+              },
+              "events",
+              {
+                "Ref": "AWS::Region"
+              },
+              {
+                "Ref": "AWS::AccountId"
+              },
+              {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "rule",
+                    "materially-development-BMG-ExtractorTrucks-rule-1"
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "MateriallydevelopmentBMGExtractorDriversrule1EventBridgeRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "materially-development-BMG-ExtractorDrivers-rule-1",
+        "ScheduleExpression": "cron(0/5 * * * ? *)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "BMGExtractorDriversLambdaFunction",
+                "Arn"
+              ]
+            },
+            "Id": "materially-development-BMG-ExtractorDrivers-rule-1-target"
+          }
+        ]
+      }
+    },
+    "BMGExtractorDriversEventBridgeLambdaPermission1": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "BMGExtractorDriversLambdaFunction"
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            ":",
+            [
+              "arn",
+              {
+                "Ref": "AWS::Partition"
+              },
+              "events",
+              {
+                "Ref": "AWS::Region"
+              },
+              {
+                "Ref": "AWS::AccountId"
+              },
+              {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "rule",
+                    "materially-development-BMG-ExtractorDrivers-rule-1"
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "MateriallydevelopmentBMGProcessOrdersrule1EventBridgeRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "materially-development-BMG-ProcessOrders-rule-1",
+        "ScheduleExpression": "cron(0 7 * * ? *)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "ProcessOrdersLambdaFunction",
+                "Arn"
+              ]
+            },
+            "Id": "materially-development-BMG-ProcessOrders-rule-1-target"
+          }
+        ]
+      }
+    },
+    "ProcessOrdersEventBridgeLambdaPermission1": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "ProcessOrdersLambdaFunction"
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            ":",
+            [
+              "arn",
+              {
+                "Ref": "AWS::Partition"
+              },
+              "events",
+              {
+                "Ref": "AWS::Region"
+              },
+              {
+                "Ref": "AWS::AccountId"
+              },
+              {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "rule",
+                    "materially-development-BMG-ProcessOrders-rule-1"
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "BMGLoaderPlantsEventSourceMappingSQSPlantQueue": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "DependsOn": [
+        "LambdaFunctionRole"
+      ],
+      "Properties": {
+        "BatchSize": 100,
+        "MaximumBatchingWindowInSeconds": 60,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "PlantQueue",
+            "Arn"
+          ]
+        },
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "BMGLoaderPlantsLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Enabled": true,
+        "FunctionResponseTypes": [
+          "ReportBatchItemFailures"
+        ]
+      }
+    },
+    "BMGLoaderJobsEventSourceMappingSQSJobQueue": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "DependsOn": [
+        "LambdaFunctionRole"
+      ],
+      "Properties": {
+        "BatchSize": 100,
+        "MaximumBatchingWindowInSeconds": 60,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "JobQueue",
+            "Arn"
+          ]
+        },
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "BMGLoaderJobsLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Enabled": true,
+        "FunctionResponseTypes": [
+          "ReportBatchItemFailures"
+        ]
+      }
+    },
+    "BMGLoaderShipmentsEventSourceMappingSQSShipmentQueue": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "DependsOn": [
+        "LambdaFunctionRole"
+      ],
+      "Properties": {
+        "BatchSize": 100,
+        "MaximumBatchingWindowInSeconds": 60,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "ShipmentQueue",
+            "Arn"
+          ]
+        },
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "BMGLoaderShipmentsLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Enabled": true,
+        "FunctionResponseTypes": [
+          "ReportBatchItemFailures"
+        ]
+      }
+    },
+    "BMGLoaderTicketsEventSourceMappingSQSTicketQueue": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "DependsOn": [
+        "LambdaFunctionRole"
+      ],
+      "Properties": {
+        "BatchSize": 100,
+        "MaximumBatchingWindowInSeconds": 60,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "TicketQueue",
+            "Arn"
+          ]
+        },
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "BMGLoaderTicketsLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Enabled": true,
+        "FunctionResponseTypes": [
+          "ReportBatchItemFailures"
+        ]
+      }
+    },
+    "BMGLoaderLoadsEventSourceMappingSQSLoadQueue": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "DependsOn": [
+        "LambdaFunctionRole"
+      ],
+      "Properties": {
+        "BatchSize": 100,
+        "MaximumBatchingWindowInSeconds": 60,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "LoadQueue",
+            "Arn"
+          ]
+        },
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "BMGLoaderLoadsLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Enabled": true,
+        "FunctionResponseTypes": [
+          "ReportBatchItemFailures"
+        ]
+      }
+    },
+    "BMGLoaderFleetsEventSourceMappingSQSFleetQueue": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "DependsOn": [
+        "LambdaFunctionRole"
+      ],
+      "Properties": {
+        "BatchSize": 100,
+        "MaximumBatchingWindowInSeconds": 60,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "FleetQueue",
+            "Arn"
+          ]
+        },
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "BMGLoaderFleetsLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Enabled": true,
+        "FunctionResponseTypes": [
+          "ReportBatchItemFailures"
+        ]
+      }
+    },
+    "BMGLoaderTrucksEventSourceMappingSQSTruckQueue": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "DependsOn": [
+        "LambdaFunctionRole"
+      ],
+      "Properties": {
+        "BatchSize": 100,
+        "MaximumBatchingWindowInSeconds": 60,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "TruckQueue",
+            "Arn"
+          ]
+        },
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "BMGLoaderTrucksLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Enabled": true,
+        "FunctionResponseTypes": [
+          "ReportBatchItemFailures"
+        ]
+      }
+    },
+    "BMGLoaderDriversEventSourceMappingSQSDriverQueue": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "DependsOn": [
+        "LambdaFunctionRole"
+      ],
+      "Properties": {
+        "BatchSize": 100,
+        "MaximumBatchingWindowInSeconds": 60,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "DriverQueue",
+            "Arn"
+          ]
+        },
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "BMGLoaderDriversLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Enabled": true,
+        "FunctionResponseTypes": [
+          "ReportBatchItemFailures"
+        ]
+      }
+    },
+    "BMGLoaderCustomersEventSourceMappingSQSCustomerQueue": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "DependsOn": [
+        "LambdaFunctionRole"
+      ],
+      "Properties": {
+        "BatchSize": 100,
+        "MaximumBatchingWindowInSeconds": 60,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "CustomerQueue",
+            "Arn"
+          ]
+        },
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "BMGLoaderCustomersLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Enabled": true,
+        "FunctionResponseTypes": [
+          "ReportBatchItemFailures"
+        ]
+      }
+    },
+    "RemappingOrdersEventSourceMappingSQSMateriallyappdevelopmentBridgeAppOrderUpdaterQueue": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "DependsOn": [
+        "LambdaFunctionRole"
+      ],
+      "Properties": {
+        "BatchSize": 10,
+        "EventSourceArn": "arn:aws:sqs:us-east-1:251623506909:materially-app-development-BridgeAppOrderUpdaterQueue",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "RemappingOrdersLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Enabled": true,
+        "FunctionResponseTypes": [
+          "ReportBatchItemFailures"
+        ]
+      }
+    },
+    "LambdaFunctionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "Description": "Role for Materially lambda functions",
+        "RoleName": "materially-development-LambdaFunctionRole",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "edgelambda.amazonaws.com",
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Path": "/",
+        "ManagedPolicyArns": [
+          {
+            "Ref": "LambdaFunctionPolicy"
+          }
+        ]
+      }
+    },
+    "LambdaFunctionPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "AllowCloudwatchLogs",
+              "Effect": "Allow",
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:CreateLogGroup",
+                "logs:PutLogEvents"
+              ],
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*:*"
+              }
+            },
+            {
+              "Sid": "AllowAssignVPC",
+              "Effect": "Allow",
+              "Action": [
+                "ec2:CreateNetworkInterface",
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:DeleteNetworkInterface",
+                "ec2:AssignPrivateIpAddresses",
+                "ec2:UnassignPrivateIpAddresses"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Sid": "AllowAccessS3",
+              "Effect": "Allow",
+              "Action": [
+                "s3:*"
+              ],
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:s3:::*"
+                }
+              ]
+            },
+            {
+              "Sid": "AllowAccessDynamoDB",
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:List*",
+                "dynamodb:BatchGet*",
+                "dynamodb:DescribeStream",
+                "dynamodb:DescribeTable",
+                "dynamodb:Get*",
+                "dynamodb:Query",
+                "dynamodb:Scan",
+                "dynamodb:BatchWrite*",
+                "dynamodb:DeleteItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:PutItem"
+              ],
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*"
+                }
+              ]
+            },
+            {
+              "Sid": "AllowReadSecretsManager",
+              "Effect": "Allow",
+              "Action": [
+                "secretsmanager:GetSecretValue"
+              ],
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:*"
+              }
+            },
+            {
+              "Sid": "AllowReadWriteSSM",
+              "Effect": "Allow",
+              "Action": [
+                "ssm:Put*",
+                "ssm:Get*",
+                "ssm:Describe*",
+                "ssm:List*"
+              ],
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/*"
+              }
+            },
+            {
+              "Sid": "AllowSendMessagesToSQS",
+              "Effect": "Allow",
+              "Action": [
+                "sqs:SendMessage",
+                "sqs:ReceiveMessage",
+                "sqs:DeleteMessage",
+                "sqs:Get*",
+                "sqs:ChangeMessageVisibility"
+              ],
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:sqs:${AWS::Region}:${AWS::AccountId}:*"
+              }
+            },
+            {
+              "Sid": "AllowAccessSNS",
+              "Effect": "Allow",
+              "Action": [
+                "sns:Publish",
+                "sns:Subscribe"
+              ],
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:*"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "DynamoDBTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "PK",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "SK",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "PK",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "SK",
+            "KeyType": "RANGE"
+          }
+        ],
+        "BillingMode": {
+          "Ref": "BillingMode"
+        },
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 0,
+          "WriteCapacityUnits": 0
+        },
+        "SSESpecification": {
+          "SSEEnabled": true,
+          "SSEType": "KMS"
+        },
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true
+        },
+        "TableName": "materially-development-table"
+      }
+    },
+    "ScalingRole": {
+      "Type": "AWS::IAM::Role",
+      "Condition": "AutoScaleCondition",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "application-autoscaling.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyName": "root",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:DescribeTable",
+                    "dynamodb:UpdateTable",
+                    "cloudwatch:PutMetricAlarm",
+                    "cloudwatch:DescribeAlarms",
+                    "cloudwatch:GetMetricStatistics",
+                    "cloudwatch:SetAlarmState",
+                    "cloudwatch:DeleteAlarms"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "WriteScalingPolicy": {
+      "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+      "Condition": "AutoScaleCondition",
+      "Properties": {
+        "PolicyName": "materially-development-WriteAutoScalingPolicy",
+        "PolicyType": "TargetTrackingScaling",
+        "ScalingTargetId": {
+          "Ref": "WriteCapacityScalableTarget"
+        },
+        "TargetTrackingScalingPolicyConfiguration": {
+          "TargetValue": 0,
+          "PredefinedMetricSpecification": {
+            "PredefinedMetricType": "DynamoDBWriteCapacityUtilization"
+          }
+        }
+      }
+    },
+    "ReadScalingPolicy": {
+      "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+      "Condition": "AutoScaleCondition",
+      "Properties": {
+        "PolicyName": "materially-development-ReadAutoScalingPolicy",
+        "PolicyType": "TargetTrackingScaling",
+        "ScalingTargetId": {
+          "Ref": "ReadCapacityScalableTarget"
+        },
+        "TargetTrackingScalingPolicyConfiguration": {
+          "TargetValue": 0,
+          "PredefinedMetricSpecification": {
+            "PredefinedMetricType": "DynamoDBReadCapacityUtilization"
+          }
+        }
+      }
+    },
+    "WriteCapacityScalableTarget": {
+      "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
+      "Condition": "AutoScaleCondition",
+      "Properties": {
+        "MaxCapacity": 0,
+        "MinCapacity": 0,
+        "ResourceId": {
+          "Fn::Sub": "table/${DynamoDBTable}"
+        },
+        "RoleARN": {
+          "Fn::GetAtt": [
+            "ScalingRole",
+            "Arn"
+          ]
+        },
+        "ScalableDimension": "dynamodb:table:WriteCapacityUnits",
+        "ServiceNamespace": "dynamodb"
+      }
+    },
+    "ReadCapacityScalableTarget": {
+      "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
+      "Condition": "AutoScaleCondition",
+      "Properties": {
+        "MaxCapacity": 0,
+        "MinCapacity": 0,
+        "ResourceId": {
+          "Fn::Sub": "table/${DynamoDBTable}"
+        },
+        "RoleARN": {
+          "Fn::GetAtt": [
+            "ScalingRole",
+            "Arn"
+          ]
+        },
+        "ScalableDimension": "dynamodb:table:ReadCapacityUnits",
+        "ServiceNamespace": "dynamodb"
+      }
+    },
+    "BridgeAppBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Ref": "BridgeAppBucketName"
+        },
+        "CorsConfiguration": {
+          "CorsRules": [
+            {
+              "AllowedHeaders": [
+                "*"
+              ],
+              "AllowedMethods": [
+                "GET",
+                "PUT",
+                "HEAD"
+              ],
+              "AllowedOrigins": [
+                "*"
+              ],
+              "Id": "OpenCors",
+              "MaxAge": 3600
+            }
+          ]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "Id": "DeleteBmgObjectsAfter30Days",
+              "Prefix": "BMG/",
+              "Status": "Enabled",
+              "ExpirationInDays": 30
+            },
+            {
+              "Id": "DeleteApexObjectsAfter30Days",
+              "Prefix": "Apex/",
+              "Status": "Enabled",
+              "ExpirationInDays": 30
+            }
+          ]
+        }
+      }
+    },
+    "NotificationTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "TopicName": "materially-development-NotificationTopic"
+      }
+    },
+    "DeadLetterQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "materially-development-DeadLetterQueue"
+      }
+    },
+    "PlantQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "materially-development-PlantQueue",
+        "RedrivePolicy": {
+          "deadLetterTargetArn": {
+            "Fn::GetAtt": [
+              "DeadLetterQueue",
+              "Arn"
+            ]
+          },
+          "maxReceiveCount": 1
+        },
+        "VisibilityTimeout": 600
+      }
+    },
+    "PlantQueuePolicy": {
+      "Type": "AWS::SQS::QueuePolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Id": "PlantQueuePolicy",
+          "Statement": [
+            {
+              "Sid": "AllowSendMessage",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": [
+                "sqs:SendMessage"
+              ],
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PlantQueue",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        },
+        "Queues": [
+          {
+            "Ref": "PlantQueue"
+          }
+        ]
+      }
+    },
+    "JobQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "materially-development-JobQueue",
+        "RedrivePolicy": {
+          "deadLetterTargetArn": {
+            "Fn::GetAtt": [
+              "DeadLetterQueue",
+              "Arn"
+            ]
+          },
+          "maxReceiveCount": 1
+        },
+        "VisibilityTimeout": 600
+      }
+    },
+    "JobQueuePolicy": {
+      "Type": "AWS::SQS::QueuePolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Id": "JobQueuePolicy",
+          "Statement": [
+            {
+              "Sid": "AllowSendMessage",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": [
+                "sqs:SendMessage"
+              ],
+              "Resource": {
+                "Fn::GetAtt": [
+                  "JobQueue",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        },
+        "Queues": [
+          {
+            "Ref": "JobQueue"
+          }
+        ]
+      }
+    },
+    "ShipmentQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "materially-development-ShipmentQueue",
+        "RedrivePolicy": {
+          "deadLetterTargetArn": {
+            "Fn::GetAtt": [
+              "DeadLetterQueue",
+              "Arn"
+            ]
+          },
+          "maxReceiveCount": 1
+        },
+        "VisibilityTimeout": 600
+      }
+    },
+    "ShipmentQueuePolicy": {
+      "Type": "AWS::SQS::QueuePolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Id": "ShipmentQueuePolicy",
+          "Statement": [
+            {
+              "Sid": "AllowSendMessage",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": [
+                "sqs:SendMessage"
+              ],
+              "Resource": {
+                "Fn::GetAtt": [
+                  "ShipmentQueue",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        },
+        "Queues": [
+          {
+            "Ref": "ShipmentQueue"
+          }
+        ]
+      }
+    },
+    "TicketQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "materially-development-TicketQueue",
+        "RedrivePolicy": {
+          "deadLetterTargetArn": {
+            "Fn::GetAtt": [
+              "DeadLetterQueue",
+              "Arn"
+            ]
+          },
+          "maxReceiveCount": 1
+        },
+        "VisibilityTimeout": 600
+      }
+    },
+    "TicketQueuePolicy": {
+      "Type": "AWS::SQS::QueuePolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Id": "TicketQueuePolicy",
+          "Statement": [
+            {
+              "Sid": "AllowSendMessage",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": [
+                "sqs:SendMessage"
+              ],
+              "Resource": {
+                "Fn::GetAtt": [
+                  "TicketQueue",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        },
+        "Queues": [
+          {
+            "Ref": "TicketQueue"
+          }
+        ]
+      }
+    },
+    "CustomerQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "materially-development-CustomerQueue",
+        "RedrivePolicy": {
+          "deadLetterTargetArn": {
+            "Fn::GetAtt": [
+              "DeadLetterQueue",
+              "Arn"
+            ]
+          },
+          "maxReceiveCount": 1
+        },
+        "VisibilityTimeout": 600
+      }
+    },
+    "CustomerQueuePolicy": {
+      "Type": "AWS::SQS::QueuePolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Id": "CustomerQueuePolicy",
+          "Statement": [
+            {
+              "Sid": "AllowSendMessage",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": [
+                "sqs:SendMessage"
+              ],
+              "Resource": {
+                "Fn::GetAtt": [
+                  "CustomerQueue",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        },
+        "Queues": [
+          {
+            "Ref": "CustomerQueue"
+          }
+        ]
+      }
+    },
+    "LoadQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "materially-development-LoadQueue",
+        "RedrivePolicy": {
+          "deadLetterTargetArn": {
+            "Fn::GetAtt": [
+              "DeadLetterQueue",
+              "Arn"
+            ]
+          },
+          "maxReceiveCount": 1
+        },
+        "VisibilityTimeout": 600
+      }
+    },
+    "LoadQueuePolicy": {
+      "Type": "AWS::SQS::QueuePolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Id": "LoadQueuePolicy",
+          "Statement": [
+            {
+              "Sid": "AllowSendMessage",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": [
+                "sqs:SendMessage"
+              ],
+              "Resource": {
+                "Fn::GetAtt": [
+                  "LoadQueue",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        },
+        "Queues": [
+          {
+            "Ref": "LoadQueue"
+          }
+        ]
+      }
+    },
+    "TruckQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "materially-development-TruckQueue",
+        "RedrivePolicy": {
+          "deadLetterTargetArn": {
+            "Fn::GetAtt": [
+              "DeadLetterQueue",
+              "Arn"
+            ]
+          },
+          "maxReceiveCount": 1
+        },
+        "VisibilityTimeout": 600
+      }
+    },
+    "TruckQueuePolicy": {
+      "Type": "AWS::SQS::QueuePolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Id": "TruckQueuePolicy",
+          "Statement": [
+            {
+              "Sid": "AllowSendMessage",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": [
+                "sqs:SendMessage"
+              ],
+              "Resource": {
+                "Fn::GetAtt": [
+                  "TruckQueue",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        },
+        "Queues": [
+          {
+            "Ref": "TruckQueue"
+          }
+        ]
+      }
+    },
+    "FleetQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "materially-development-FleetQueue",
+        "RedrivePolicy": {
+          "deadLetterTargetArn": {
+            "Fn::GetAtt": [
+              "DeadLetterQueue",
+              "Arn"
+            ]
+          },
+          "maxReceiveCount": 1
+        },
+        "VisibilityTimeout": 600
+      }
+    },
+    "FleetQueuePolicy": {
+      "Type": "AWS::SQS::QueuePolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Id": "FleetQueuePolicy",
+          "Statement": [
+            {
+              "Sid": "AllowSendMessage",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": [
+                "sqs:SendMessage"
+              ],
+              "Resource": {
+                "Fn::GetAtt": [
+                  "FleetQueue",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        },
+        "Queues": [
+          {
+            "Ref": "FleetQueue"
+          }
+        ]
+      }
+    },
+    "DriverQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "materially-development-DriverQueue",
+        "RedrivePolicy": {
+          "deadLetterTargetArn": {
+            "Fn::GetAtt": [
+              "DeadLetterQueue",
+              "Arn"
+            ]
+          },
+          "maxReceiveCount": 1
+        },
+        "VisibilityTimeout": 600
+      }
+    },
+    "DriverQueuePolicy": {
+      "Type": "AWS::SQS::QueuePolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Id": "DriverQueuePolicy",
+          "Statement": [
+            {
+              "Sid": "AllowSendMessage",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": [
+                "sqs:SendMessage"
+              ],
+              "Resource": {
+                "Fn::GetAtt": [
+                  "DriverQueue",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        },
+        "Queues": [
+          {
+            "Ref": "DriverQueue"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "ServerlessDeploymentBucketName": {
+      "Value": "materially-deployment-bucket",
+      "Export": {
+        "Name": "sls-materially-development-ServerlessDeploymentBucketName"
+      }
+    },
+    "BMGExtractorJobsLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "BMGExtractorJobsLambdaVersionLIQyNX8tSWfvoikFSLoHaXWxo9ECTGbby4On3xKn9g"
+      },
+      "Export": {
+        "Name": "sls-materially-development-BMGExtractorJobsLambdaFunctionQualifiedArn"
+      }
+    },
+    "BMGExtractorTicketsLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "BMGExtractorTicketsLambdaVersionLZj1E0Dl8nBIDcnHYueJS3BwdrfuQp4KErznEsIms"
+      },
+      "Export": {
+        "Name": "sls-materially-development-BMGExtractorTicketsLambdaFunctionQualifiedArn"
+      }
+    },
+    "BMGExtractorPlantsLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "BMGExtractorPlantsLambdaVersionPyRI0tBlwMtvJcb2b9yw4KqamBzq28U5XSmW6bY"
+      },
+      "Export": {
+        "Name": "sls-materially-development-BMGExtractorPlantsLambdaFunctionQualifiedArn"
+      }
+    },
+    "BMGExtractorLoadsLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "BMGExtractorLoadsLambdaVersionTNmT4VtAq5kZ4nioqUj1Yin9R5whIckEVpgohxSEE"
+      },
+      "Export": {
+        "Name": "sls-materially-development-BMGExtractorLoadsLambdaFunctionQualifiedArn"
+      }
+    },
+    "BMGExtractorCustomersLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "BMGExtractorCustomersLambdaVersions0ijgfFmJchQGyCmSFN785As7Gqve2BNX1jwhWRKWs"
+      },
+      "Export": {
+        "Name": "sls-materially-development-BMGExtractorCustomersLambdaFunctionQualifiedArn"
+      }
+    },
+    "BMGExtractorTrucksLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "BMGExtractorTrucksLambdaVersion2r3YQmFgUbkFKu44BUeJ95uY5EyMEbJ9y5ayLWHtc"
+      },
+      "Export": {
+        "Name": "sls-materially-development-BMGExtractorTrucksLambdaFunctionQualifiedArn"
+      }
+    },
+    "BMGExtractorDriversLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "BMGExtractorDriversLambdaVersionCnLjjCRU1crv61bnh1KwwwiurJF3TbJ5cBUpY3pTW0"
+      },
+      "Export": {
+        "Name": "sls-materially-development-BMGExtractorDriversLambdaFunctionQualifiedArn"
+      }
+    },
+    "BMGLoaderShipmentsLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "BMGLoaderShipmentsLambdaVersionhW3ciQLfyDQKD1C6aVsXIfgHARjInCt9d5UjwrkM"
+      },
+      "Export": {
+        "Name": "sls-materially-development-BMGLoaderShipmentsLambdaFunctionQualifiedArn"
+      }
+    },
+    "BMGExtractorShipmentsLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "BMGExtractorShipmentsLambdaVersionXz3uV2ZbobcTm5yA9BjDIdFyuXz9efPlD37eLkZ5wc"
+      },
+      "Export": {
+        "Name": "sls-materially-development-BMGExtractorShipmentsLambdaFunctionQualifiedArn"
+      }
+    },
+    "BMGLoaderPlantsLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "BMGLoaderPlantsLambdaVersionBpajZHeEE8IvKQXp2nJ3oD9P5LJuktCIzJVBJ1Nw"
+      },
+      "Export": {
+        "Name": "sls-materially-development-BMGLoaderPlantsLambdaFunctionQualifiedArn"
+      }
+    },
+    "BMGLoaderJobsLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "BMGLoaderJobsLambdaVersionVagFeeeBmxp0OjVASaCa1HcQHkBwWVfjXfVOIjJE"
+      },
+      "Export": {
+        "Name": "sls-materially-development-BMGLoaderJobsLambdaFunctionQualifiedArn"
+      }
+    },
+    "BMGLoaderLoadsLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "BMGLoaderLoadsLambdaVersionvuT9A2GqYPmDKIlaqIqnnZVfsjhWcd27pN945fWs7n4"
+      },
+      "Export": {
+        "Name": "sls-materially-development-BMGLoaderLoadsLambdaFunctionQualifiedArn"
+      }
+    },
+    "BMGExtractorFleetsLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "BMGExtractorFleetsLambdaVersionXs33QlTRXrsegp5P3ybeqtxXhB0mUQWxI3GYMVqIK68"
+      },
+      "Export": {
+        "Name": "sls-materially-development-BMGExtractorFleetsLambdaFunctionQualifiedArn"
+      }
+    },
+    "BMGLoaderFleetsLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "BMGLoaderFleetsLambdaVersion4HQRd1rckJRylpL4FpMHnEVkTQC75BChBmDrfp151o"
+      },
+      "Export": {
+        "Name": "sls-materially-development-BMGLoaderFleetsLambdaFunctionQualifiedArn"
+      }
+    },
+    "BMGLoaderTrucksLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "BMGLoaderTrucksLambdaVersion5STLi91AHKPwidZt8qLmSnUYIJBNBQm897LFzdmqA"
+      },
+      "Export": {
+        "Name": "sls-materially-development-BMGLoaderTrucksLambdaFunctionQualifiedArn"
+      }
+    },
+    "ProcessOrdersLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ProcessOrdersLambdaVersiono0ierW3ezq9r6SWLRn4j7javAYyw0VIBa4oBdzrk4"
+      },
+      "Export": {
+        "Name": "sls-materially-development-ProcessOrdersLambdaFunctionQualifiedArn"
+      }
+    },
+    "BMGLoaderCustomersLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "BMGLoaderCustomersLambdaVersionjHera2I7TvYKrAWVwDcdTs4rMMY258CS7IazT8VcU"
+      },
+      "Export": {
+        "Name": "sls-materially-development-BMGLoaderCustomersLambdaFunctionQualifiedArn"
+      }
+    },
+    "BMGLoaderDriversLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "BMGLoaderDriversLambdaVersionbHIAhyWssYxMuWtMDmR5bb6NRJ8WgDtO65Wr1SKmbuY"
+      },
+      "Export": {
+        "Name": "sls-materially-development-BMGLoaderDriversLambdaFunctionQualifiedArn"
+      }
+    },
+    "BMGLoaderTicketsLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "BMGLoaderTicketsLambdaVersion8kWEbRHNeU4UZ5w9XExoe3QnG6pSara178XTLNMacp4"
+      },
+      "Export": {
+        "Name": "sls-materially-development-BMGLoaderTicketsLambdaFunctionQualifiedArn"
+      }
+    },
+    "RemappingOrdersLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "RemappingOrdersLambdaVersionldy1zfTVNCveoTiuaRFUqRXsWv5mjB9Mko0DddDGf4"
+      },
+      "Export": {
+        "Name": "sls-materially-development-RemappingOrdersLambdaFunctionQualifiedArn"
+      }
+    },
+    "DynamoDBTableName": {
+      "Value": {
+        "Ref": "DynamoDBTable"
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}:DynamoDBObjectTable:Table"
+        }
+      }
+    },
+    "MateriallyDashdevelopmentDashbridgeDashappDashnodejsDashcommonLambdaLayerQualifiedArn": {
+      "Value": "arn:aws:lambda:us-east-1:251623506909:layer:materially-development-bridge-app-nodejs-common:25",
+      "Export": {
+        "Name": "MateriallyDashdevelopmentDashbridgeDashappDashnodejsDashcommonLambdaLayerQualifiedArn"
+      }
+    }
+  },
+  "Parameters": {
+    "Stage": {
+      "Type": "String",
+      "Default": "development",
+      "AllowedValues": [
+        "local",
+        "testing",
+        "staging",
+        "development",
+        "production",
+        "v105"
+      ]
+    },
+    "BillingMode": {
+      "Type": "String",
+      "Default": "PAY_PER_REQUEST",
+      "AllowedValues": [
+        "PROVISIONED",
+        "PAY_PER_REQUEST"
+      ]
+    },
+    "AutoScale": {
+      "Type": "String",
+      "Default": false,
+      "AllowedValues": [
+        true,
+        false
+      ]
+    },
+    "BridgeAppBucketName": {
+      "Type": "String",
+      "Default": "bridge-app-development"
+    }
+  },
+  "Conditions": {
+    "AutoScaleCondition": {
+      "Fn::Equals": [
+        {
+          "Ref": "AutoScale"
+        },
+        true
+      ]
+    }
+  }
+}

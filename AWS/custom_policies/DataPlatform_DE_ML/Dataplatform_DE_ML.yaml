@@ -1,0 +1,11 @@
+Statement:
+- Action:
+  - sagemaker:*
+  - s3:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion: us-west-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor0
+Version: '2012-10-17'

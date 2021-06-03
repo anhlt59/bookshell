@@ -1,0 +1,17 @@
+# serverless framework configuration
+
+function:
+  name: ${self:provider.tags.Owner}-${self:provider.tags.Stage}-ExportLogs
+  description: ExportLogs lambda function
+  handler: export_logs_to_s3/index.lambdaHandler
+  memorySize: 128
+  timeout: 3
+  package:
+    patterns:
+      - '!./**'
+      - export_logs_to_s3/*.js
+  events:
+    - eventBridge:
+        schedule: cron(0 * * * ? *)
+  tracing: Active
+  role: LambdaFunctionRole

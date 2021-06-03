@@ -1,0 +1,62 @@
+GuardDutyDetector:
+  Type: AWS::GuardDuty::Detector
+  Properties:
+    DataSources:
+      S3Logs:
+        Enable: True
+    Enable: True
+    FindingPublishingFrequency: FIFTEEN_MINUTES
+
+#ExecutionRole:
+#  Type: AWS::IAM::Role
+#  Properties:
+#    RoleName: ManageGuardDuty
+#    AssumeRolePolicyDocument:
+#      Version: 2012-10-17
+#      Statement:
+#        - Effect: Allow
+#          Principal:
+#            AWS:
+#              - !Ref AdministratorAccountId
+#          Action:
+#            - sts:AssumeRole
+#    Path: /
+#    ManagedPolicyArns:
+#      - arn:aws:iam::aws:policy/AmazonGuardDutyFullAccess
+#
+#
+#InstanceRole:
+#  Type: AWS::IAM::Role
+#  Condition: CreateInstanceRole
+#  Properties:
+#    RoleName: ManageGuardDutyInstanceRole
+#    AssumeRolePolicyDocument:
+#      Version: "2012-10-17"
+#      Statement:
+#        -
+#          Effect: "Allow"
+#          Principal:
+#            Service:
+#              - "ec2.amazonaws.com"
+#          Action:
+#            - "sts:AssumeRole"
+#    Policies:
+#    -
+#      PolicyName: ManageGuardDutyPolicy
+#      PolicyDocument:
+#        Version: "2012-10-17"
+#        Statement:
+#          -
+#            Effect: "Allow"
+#            Action: "sts:AssumeRole"
+#            Resource: !Join ["", ["arn:aws:iam::*:role/",!Ref ExecutionRole]]
+#
+#
+#InstanceProfile:
+#  Type: AWS::IAM::InstanceProfile
+#  Condition: CreateInstanceRole
+#  Properties:
+#    Path: /
+#    Roles:
+#      - !Ref InstanceRole
+#    InstanceProfileName: EnableGuardDuty

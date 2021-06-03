@@ -1,0 +1,91 @@
+exclude: 'docs|node_modules|migrations|.tox|.idea|venv'
+default_stages: [commit]
+fail_fast: true
+
+repos:
+  # remote -----------------------------------------------
+  # Security
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+      - id: detect-aws-credentials
+      - id: detect-private-key
+
+  # formatter
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+
+  # Python code formatter
+  - repo: https://github.com/psf/black
+    rev: 20.8b1
+    hooks:
+      - id: black
+        args: ["--line-length", "119"]
+        language_version: python3.8
+
+  # sort imports alphabetically, and automatically separated into sections and by type
+  - repo: https://github.com/timothycrosley/isort
+    rev: 5.5.3
+    hooks:
+      - id: isort
+        args: ["-l", "119", "--profile", "black"]
+        language_version: python3.8
+
+  # compliance to PEP8
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.8.3
+    hooks:
+      - id: flake8
+        args: ["--config", "Tools/pre-commit/setup.cfg"]
+        additional_dependencies:
+          - flake8-isort
+          - flake8-black>=0.1.1
+        language_version: python3.8
+
+  # static type checker
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.720
+    hooks:
+      - id: mypy
+
+  # code metric
+  - repo: https://github.com/yunojuno/pre-commit-xenon
+    rev: cc59b0431a5d072786b59430e9b342b2881064f6
+    hooks:
+      - id: xenon
+        args: ["--max-average=A", "--max-modules=C", "--max-absolute=C"]
+
+  # security
+  - repo: https://github.com/PyCQA/bandit
+    rev: 44f5c416cc0b7d62ca55b78e90bd1f7ee3d16082
+    hooks:
+      - id: bandit
+        args: ["-x", "venv,tests", "-r", "./Tools/pre-commit"]
+
+  # local --------------------------------------------------
+  - repo: local
+    hooks:
+      - id: git-check-commit-msg
+        name: GIT check commit message
+        language: pygrep
+        entry: '\A(?!\[JIRA-[0-9]+\]\s*((fix)|(feat))\s*:)'
+        args: [--multiline]
+        stages: [commit-msg]
+
+      # run pytest & coverage
+      - id: pytest
+        name: pytest
+        entry: bash -c "coverage run -m pytest" # $ coverage html # create html report
+        language: system
+        verbose: true
+
+#      - id: migrations-check
+#        language: system
+#        name: Check for uncreated migrations.
+#        entry: bash -c "docker-compose -f local.yml run django  python manage.py makemigrations --check --dry-run"
+#        files: "models\\.py$"
+#        stages: [commit]

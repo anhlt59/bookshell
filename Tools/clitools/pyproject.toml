@@ -1,0 +1,45 @@
+[tool.poetry]
+name = "clitool"
+version = "0.1.0"
+description = "clitool"
+authors = ["anhlt <tuananh220695@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+boto3 = "~1.34.0"
+click = "~8.1.0"
+rich = "~13.7.0"
+click_shell = "~2.1.0"
+
+[tool.poetry.group.test.dependencies]
+pytest = "~7.2.0"
+moto = "~2.0.0"
+pytest-cov = "~4.1.0"
+
+[tool.poetry.group.local.dependencies]
+pre-commit = "^3.7.0"
+
+[tool.poetry.scripts]
+cli = "clitool.cli:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+#requires = ["flit_core<4"]
+#build-backend = "flit_core.buildapi"
+#[tool.flit.module]
+#name = "clitool"
+
+# CQA tools ------------------------------------------------------------------
+[tool.black]
+line_length = 119
+
+[tool.isort]
+profile = "black"
+line_length = 119
+
+[tool.bandit]
+exclude_dirs = ["tests", "scripts", "data", "config"]
