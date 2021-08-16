@@ -333,3 +333,4 @@ django_celery/media/
 .envs/*
 
 !.envs/.local/
+test/
