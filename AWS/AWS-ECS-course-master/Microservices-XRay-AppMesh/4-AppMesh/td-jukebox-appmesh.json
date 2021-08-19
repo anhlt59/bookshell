@@ -1,0 +1,135 @@
+{
+    "family": "td-jukebox",
+    "memory" : "1024",
+    "cpu" : "0.5 vCPU",
+    "requiresCompatibilities": [ "FARGATE" ],
+    "networkMode": "awsvpc",
+    "executionRoleArn": "arn:aws:iam::<<your-account-id>>:role/ecsTaskExecutionRole",
+    "taskRoleArn": "arn:aws:iam::<<your-account-id>>:role/ecsTaskRole",
+    "proxyConfiguration":{
+      "type": "APPMESH",
+      "containerName": "envoy",
+      "properties": [
+        {
+          "name": "IgnoredUID",
+          "value": "1337"
+        },
+        {
+          "name": "ProxyIngressPort",
+          "value": "15000"
+        },
+        {
+          "name": "ProxyEgressPort",
+          "value": "15001"
+        },
+        {
+          "name": "AppPorts",
+          "value": "9000"
+        },
+        {
+          "name": "EgressIgnoredIPs",
+          "value": "169.254.170.2,169.254.169.254"
+        }
+      ]
+    },
+    "containerDefinitions": [
+      {
+        "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+            "awslogs-group": "/ecs/microservice-demo",
+            "awslogs-region": "eu-central-1",
+            "awslogs-stream-prefix": "ecs"
+          }
+        },
+        "portMappings": [
+          {
+            "hostPort": 9000,
+            "protocol": "tcp",
+            "containerPort": 9000
+          }
+        ],
+        "environment": [
+          {
+            "name": "METAL_HOST",
+            "value": "metal-service.ecs-course.local"
+          },
+          {
+            "name": "POP_HOST",
+            "value": "pop-service.ecs-course.local"
+          },
+          {
+            "name": "PORT",
+            "value": "9000"
+          }
+        ],
+        "memoryReservation": 128,
+        "image": "gkoenig/jukeboxapp:latest",
+        "essential": true,
+        "name": "jukebox"
+      },
+      {
+        "name": "envoy",
+        "image": "840364872350.dkr.ecr.eu-central-1.amazonaws.com/aws-appmesh-envoy:v1.12.3.0-prod",
+        "user": "1337",
+        "memory": 256,
+        "essential": true,
+        "environment": [
+          {
+            "name": "APPMESH_VIRTUAL_NODE_NAME",
+            "value": "arn:aws:appmesh:eu-central-1:<<your-account-id>>:mesh/jukebox-mesh/virtualNode/jukebox-vn"
+          },
+          {
+            "name": "ENABLE_ENVOY_XRAY_TRACING",
+            "value": "1"
+          },
+          {
+            "name": "ENABLE_ENVOY_STATS_TAGS",
+            "value": "1"
+          },
+          {
+            "name": "ENVOY_LOG_LEVEL",
+            "value": "debug"
+          }
+        ],
+        "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+            "awslogs-group": "/ecs/microservice-demo",
+            "awslogs-region": "eu-central-1",
+            "awslogs-stream-prefix": "/jukebox/envoy"
+          }
+        },
+        "healthCheck": {
+          "command": [
+            "CMD-SHELL",
+            "curl -s http://localhost:9901/server_info | grep state | grep -q LIVE"
+          ],
+          "interval": 5,
+          "timeout": 2,
+          "retries": 3
+        }
+      },
+      {
+        "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+            "awslogs-group": "/ecs/microservice-demo",
+            "awslogs-region": "eu-central-1",
+            "awslogs-stream-prefix": "jukebox/xray"
+          }
+        },
+        "portMappings": [
+          {
+            "protocol": "udp",
+            "containerPort": 2000
+          }
+        ],
+        "cpu": 32,
+        "memoryReservation": 256,
+        "image": "amazon/aws-xray-daemon",        
+        "name": "xray-daemon",
+        "user": "1337"
+      }
+    ]    
+  }

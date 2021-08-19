@@ -1,0 +1,29 @@
+{
+  "taskRoleArn": "arn:aws:iam::<<your-account-id>>:role/ecsTaskRole",
+  "executionRoleArn": "arn:aws:iam::<<your-account-id>>:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+      {
+        "environment": [
+          {
+              "name": "PORT",
+              "value": "9002"
+          }
+        ],
+        "memory": 128,
+        "image": "gkoenig/popapp:latest",
+        "essential": true,
+        "portMappings": [
+              {
+                  "protocol": "tcp",
+                  "containerPort": 9002
+              }
+        ],
+        "name": "popapp"
+      }
+  ],
+  "family": "td-popapp",
+  "requiresCompatibilities": [
+      "EC2"
+  ],
+  "networkMode": "awsvpc"
+}

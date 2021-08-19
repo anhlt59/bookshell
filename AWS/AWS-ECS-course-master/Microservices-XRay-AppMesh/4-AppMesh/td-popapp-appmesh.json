@@ -1,0 +1,57 @@
+{
+  "family": "td-popapp",
+  "requiresCompatibilities": [
+      "FARGATE"
+  ],
+  "networkMode": "awsvpc",
+  "executionRoleArn": "arn:aws:iam::<<your-account-id>>:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::<<your-account-id>>:role/ecsTaskRole",
+  "containerDefinitions": [
+      {
+        "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+            "awslogs-group": "/ecs/microservice-demo",
+            "awslogs-region": "eu-central-1",
+            "awslogs-stream-prefix": "ecs"
+          }
+        },
+        "portMappings": [
+              {
+                  "protocol": "tcp",
+                  "containerPort": 80
+              }
+          ],
+          "environment": [
+              {
+                  "name": "PORT",
+                  "value": "80"
+              }
+          ],
+          "memory": 128,
+          "image": "gkoenig/popapp:latest",
+          "essential": true,
+          "name": "popapp"
+      },
+      {
+        "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+            "awslogs-group": "/ecs/microservice-demo",
+            "awslogs-region": "eu-central-1",
+            "awslogs-stream-prefix": "pop/xray"
+          }
+        },
+        "portMappings": [
+          {
+            "protocol": "udp",
+            "containerPort": 2000
+          }
+        ],
+        "cpu": 32,
+        "memoryReservation": 256,
+        "image": "amazon/aws-xray-daemon",        
+        "name": "xray-daemon"
+      }
+  ]
+}

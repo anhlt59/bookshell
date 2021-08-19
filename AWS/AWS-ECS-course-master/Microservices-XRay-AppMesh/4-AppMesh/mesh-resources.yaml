@@ -1,0 +1,179 @@
+---
+Parameters:
+        
+  AppMeshMeshName:
+    Type: String
+    Description: Name of mesh
+    Default: jukebox-mesh
+  CloudMapNamespace:
+    Type: String
+    Default: ecs-course.local
+  CloudMapMetalService:
+    Type: String
+    Default: metal-service
+  CloudMapPopService:
+    Type: String
+    Default: pop-service
+  CloudMapJukeboxService:
+    Type: String
+    Default: jukebox-service
+
+Resources:
+
+#############################################
+# AppMesh virtual services & router
+#############################################
+  MetalVirtualRouter:
+    Type: AWS::AppMesh::VirtualRouter
+    Properties:
+        MeshName: !Ref AppMeshMeshName
+        VirtualRouterName: metal-vr
+        Spec:
+          Listeners:
+            - PortMapping:
+                Port: 80
+                Protocol: http
+
+  MetalRoute:
+    Type: AWS::AppMesh::Route
+    DependsOn:
+      - MetalVirtualRouter
+      - MetalAppVirtualNode
+    Properties:
+      MeshName: !Ref AppMeshMeshName
+      VirtualRouterName: metal-vr
+      RouteName: metal-route
+      Spec:
+        HttpRoute:
+          Action:
+            WeightedTargets:
+              - VirtualNode: metal-service-vn
+                Weight: 1
+          Match:
+            Prefix: "/"
+
+  MetalVirtualService:
+    Type: AWS::AppMesh::VirtualService
+    DependsOn:
+      - MetalVirtualRouter
+    Properties:
+      MeshName: !Ref AppMeshMeshName
+      VirtualServiceName: !Sub "${CloudMapMetalService}.${CloudMapNamespace}"
+      Spec:
+        Provider:
+          VirtualRouter:
+            VirtualRouterName: metal-vr
+
+  PopVirtualService:
+    Type: AWS::AppMesh::VirtualService
+    DependsOn:
+      - PopAppVirtualNode
+    Properties:
+      MeshName: !Ref AppMeshMeshName
+      VirtualServiceName: !Sub "${CloudMapPopService}.${CloudMapNamespace}"
+      Spec:
+        Provider:
+          VirtualNode:
+            VirtualNodeName: pop-service-vn
+
+  JukeboxVirtualService:
+    Type: AWS::AppMesh::VirtualService
+    DependsOn:
+      - JukeboxAppVirtualNode
+    Properties:
+      MeshName: !Ref AppMeshMeshName
+      VirtualServiceName: !Sub "${CloudMapJukeboxService}.${CloudMapNamespace}"
+      Spec:
+        Provider:
+          VirtualNode:
+            VirtualNodeName: jukebox-service-vn
+
+#############################################
+# virtual nodes for "physical" ECS services
+#############################################
+  MetalAppVirtualNode:
+    Type: AWS::AppMesh::VirtualNode
+    Properties:
+      MeshName: !Ref AppMeshMeshName
+      VirtualNodeName: metal-service-vn
+      Spec:
+        Listeners:
+          - PortMapping:
+              Port: 80
+              Protocol: http
+            HealthCheck:
+              Protocol: http
+              Path: "/ping"
+              HealthyThreshold: 2
+              UnhealthyThreshold: 2
+              TimeoutMillis: 2000
+              IntervalMillis: 5000
+        ServiceDiscovery:
+          AWSCloudMap:
+            NamespaceName: !Ref CloudMapNamespace
+            ServiceName: !Ref CloudMapMetalService
+        
+  PopAppVirtualNode:
+    Type: AWS::AppMesh::VirtualNode
+    Properties:
+      MeshName: !Ref AppMeshMeshName
+      VirtualNodeName: pop-service-vn
+      Spec:
+        Listeners:
+          - PortMapping:
+              Port: 80
+              Protocol: http
+            HealthCheck:
+              Protocol: http
+              Path: "/ping"
+              HealthyThreshold: 2
+              UnhealthyThreshold: 2
+              TimeoutMillis: 2000
+              IntervalMillis: 5000
+        ServiceDiscovery:
+          AWSCloudMap:
+            NamespaceName: !Ref CloudMapNamespace
+            ServiceName: !Ref CloudMapPopService
+  
+  JukeboxAppVirtualNode:
+    Type: AWS::AppMesh::VirtualNode
+    DependsOn:
+      - MetalVirtualService
+      - PopVirtualService
+    Properties:
+      MeshName: !Ref AppMeshMeshName
+      VirtualNodeName: jukebox-service-vn
+      Spec:
+        Listeners:
+          - PortMapping:
+              Port: 9000
+              Protocol: http
+        ServiceDiscovery:
+          AWSCloudMap:
+            NamespaceName: !Ref CloudMapNamespace
+            ServiceName: "jukebox-service"
+        Backends:
+          - VirtualService:
+              VirtualServiceName: !Sub "${CloudMapPopService}.${CloudMapNamespace}"
+          - VirtualService:
+              VirtualServiceName: !Sub "${CloudMapMetalService}.${CloudMapNamespace}"
+
+Outputs:    
+  MetalAppVirtualNodeName:
+    Description: Name of the MetalApp VirtualNode
+    Value:
+      Fn::GetAtt:
+      - MetalAppVirtualNode
+      - VirtualNodeName
+  PopAppVirtualNodeName:
+    Description: Name of the PopApp VirtualNode
+    Value:
+      Fn::GetAtt:
+      - PopAppVirtualNode
+      - VirtualNodeName 
+  JukeboxAppVirtualNodeName:
+    Description: Name of the JukeboxApp VirtualNode
+    Value:
+      Fn::GetAtt:
+      - JukeboxAppVirtualNode
+      - VirtualNodeName     

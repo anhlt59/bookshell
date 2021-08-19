@@ -1,0 +1,84 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "restrict policies to control access to S3 from fargate task",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": [
+                "s3:GetObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::prod-eu-central-1-starport-layer-bucket/*"
+            ],
+            "Condition": {
+                "StringEquals": {
+                    "aws:PrincipalArn": [
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-ECSRole-1EHWR6VA6ON1H",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-BatchTaskRole-1IVLQYCIQ5FGK"
+                    ]
+                }   
+            }
+        },
+        {
+            "Sid": "restrict policies to control access to S3 from lambda",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject",
+                "s3:ListBucket",
+                "s3:DeleteObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::paw-tr0-predeployment",
+                "arn:aws:s3:::paw-tr0-predeployment/*",
+                "arn:aws:s3:::paw-tr0-web",
+                "arn:aws:s3:::paw-tr0-web/*",
+                "arn:aws:s3:::paw-tr0-users",
+                "arn:aws:s3:::paw-tr0-users/*",
+                "arn:aws:s3:::paw-tr0-private",
+                "arn:aws:s3:::paw-tr0-private/*"
+            ],
+            "Condition": {
+                "StringEquals": {
+                    "aws:PrincipalArn": [
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleCcsGetListFile-40IBVQ6IRACW",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleImportPdf-3I28Y94GMNMO",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleAuthUser-E9S7C8C8L1DP",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleProcessImageOutput-ASZLCJ3ZYEBN",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleProcessVivid-5BKYO0JN12LC",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRolePosterAddPictureGet-1EJ2TAKTVBIYZ",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleGetLastPosterUrl-74UYR4HY7G7O",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleStockImages-11K4LZ0ZBJV2X",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRolePrepareUpload-1MP6K5CFKVN5B",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleTmpDataDelete-1FKDSOORELZSK",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleGetUserCapacity-1L4TWNBOK1VU2",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleCcsGetService-XAIUMGUX4OAD",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleImportPoster-HZWFM3TD1UJZ",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleCcsGetStatusUpload-1K7TZMLALU0D",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleAuthLogout-A2SSBL5SQ9VL",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRolePosterToImage-V01ZY78NHS9N",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRolePosterAddImageProce-1Q838DY4MAU3S",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleBatchSqsPoller-1L2GEB3S1AVC4",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleCcsGetUrlDownload-W9ENLBFM0AHI",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRolePuppeteerRenderImag-NPEGV1WIG5KP",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleNotifyTask-LF9R6DYGYH2K",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleProcessSpotColor-1BHGR8G0DOVYF",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleExportPoster-P0BI2I4GZ3LV",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleConvertToken-QSX889YUEU8B",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleProcessS3Path-MUXZ9XSC5GU8",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRolePosterGetSavePresig-WFIU6UBN2IS5",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleDeleteS3MultiObject-1CUZV9VPLIQJ5",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleAuthToken-BZT4TQFW1KO9",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleCcsGetUploadUrl-F7O8OJWFNXK3",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleCcsDeleteToken-SDPEKV2FWZEL",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleImageProcessingAppl-1OQBF5PUTGSQL",
+                        "arn:aws:iam::315941280866:role/paw-tr0-core-LambdaFunctionRoleCcsGetServiceAuthor-8X3K7A8GLYDD"
+                    ]
+                }
+            }
+        }
+    ]
+}
+

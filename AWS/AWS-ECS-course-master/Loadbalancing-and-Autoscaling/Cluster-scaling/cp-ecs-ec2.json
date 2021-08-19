@@ -1,0 +1,13 @@
+{
+    "name": "cp-ecs-ec2",
+    "autoScalingGroupProvider": {
+        "autoScalingGroupArn": "arn:aws:autoscaling:eu-central-1:258889785048:autoScalingGroup:8a9779f8-c850-4692-81a5-97f569c7d323:autoScalingGroupName/amazon-ecs-cli-setup-ecs-ec2-EcsInstanceAsg-1W6Q2U5RG6O0B",
+        "managedScaling": {
+            "status": "ENABLED",
+            "targetCapacity": 100,
+            "minimumScalingStepSize": 1,
+            "maximumScalingStepSize": 3
+        },
+        "managedTerminationProtection": "DISABLED"
+    }
+}
