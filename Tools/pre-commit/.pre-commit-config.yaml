@@ -1,0 +1,58 @@
+exclude: 'docs|node_modules|migrations|.git|.tox|.idea|venv'
+default_stages: [commit]
+fail_fast: true
+
+repos:
+  # remote -----------------------------------------------
+  # formatter
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+
+  # Python code formatter
+  - repo: https://github.com/psf/black
+    rev: 20.8b1
+    hooks:
+      - id: black
+        language_version: python3.8
+
+  # sort imports alphabetically, and automatically separated into sections and by type
+  - repo: https://github.com/timothycrosley/isort
+    rev: 5.5.3
+    hooks:
+      - id: isort
+
+  # static type checker
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.720
+    hooks:
+      - id: mypy
+
+  # security
+  - repo: https://github.com/yunojuno/pre-commit-xenon
+    rev: cc59b0431a5d072786b59430e9b342b2881064f6
+    hooks:
+      - id: xenon
+        args: ["--max-average=A", "--max-modules=C", "--max-absolute=C"]
+
+  # local --------------------------------------------------
+  # run pytest & coverage
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: bash -c "coverage run -m pytest"
+        language: system
+        verbose: true
+
+#  - repo: local
+#    hooks:
+#      - id: migrations-check
+#        language: system
+#        name: Check for uncreated migrations.
+#        entry: bash -c "docker-compose -f local.yml run django  python manage.py makemigrations --check --dry-run"
+#        files: "models\\.py$"
+#        stages: [commit]
