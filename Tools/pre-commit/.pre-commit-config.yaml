@@ -1,4 +1,4 @@
-exclude: 'docs|node_modules|migrations|.git|.tox|.idea|venv'
+exclude: 'docs|node_modules|migrations|.tox|.idea|venv'
 default_stages: [commit]
 fail_fast: true
 
@@ -47,7 +47,7 @@ repos:
     hooks:
       - id: mypy
 
-  # security ???
+  # security
   - repo: https://github.com/yunojuno/pre-commit-xenon
     rev: cc59b0431a5d072786b59430e9b342b2881064f6
     hooks:
@@ -57,19 +57,19 @@ repos:
   # local --------------------------------------------------
   - repo: local
     hooks:
-      - id: jira-ticket-check
-        name: check for jira ticket
+      - id: git-check-commit-msg
+        name: GIT check commit message
         language: pygrep
-        entry: '\A(?!JIRA-[0-9]+)'
+        entry: '\A(?!\[JIRA-[0-9]+\]\s*((fix)|(feat))\s*:)'
         args: [--multiline]
         stages: [commit-msg]
 
-#      # run pytest & coverage
-#      - id: pytest
-#        name: pytest
-#        entry: bash -c "coverage run -m pytest"
-#        language: system
-#        verbose: true
+      # run pytest & coverage
+      - id: pytest
+        name: pytest
+        entry: bash -c "coverage run -m pytest"
+        language: system
+        verbose: true
 
 #      - id: migrations-check
 #        language: system
