@@ -25,13 +25,22 @@ repos:
     hooks:
       - id: isort
 
+  # compliance to PEP8
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.8.3
+    hooks:
+      - id: flake8
+        args: ['--config=setup.cfg']
+        additional_dependencies: [flake8-isort]
+        language_version: python3.8
+
   # static type checker
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v0.720
     hooks:
       - id: mypy
 
-  # security
+  # security ???
   - repo: https://github.com/yunojuno/pre-commit-xenon
     rev: cc59b0431a5d072786b59430e9b342b2881064f6
     hooks:
@@ -39,17 +48,22 @@ repos:
         args: ["--max-average=A", "--max-modules=C", "--max-absolute=C"]
 
   # local --------------------------------------------------
-  # run pytest & coverage
   - repo: local
     hooks:
-      - id: pytest
-        name: pytest
-        entry: bash -c "coverage run -m pytest"
-        language: system
-        verbose: true
+      - id: jira-ticket-check
+        name: check for jira ticket
+        language: pygrep
+        entry: '\A(?!JIRA-[0-9]+)'
+        args: [--multiline]
+        stages: [commit-msg]
 
-#  - repo: local
-#    hooks:
+#      # run pytest & coverage
+#      - id: pytest
+#        name: pytest
+#        entry: bash -c "coverage run -m pytest"
+#        language: system
+#        verbose: true
+
 #      - id: migrations-check
 #        language: system
 #        name: Check for uncreated migrations.

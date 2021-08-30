@@ -4,6 +4,7 @@
     ```sh
     $ pip install -r requirements.txt
     $ pre-commit install
+    $ pre-commit install --hook-type commit-msg
     ```
 
     - config file: `.pre-commit-config.yaml`
