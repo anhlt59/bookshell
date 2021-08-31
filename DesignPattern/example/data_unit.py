@@ -1,46 +1,57 @@
-from abc import ABCMeta
+from abc import abstractmethod, ABCMeta
+from typing import Any
 
 
-class DataUnit(float, metaclass=ABCMeta):
-    unit = None
-    symbol = None
+class BaseUnit(metaclass=ABCMeta):
+    default = None
 
     @classmethod
-    def convert(cls, value):
+    @abstractmethod
+    def convert(cls, value: Any):
+        pass
+
+    def __new__(cls, value: Any):
+        value = cls.convert(value or cls.default)
+        return super(BaseUnit, cls).__new__(cls, value)
+
+
+class DataUnit(float, BaseUnit):
+    unit = None
+    symbol = None
+    default = 0.0
+
+    @classmethod
+    def convert(cls, value: Any):
         if isinstance(value, DataUnit) and cls.unit != value.unit:
             value = round(value * pow(1024, value.unit - cls.unit), 5)
         return value
 
     def __str__(self):
-        return f"{self} {self.symbol}"
-
-    def __new__(cls, value: float = 0.0):
-        value = cls.convert(value)
-        return super(DataUnit, cls).__new__(cls, value)
+        return f"{self.real} {self.symbol}"
 
     def __sub__(self, other):
-        return self.__class__(self - self.convert(other))
+        return self.__class__(self.real - self.convert(other))
 
     def __add__(self, other):
-        return self.__class__(self + self.convert(other))
+        return self.__class__(self.real + self.convert(other))
 
     def __gt__(self, other):
-        return self > self.convert(other)
+        return self.real > self.convert(other)
 
     def __ge__(self, other):
-        return self >= self.convert(other)
+        return self.real >= self.convert(other)
 
     def __lt__(self, other):
-        return self < self.convert(other)
+        return self.real < self.convert(other)
 
     def __le__(self, other):
-        return self <= self.convert(other)
+        return self.real <= self.convert(other)
 
     def __eq__(self, other):
-        return self == self.convert(other)
+        return self.real == self.convert(other)
 
     def __ne__(self, other):
-        return self != self.convert(other)
+        return self.real != self.convert(other)
 
 
 class Byte(DataUnit):
