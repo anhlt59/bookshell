@@ -2,7 +2,7 @@ import inspect
 from abc import ABCMeta, abstractmethod
 from typing import Dict
 
-from DesignPattern.example.models.fields import Descriptor, StringField, IntegerField, EmptyValue
+from DesignPattern.example.models.fields import Descriptor, StringField, IntegerField
 
 
 class BaseModel(metaclass=ABCMeta):
