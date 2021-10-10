@@ -10,16 +10,6 @@ RUN apt-get update \
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
 
-# requirements are installed here to ensure they will be cached
-COPY ./requirements /requirements
-RUN pip install -r /requirements/local.txt
-
-COPY ./entrypoint.sh /entrypoint.sh
-RUN sed -i 's/\r$//g' /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-WORKDIR /serverless
-
 RUN npm install -g serverless \
   serverless-python-requirements \
   serverless-offline
@@ -28,4 +18,14 @@ RUN aws configure set aws_access_key_id root
 RUN aws configure set aws_secret_access_key abc@123456
 RUN aws configure set default.region eu-central-1
 
-ENTRYPOINT ["/entrypoint.sh"]
+WORKDIR /serverless
+
+COPY ./entrypoint.sh /entrypoint.sh
+RUN sed -i 's/\r$//g' /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# requirements are installed here to ensure they will be cached
+COPY ./requirements /requirements
+RUN pip install -r /requirements/local.txt
+
+ENTRYPOINT ["/entrypoint.py"]
