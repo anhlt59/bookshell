@@ -37,7 +37,7 @@ repos:
     rev: 3.8.3
     hooks:
       - id: flake8
-        args: ['--config=setup.cfg']
+        args: ["--config", "Tools/pre-commit/setup.cfg"]
         additional_dependencies: [flake8-isort]
         language_version: python3.8
 
@@ -53,6 +53,12 @@ repos:
     hooks:
       - id: xenon
         args: ["--max-average=A", "--max-modules=C", "--max-absolute=C"]
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: 44f5c416cc0b7d62ca55b78e90bd1f7ee3d16082
+    hooks:
+      - id: bandit
+        args: ["-r", "./Tools/pre-commit"]
 
   # local --------------------------------------------------
   - repo: local
