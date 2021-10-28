@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from typing import Dict, List
 
-from DesignPattern.others.models.fields import Descriptor, StringField, IntegerField
+from Pattern.DesignPattern.others.models.fields import Descriptor, StringField, IntegerField
 
 
 class InvalidValue(Exception):
