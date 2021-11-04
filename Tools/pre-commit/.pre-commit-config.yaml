@@ -73,7 +73,7 @@ repos:
       # run pytest & coverage
       - id: pytest
         name: pytest
-        entry: bash -c "coverage run -m pytest"
+        entry: bash -c "coverage run -m pytest" # $ coverage html # create html report
         language: system
         verbose: true
 
