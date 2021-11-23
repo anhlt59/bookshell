@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  lambda-layer:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: pdftocairo
+    volumes:
+      - ./volume:/volume
+    command: tail -f /volume/test.py
+
+#export LD_LIBRARY_PATH="/volume/pdftocairo/lib:${LD_LIBRARY_PATH}"
+#export PATH="/volume/pdftocairo/bin:${PATH}"
+
