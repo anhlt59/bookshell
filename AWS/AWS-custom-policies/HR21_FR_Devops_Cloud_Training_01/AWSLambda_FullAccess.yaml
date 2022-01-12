@@ -1,0 +1,39 @@
+Statement:
+- Action:
+  - cloudformation:DescribeStacks
+  - cloudformation:ListStackResources
+  - cloudwatch:ListMetrics
+  - cloudwatch:GetMetricData
+  - ec2:DescribeSecurityGroups
+  - ec2:DescribeSubnets
+  - ec2:DescribeVpcs
+  - kms:ListAliases
+  - iam:GetPolicy
+  - iam:GetPolicyVersion
+  - iam:GetRole
+  - iam:GetRolePolicy
+  - iam:ListAttachedRolePolicies
+  - iam:ListRolePolicies
+  - iam:ListRoles
+  - lambda:*
+  - logs:DescribeLogGroups
+  - states:DescribeStateMachine
+  - states:ListStateMachines
+  - tag:GetResources
+  - xray:GetTraceSummaries
+  - xray:BatchGetTraces
+  Effect: Allow
+  Resource: '*'
+- Action: iam:PassRole
+  Condition:
+    StringEquals:
+      iam:PassedToService: lambda.amazonaws.com
+  Effect: Allow
+  Resource: '*'
+- Action:
+  - logs:DescribeLogStreams
+  - logs:GetLogEvents
+  - logs:FilterLogEvents
+  Effect: Allow
+  Resource: arn:aws:logs:*:*:log-group:/aws/lambda/*
+Version: '2012-10-17'

@@ -1,0 +1,186 @@
+Statement:
+- Action:
+  - iam:CreateRole
+  - iam:CreatePolicy
+  - iam:PassRole
+  - iam:AttachRolePolicy
+  - iam:CreatePolicyVersion
+  - iam:DeletePolicyVersion
+  - iam:ListRolePolicies
+  - iam:GetRole
+  - iam:ListAttachedRolePolicies
+  - iam:GetPolicy
+  - iam:ListEntitiesForPolicy
+  - iam:DetachRolePolicy
+  - iam:GetPolicyVersion
+  Effect: Allow
+  Resource:
+  - arn:aws:iam::541253215789:role/service-role/codebuild*
+  - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser
+  - arn:aws:iam::541253215789:policy/service-role/CodeBuildBasePolicy*
+  - arn:aws:iam::541253215789:policy/service-role/CodeBuildCachePolicy*
+  - arn:aws:iam::541253215789:policy/service-role/CodeBuild*
+- Action: codepipeline:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-west-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor0
+- Action: rds:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-west-1
+  Effect: Allow
+  Resource: '*'
+- Action: codedeploy:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-west-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor1
+- Action: ecs:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-west-1
+  Effect: Allow
+  Resource: '*'
+- Action: cloudwatch:getmetricstatistics
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-west-1
+  Effect: Allow
+  Resource: '*'
+- Action: elasticloadbalancing:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-west-1
+  Effect: Allow
+  Resource: '*'
+- Action:
+  - apigateway:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-west-1
+  Effect: Allow
+  Resource: arn:aws:apigateway:*::/*
+- Action: ecr:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-west-1
+  Effect: Allow
+  Resource: '*'
+- Action: ec2:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-west-1
+      - us-east-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor2
+- Action: codecommit:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-west-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor3
+- Action: sns:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-west-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor4
+- Action: codebuild:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-west-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor5
+- Action: cloudformation:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-west-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor6
+- Action: events:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-west-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor7
+- Action: s3:*
+  Effect: Allow
+  Resource:
+  - arn:aws:s3:::cf-templates-reoct7tjonqr-us-west-1/*
+  - arn:aws:s3:::cf-templates-reoct7tjonqr-us-west-1
+  Sid: VisualEditor8
+- Action: ec2:RunInstances
+  Condition:
+    ForAnyValue:StringNotLike:
+      ec2:InstanceType:
+      - t2.nano
+      - t2.small
+      - t2.micro
+      - t3.nano
+      - t3.small
+      - t3.micro
+      - t3.medium
+  Effect: Deny
+  Resource: arn:aws:ec2:*:*:instance/*
+  Sid: VisualEditor9
+- Action: ec2:RunInstances
+  Condition:
+    NumericGreaterThanEquals:
+      ec2:VolumeSize: '100'
+  Effect: Deny
+  Resource: arn:aws:ec2:*:*:instance/*
+  Sid: VisualEditor10
+- Action: rds:CreateDBInstance
+  Condition:
+    ForAnyValue:StringNotLike:
+      rds:DatabaseClass:
+      - db.t2.micro
+      - db.t2.small
+      - db.t2.medium
+      - db.t3.micro
+      - db.t3.small
+      - db.t3.medium
+  Effect: Deny
+  Resource: arn:aws:rds:*:*:db:*
+  Sid: VisualEditor11
+- Action: rds:CreateDBInstance
+  Condition:
+    NumericGreaterThanEquals:
+      rds:StorageSize: '100'
+  Effect: Deny
+  Resource: arn:aws:rds:*:*:db:*
+  Sid: VisualEditor12
+- Action: rds:CreateDBInstance
+  Condition:
+    Bool:
+      rds:MultiAz: 'true'
+      rds:StorageEncrypted: 'true'
+  Effect: Deny
+  Resource: arn:aws:rds:*:*:db:*
+  Sid: VisualEditor13
+Version: '2012-10-17'

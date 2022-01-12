@@ -1,0 +1,8 @@
+Statement:
+- Action:
+  - ec2:DescribeInstances
+  - ec2-instance-connect:SendSSHPublicKey
+  Effect: Allow
+  Resource: '*'
+  Sid: EC2InstanceConnect
+Version: '2012-10-17'

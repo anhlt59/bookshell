@@ -1,0 +1,26 @@
+Statement:
+- Action: ec2:*
+  Effect: Allow
+  Resource: '*'
+- Action: elasticloadbalancing:*
+  Effect: Allow
+  Resource: '*'
+- Action: cloudwatch:*
+  Effect: Allow
+  Resource: '*'
+- Action: autoscaling:*
+  Effect: Allow
+  Resource: '*'
+- Action: iam:CreateServiceLinkedRole
+  Condition:
+    StringEquals:
+      iam:AWSServiceName:
+      - autoscaling.amazonaws.com
+      - ec2scheduled.amazonaws.com
+      - elasticloadbalancing.amazonaws.com
+      - spot.amazonaws.com
+      - spotfleet.amazonaws.com
+      - transitgateway.amazonaws.com
+  Effect: Allow
+  Resource: '*'
+Version: '2012-10-17'

@@ -1,0 +1,40 @@
+Statement:
+- Action:
+  - codecommit:*
+  - cloudwatch:*
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor0
+- Action:
+  - datasync:*
+  - secretsmanager:*
+  - apigateway:*
+  - transfer:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion: us-west-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor1
+- Action: lambda:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion: us-west-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor2
+- Action: s3:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion: us-west-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor3
+- Action: states:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion: us-west-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor4
+Version: '2012-10-17'

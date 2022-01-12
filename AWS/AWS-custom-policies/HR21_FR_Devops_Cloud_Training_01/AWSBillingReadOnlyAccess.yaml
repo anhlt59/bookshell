@@ -1,0 +1,6 @@
+Statement:
+- Action:
+  - aws-portal:ViewBilling
+  Effect: Allow
+  Resource: '*'
+Version: '2012-10-17'

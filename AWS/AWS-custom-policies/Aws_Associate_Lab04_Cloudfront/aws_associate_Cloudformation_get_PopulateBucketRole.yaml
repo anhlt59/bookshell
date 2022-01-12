@@ -1,0 +1,33 @@
+Statement:
+- Action:
+  - iam:ListRoleTags
+  - iam:ListGroupPolicies
+  - iam:ListEntitiesForPolicy
+  - iam:ListServiceSpecificCredentials
+  - iam:ListUserPolicies
+  - iam:ListMFADevices
+  - iam:ListSigningCertificates
+  - iam:ListInstanceProfiles
+  - iam:ListInstanceProfilesForRole
+  - iam:PassRole
+  - iam:ListSSHPublicKeys
+  - iam:ListPolicyVersions
+  - iam:ListGroupsForUser
+  - iam:ListAttachedRolePolicies
+  - iam:ListAttachedUserPolicies
+  - iam:ListAttachedGroupPolicies
+  - iam:ListRolePolicies
+  - iam:GetLoginProfile
+  - iam:ListUserTags
+  - iam:ListAccessKeys
+  Effect: Allow
+  Resource: arn:aws:iam::541253215789:role/PopulateBucketRole
+  Sid: VisualEditor0
+- Action:
+  - iam:GetRoles
+  - iam:ListRoles
+  - iam:CreateRole
+  Effect: Allow
+  Resource: arn:aws:iam::541253215789:role/PopulateBucketRole
+  Sid: VisualEditor1
+Version: '2012-10-17'

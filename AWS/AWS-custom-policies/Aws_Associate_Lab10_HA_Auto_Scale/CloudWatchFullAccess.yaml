@@ -1,0 +1,18 @@
+Statement:
+- Action:
+  - autoscaling:Describe*
+  - cloudwatch:*
+  - logs:*
+  - sns:*
+  - iam:GetPolicy
+  - iam:GetPolicyVersion
+  - iam:GetRole
+  Effect: Allow
+  Resource: '*'
+- Action: iam:CreateServiceLinkedRole
+  Condition:
+    StringLike:
+      iam:AWSServiceName: events.amazonaws.com
+  Effect: Allow
+  Resource: arn:aws:iam::*:role/aws-service-role/events.amazonaws.com/AWSServiceRoleForCloudWatchEvents*
+Version: '2012-10-17'

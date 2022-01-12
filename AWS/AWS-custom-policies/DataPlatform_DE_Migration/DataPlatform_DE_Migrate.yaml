@@ -1,0 +1,41 @@
+Statement:
+- Action: cloudformation:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion: ap-southeast-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor0
+- Action: codecommit:*
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor1
+- Action: dms:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion: ap-southeast-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor2
+- Action: ec2:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion: ap-southeast-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor3
+- Action: s3:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion: ap-southeast-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor4
+- Action: rds:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion: ap-southeast-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor5
+Version: '2012-10-17'

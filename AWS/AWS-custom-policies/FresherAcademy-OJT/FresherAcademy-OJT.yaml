@@ -1,0 +1,20 @@
+Statement:
+- Action:
+  - states:*
+  - lambda:*
+  - kms:*
+  - dynamodb:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion: us-west-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor0
+- Action: s3:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion: us-west-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor4
+Version: '2012-10-17'

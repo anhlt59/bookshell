@@ -1,0 +1,61 @@
+Statement:
+- Action:
+  - codecommit:*
+  - cloudformation:*
+  - kms:*
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor0
+- Action:
+  - dms:*
+  - firehose:*
+  - ec2:*
+  - rds:*
+  - sts:*
+  - athena:*
+  - glue:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-west-1
+      - ap-southeast-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor1
+- Action: kinesis:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-west-1
+      - ap-southeast-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor2
+- Action: kinesisanalytics:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-west-1
+      - ap-southeast-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor3
+- Action: kinesisanalytics:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-west-1
+      - ap-southeast-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor4
+- Action: s3:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-west-1
+      - ap-southeast-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor5
+Version: '2012-10-17'

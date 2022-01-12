@@ -1,0 +1,33 @@
+Statement:
+- Action:
+  - iam:UpdateAssumeRolePolicy
+  - iam:List*
+  - events:PutRule
+  - iam:DeletePolicy
+  - iam:CreateRole
+  - iam:AttachRolePolicy
+  - iam:PutRolePolicy
+  - codebuild:*
+  - iam:PassRole
+  - iam:DetachRolePolicy
+  - iam:DeleteRolePolicy
+  - codedeploy:*
+  - events:RemoveTargets
+  - iam:CreatePolicyVersion
+  - events:PutEvents
+  - iam:GetRole
+  - iam:GetPolicy
+  - iam:AttachUserPolicy
+  - iam:DeleteRole
+  - iam:CreatePolicy
+  - events:DeleteRule
+  - events:PutTargets
+  - codecommit:*
+  - codepipeline:*
+  - iam:UpdateRole
+  - iam:GetRolePolicy
+  - iam:DeletePolicyVersion
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor0
+Version: '2012-10-17'

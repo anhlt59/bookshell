@@ -1,0 +1,40 @@
+Statement:
+- Action:
+  - iam:AddUserToGroup
+  - iam:RemoveUserFromGroup
+  - iam:ListPolicyVersions
+  - iam:ListGroupPolicies
+  - iam:ListAttachedGroupPolicies
+  - iam:GetGroup
+  Effect: Allow
+  Resource:
+  - arn:aws:iam::541253215789:group/EC2-Support
+  - arn:aws:iam::541253215789:group/EC2-Admin
+  - arn:aws:iam::541253215789:group/S3-Support
+  Sid: VisualEditor0
+- Action:
+  - iam:GetPolicyVersion
+  - iam:ListPolicyVersions
+  Effect: Allow
+  Resource:
+  - arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
+  - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+  Sid: VisualEditor1
+- Action:
+  - iam:CreateLoginProfile
+  - iam:ListGroupsForUser
+  - iam:ListUsers
+  - iam:CreateUser
+  - iam:GetLoginProfile
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor2
+- Action: iam:ListGroups
+  Effect: Allow
+  Resource:
+  - arn:aws:iam::541253215789:group/EC2-Support
+  - arn:aws:iam::541253215789:group/EC2-Admin
+  - arn:aws:iam::541253215789:group/S3-Support
+  - arn:aws:iam::541253215789:group/*
+  Sid: VisualEditor3
+Version: '2012-10-17'

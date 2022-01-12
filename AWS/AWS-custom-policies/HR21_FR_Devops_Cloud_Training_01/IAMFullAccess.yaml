@@ -1,0 +1,16 @@
+Statement:
+- Action:
+  - iam:*
+  - organizations:DescribeAccount
+  - organizations:DescribeOrganization
+  - organizations:DescribeOrganizationalUnit
+  - organizations:DescribePolicy
+  - organizations:ListChildren
+  - organizations:ListParents
+  - organizations:ListPoliciesForTarget
+  - organizations:ListRoots
+  - organizations:ListPolicies
+  - organizations:ListTargetsForPolicy
+  Effect: Allow
+  Resource: '*'
+Version: '2012-10-17'

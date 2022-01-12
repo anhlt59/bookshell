@@ -1,0 +1,47 @@
+Statement:
+- Action: iam:CreateServiceLinkedRole
+  Condition:
+    StringLike:
+      iam:AWSServiceName: rds.amazonaws.com
+  Effect: Allow
+  Resource: arn:aws:iam::*:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS
+- Action: rds:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-east-1
+  Effect: Allow
+  Resource: '*'
+- Action: cloudwatch:getmetricstatistics
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-east-1
+  Effect: Allow
+  Resource: '*'
+- Action: rds:CreateDBInstance
+  Condition:
+    ForAnyValue:StringNotLike:
+      rds:DatabaseClass:
+      - db.t2.micro
+      - db.t2.small
+      - db.t2.medium
+  Effect: Deny
+  Resource: arn:aws:rds:*:*:db:*
+  Sid: VisualEditor11
+- Action: rds:CreateDBInstance
+  Condition:
+    NumericGreaterThanEquals:
+      rds:StorageSize: '100'
+  Effect: Deny
+  Resource: arn:aws:rds:*:*:db:*
+  Sid: VisualEditor12
+- Action: rds:CreateDBInstance
+  Condition:
+    Bool:
+      rds:MultiAz: 'true'
+      rds:StorageEncrypted: 'true'
+  Effect: Deny
+  Resource: arn:aws:rds:*:*:db:*
+  Sid: VisualEditor13
+Version: '2012-10-17'

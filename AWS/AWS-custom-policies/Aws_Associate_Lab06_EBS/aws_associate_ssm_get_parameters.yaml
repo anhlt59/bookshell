@@ -1,0 +1,10 @@
+Statement:
+- Action:
+  - ssm:DescribeParameters
+  Effect: Allow
+  Resource: '*'
+- Action:
+  - ssm:GetParameters
+  Effect: Allow
+  Resource: '*'
+Version: '2012-10-17'

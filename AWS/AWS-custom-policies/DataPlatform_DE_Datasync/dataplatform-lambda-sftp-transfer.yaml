@@ -1,0 +1,18 @@
+Statement:
+- Action: lambda:InvokeFunction
+  Effect: Allow
+  Resource: arn:aws:lambda:us-west-1:541253215789:function:*
+  Sid: VisualEditor0
+- Action:
+  - states:DescribeStateMachineForExecution
+  - states:DescribeActivity
+  - states:ListStateMachines
+  - states:ListActivities
+  - states:CreateActivity
+  - states:StartExecution
+  - states:DeleteActivity
+  - states:StopExecution
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor1
+Version: '2012-10-17'

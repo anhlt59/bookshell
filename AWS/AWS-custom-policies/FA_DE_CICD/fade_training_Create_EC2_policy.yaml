@@ -1,0 +1,47 @@
+Statement:
+- Action: ec2:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion:
+      - us-east-1
+      - us-west-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor0
+- Action:
+  - iam:DeactivateMFADevice
+  - iam:DeleteVirtualMFADevice
+  - iam:EnableMFADevice
+  - iam:UntagMFADevice
+  - iam:TagMFADevice
+  - iam:CreateVirtualMFADevice
+  - iam:ListMFADevices
+  - iam:ListMFADeviceTags
+  - iam:ListVirtualMFADevices
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor1
+- Action: ec2:RunInstances
+  Condition:
+    ForAnyValue:StringNotLike:
+      ec2:InstanceType:
+      - t2.nano
+      - t2.small
+      - t2.micro
+      - t3.nano
+      - t3.small
+      - t3.micro
+      - t3a.nano
+      - t3a.small
+      - t3a.micro
+  Effect: Deny
+  Resource: arn:aws:ec2:*:*:instance/*
+  Sid: VisualEditor2
+- Action: ec2:RunInstances
+  Condition:
+    NumericGreaterThanEquals:
+      ec2:VolumeSize: '30'
+  Effect: Deny
+  Resource: arn:aws:ec2:*:*:instance/*
+  Sid: VisualEditor3
+Version: '2012-10-17'

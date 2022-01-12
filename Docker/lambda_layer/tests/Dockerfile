@@ -15,19 +15,19 @@ RUN wget https://poppler.freedesktop.org/poppler-21.11.0.tar.xz --no-check-certi
 RUN tar -xf poppler-21.11.0.tar.xz
 RUN cd poppler-21.11.0 \
     && cmake  -DCMAKE_BUILD_TYPE=Release \
-       -DCMAKE_INSTALL_PREFIX=/pdftocairo \
+       -DCMAKE_INSTALL_PREFIX=/usr \
        -DTESTDATADIR=$PWD/testfiles \
        -DENABLE_UNSTABLE_API_ABI_HEADERS=ON \
        -DENABLE_GTK_DOC=OFF \
        -DENABLE_BOOST=OFF \
     && make \
-    && make DESTDIR=/tmp install
+    && make install
 
 # poppler data
 RUN wget https://poppler.freedesktop.org/poppler-data-0.4.11.tar.gz --no-check-certificate
 RUN tar -xf poppler-data-0.4.11.tar.gz
 RUN cd poppler-data-0.4.11 \
-    && make prefix=/pdftocairo DESTDIR=/tmp install
+    && make install
 
 #RUN yum install poppler-utils
 #RUN rpmdev-extract *rpm

@@ -1,0 +1,17 @@
+Statement:
+- Action: ec2:Describe*
+  Effect: Allow
+  Resource: '*'
+- Action: elasticloadbalancing:Describe*
+  Effect: Allow
+  Resource: '*'
+- Action:
+  - cloudwatch:ListMetrics
+  - cloudwatch:GetMetricStatistics
+  - cloudwatch:Describe*
+  Effect: Allow
+  Resource: '*'
+- Action: autoscaling:Describe*
+  Effect: Allow
+  Resource: '*'
+Version: '2012-10-17'

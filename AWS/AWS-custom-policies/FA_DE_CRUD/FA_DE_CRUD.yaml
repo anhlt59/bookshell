@@ -1,0 +1,81 @@
+Statement:
+- Action: apigateway:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion: us-west-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor0
+- Action: lambda:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion: us-west-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor1
+- Action: dynamodb:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion: us-west-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor2
+- Action:
+  - iam:CreatePolicy
+  - iam:PassRole
+  - iam:DeletePolicy
+  - iam:CreateRole
+  - iam:DeleteRole
+  - iam:AttachRolePolicy
+  - iam:DeleteRolePolicy
+  Condition:
+    StringEquals:
+      aws:RequestedRegion: us-west-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor3
+- Action: lambda:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion: us-west-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor4
+- Action:
+  - logs:ListTagsLogGroup
+  - logs:DescribeQueries
+  - logs:GetLogRecord
+  - logs:DescribeLogGroups
+  - logs:DeleteLogGroup
+  - logs:DescribeLogStreams
+  - logs:DescribeSubscriptionFilters
+  - logs:StartQuery
+  - logs:DescribeMetricFilters
+  - logs:StopQuery
+  - logs:TestMetricFilter
+  - logs:GetLogDelivery
+  - logs:DeleteLogStream
+  - logs:ListLogDeliveries
+  - logs:DescribeExportTasks
+  - logs:GetQueryResults
+  - logs:GetLogEvents
+  - logs:DeleteLogDelivery
+  - logs:FilterLogEvents
+  - logs:DescribeQueryDefinitions
+  - logs:GetLogGroupFields
+  - logs:DescribeResourcePolicies
+  - logs:DescribeDestinations
+  Condition:
+    StringEquals:
+      aws:RequestedRegion: us-west-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor5
+- Action: s3:*
+  Condition:
+    StringEquals:
+      aws:RequestedRegion: us-west-1
+  Effect: Allow
+  Resource: '*'
+  Sid: VisualEditor6
+Version: '2012-10-17'

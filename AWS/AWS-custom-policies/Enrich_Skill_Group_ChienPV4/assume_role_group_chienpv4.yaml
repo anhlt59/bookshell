@@ -1,0 +1,6 @@
+Statement:
+- Action: sts:AssumeRole
+  Effect: Allow
+  Resource: arn:aws:iam::541253215789:role/Enrich_Skill_Group_ChienPV4
+  Sid: VisualEditor0
+Version: '2012-10-17'
