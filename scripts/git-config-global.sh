@@ -1,6 +1,5 @@
 #!/bin/bash
 
-source util-definecolors.sh
 
 printf "git config --global user.name: "
 read -r name
@@ -10,4 +9,4 @@ read -r email
 git config --global user.name "$name"
 git config --global user.email "$email"
 
-echo -e "${GREEN}GIT config global done!${NOCOLOR}"
+echo -e "GIT config global done!"

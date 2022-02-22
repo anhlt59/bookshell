@@ -9,9 +9,6 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-# Set up some output colors
-source util-definecolors.sh
-
 # convert line separater LF
 ./util-lff.sh .
 
@@ -30,11 +27,7 @@ fi
 # GIT ENABLED
 ./git-prompt-install.sh
 
-echo -e "${GREEN}"
 echo WSL Bash Setup complete.
-echo -e "${NOCOLOR}"
 
-echo -e "${YELLOW}"
 echo 'NOTE: Bash configuration changes will not be applied until WSL Bash is closed and restarted'
-echo -e "${NOCOLOR}"
 echo ''
