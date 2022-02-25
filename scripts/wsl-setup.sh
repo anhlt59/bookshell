@@ -24,8 +24,8 @@ fi
 # DOCKER
 ./install-docker.sh
 
-# GIT ENABLED
-./git-prompt-install.sh
+## GIT ENABLED
+#./git-prompt-install.sh
 
 echo WSL Bash Setup complete.
 

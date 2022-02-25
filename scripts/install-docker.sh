@@ -24,3 +24,6 @@ grep -q -F '# DOCKER' ~/.bashrc_wsl || printf "\n# DOCKER\n" >>  ~/.bashrc_wsl
 grep -q -F 'export DOCKER_HOST' ~/.bashrc_wsl || echo "export DOCKER_HOST=tcp://127.0.0.1:2375" >> ~/.bashrc_wsl
 sudo ln -s /mnt/c /c
 echo -e "Docker installed!"
+
+# Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.40/containers/json: dial unix /var/run/docker.sock: connect: permission denied
+# $ sudo chmod 666 /var/run/docker.sock
