@@ -1,0 +1,217 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Deploy a VPC
+
+Parameters:
+  Owner:
+    Type: String
+    Default: anhlt87
+
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      InstanceTenancy: default
+      EnableDnsHostnames: false
+      EnableDnsSupport: true
+      Tags:
+      - Key: Name
+        Value: !Sub "${AWS::StackName} VPC"
+      - Key: Owner
+        Value: !Ref Owner
+
+  # Internet Gateway ------------------------------------------------------
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+      - Key: Name
+        Value:  !Sub "${AWS::StackName} Internet Gateway"
+      - Key: Owner
+        Value: !Ref Owner
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  # Subnet ------------------------------------------------------
+  PublicSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 0.0.0.0/0
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: !Select ["0", !GetAZs ""]
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName} Public Subnet 1"
+        - Key: Owner
+          Value: !Ref Owner
+
+  PublicSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 0.0.0.0/0
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: !Select ["1", !GetAZs ""]
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName} Public Subnet 2"
+        - Key: Owner
+          Value: !Ref Owner
+
+  PrivateSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.1.0/24
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: !Select ["0", !GetAZs ""]
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName} Private Subnet 1"
+        - Key: Owner
+          Value: !Ref Owner
+
+  PrivateSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.1.1.0/24
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: !Select ["1", !GetAZs ""]
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName} Private Subnet 1"
+        - Key: Owner
+          Value: !Ref Owner
+
+  # NatGateway ------------------------------------------------------
+  EIPA:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Owner
+          Value: !Ref Owner
+        - Key: Name
+          Value: !Sub "${AWS::StackName} EIP A"
+
+  EIPB:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Owner
+          Value: !Ref Owner
+        - Key: Name
+          Value: !Sub "${AWS::StackName} EIP B"
+
+  NatGatewayA:
+    Type: AWS::EC2::NatGateway
+    DependsOn: VpcPublicIP
+    Properties:
+      AllocationId: !GetAtt [EIPA, AllocationId]
+      SubnetId: !Ref PublicSubnetB
+      Tags:
+        - Key: Owner
+          Value: !Ref Owner
+        - Key: Name
+          Value: !Sub "${AWS::StackName} NatGateway A"
+
+  NatGatewayB:
+    Type: AWS::EC2::NatGateway
+    DependsOn: VpcPublicIP
+    Properties:
+      AllocationId: !GetAtt [EIPB, AllocationId]
+      SubnetId: !Ref PublicSubnetB
+      Tags:
+        - Key: Owner
+          Value: !Ref Owner
+        - Key: Name
+          Value: "${AWS::StackName} NatGateway B"
+
+  # Route Table ------------------------------------------------------
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName} Public Route Table"
+        - Key: Owner
+          Value: !Ref Owner
+
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Owner
+          Value: !Ref Owner
+        - Key: Name
+          Value: !Sub "${AWS::StackName} Private Route Table"
+
+  PublicSubnetRouteTableAssociationA:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnetA
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnetRouteTableAssociationB:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnetB
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+
+  # Security Group ----------------------------------------------
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable HTTP
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+Outputs:
+  VPC:
+    Description: VPC
+    Value: !Ref VPC
+    Export:
+      Name: !Sub ${AWS::StackName}-VPC
+
+  PublicSubnetA:
+    Description: PublicSubnetA
+    Value: !Ref PublicSubnetA
+    Export:
+      Name: !Sub ${AWS::StackName}-PublicSubnetA
+
+  PublicSubnetB:
+    Description: PublicSubnetB
+    Value: !Ref PublicSubnetB
+    Export:
+      Name: !Sub ${AWS::StackName}-PublicSubnetB
+
+  WebSecurityGroupID:
+    Description: Security group for Launch configuration
+    Value: !Ref WebServerSecurityGroup
+    Export:
+      Name: !Sub ${AWS::StackName}-WebServerSecurityGroup
