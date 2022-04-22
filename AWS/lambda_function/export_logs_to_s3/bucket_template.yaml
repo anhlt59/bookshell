@@ -1,0 +1,60 @@
+# Cloudformaton template
+
+S3Bucket:
+  Type: AWS::S3::Bucket
+  DeletionPolicy: Retain
+  UpdateReplacePolicy: Retain
+  Properties:
+    BucketName: bucket_logs
+    BucketEncryption:
+      ServerSideEncryptionConfiguration:
+        - BucketKeyEnabled: true
+          ServerSideEncryptionByDefault:
+            SSEAlgorithm: AES256
+    PublicAccessBlockConfiguration:
+      BlockPublicAcls: true
+      BlockPublicPolicy: true
+      IgnorePublicAcls: true
+      RestrictPublicBuckets: true
+    LifecycleConfiguration:
+      Rules:
+        - Id: GlacierRule
+          Prefix: cloudwatch/
+          Status: Enabled
+          ExpirationInDays: 365
+          Transitions:
+            - TransitionInDays: 1
+              StorageClass: ONEZONE_ID
+            - TransitionInDays: 30
+              StorageClass: GLACIER
+            - TransitionInDays: 90
+              StorageClass: DEEP_ARCHIVE
+
+
+S3BucketPolicy:
+  Type: AWS::S3::BucketPolicy
+  Properties:
+    Bucket: !Ref S3Bucket
+    PolicyDocument:
+      Version: "2012-10-17"
+      Statement:
+        - Sid: AllowOriginAccount
+          Action:
+            - s3:GetObject
+            - s3:ListBucket
+          Effect: Allow
+          Resource:
+            - !Sub arn:aws:s3:::${S3Bucket}/*
+            - !Sub arn:aws:s3:::${S3Bucket}
+          Principal:
+            AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+        - Sid: AllowExportLogs
+          Action:
+            - s3:PutObject
+            - s3:GetBucketAcl
+          Effect: Allow
+          Resource:
+            - !Sub arn:aws:s3:::${S3Bucket}/*
+            - !Sub arn:aws:s3:::${S3Bucket}
+          Principal:
+            Service: logs.amazonaws.com
