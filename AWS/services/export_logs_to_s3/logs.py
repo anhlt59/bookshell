@@ -32,7 +32,7 @@ def wait_export_task_done(task_id, retries=30):
     time.sleep(SLEEP_INTERVAL)
     response = logs.describe_export_tasks(taskId=task_id)
 
-    for task in response.get['exportTasks']:
+    for task in response['exportTasks']:
         if task.get("status", {}).get("code") == "PENDING":
             return wait_export_task_done(task_id, retries - 1)
 
