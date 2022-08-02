@@ -8,3 +8,8 @@
           mkdir /usr/share/tomcat8/webapps/ROOT
           touch /usr/share/tomcat8/webapps/ROOT/index.html
           echo "Cloud Formation Tomcat8" > /usr/share/tomcat8/webapps/ROOT/index.html
+
+
+docker run postgres -p 5432:5432 POSTGRES_HOST_AUTH_METHOD=trust
+
+docker run --name rds -e POSTGRES_USER=di2 -e POSTGRES_PASSWORD=nikkeidi2 -p 5432:5432 -v ./data:/var/lib/postgresql/data

@@ -24,4 +24,3 @@ grep -q -F 'export PS1=' ~/.bashrc_wsl || echo 'export PS1="\${debian_chroot:+(\
 # This is an alternative, more fully featured Git integrated prompt, but it may be slower
 # Comment out the prompt install lines above and uncomment the lines below to use it instead
 #rm -rf ~/.bash/bash-git-prompt
-
