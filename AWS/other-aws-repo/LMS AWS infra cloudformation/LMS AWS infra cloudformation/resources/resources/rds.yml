@@ -1,0 +1,58 @@
+Parameters:
+  DBUsername:
+    Type: String
+    Description: Enter a valid Database master username
+    MinLength: 1
+    MaxLength: 16
+    AllowedPattern: "[a-zA-Z][a-zA-Z0-9]*"
+  DBPassword:
+    Type: String
+    Description: Enter a valid Database master password
+    NoEcho: true
+    MinLength: 1
+    MaxLength: 41
+    AllowedPattern: "[a-zA-Z0-9]*"
+  DBInstanceClass:
+    Description: The database instance type
+    Type: String
+    Default: db.t2.micro
+    AllowedValues: [db.t1.micro, db.m1.small, db.m1.medium, db.m1.large, db.m1.xlarge,
+      db.m2.xlarge, db.m2.2xlarge, db.m2.4xlarge, db.m3.medium, db.m3.large, db.m3.xlarge,
+      db.m3.2xlarge, db.m4.large, db.m4.xlarge, db.m4.2xlarge, db.m4.4xlarge, db.m4.10xlarge,
+      db.r3.large, db.r3.xlarge, db.r3.2xlarge, db.r3.4xlarge, db.r3.8xlarge, db.m2.xlarge,
+      db.m2.2xlarge, db.m2.4xlarge, db.cr1.8xlarge, db.t2.micro, db.t2.small, db.t2.medium,
+      db.t2.large]
+Resources:
+  LMSRdsParameterGroup:
+    Type: AWS::RDS::DBParameterGroup
+    Properties:
+      Description: lms-rds-parameter-group-${opt:stage, self:custom.defaultStage}
+      Family: mysql8.0
+      Parameters:
+        time_zone: Asia/Tokyo
+  LMSRds:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      Engine: mysql
+      EngineVersion: 8.0.20
+      DBInstanceIdentifier: lms-rds-${opt:stage, self:custom.defaultStage}
+      DBName: !Ref DBName
+      DBInstanceClass: !Ref DBInstanceClass
+      AllocatedStorage: 50
+      AutoMinorVersionUpgrade: true
+      MasterUsername: !Ref DBUsername
+      MasterUserPassword: !Ref DBPassword
+      MultiAZ: true
+      PubliclyAccessible: false
+      DBSubnetGroupName: !Ref LMSDbSubnetGroup
+      VPCSecurityGroups: 
+        - !Ref LMSSecurityGroupRds
+      BackupRetentionPeriod: 7
+      StorageType: gp2
+      DBParameterGroupName: !Ref LMSRdsParameterGroup
+
+Outputs:
+  LMSRdsEndpointAddress:
+    Value: !GetAtt LMSRds.Endpoint.Address
+  LMSRdsEndpointPort:
+    Value: !GetAtt LMSRds.Endpoint.Port

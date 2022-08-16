@@ -1,0 +1,46 @@
+Resources:
+  LMSS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: lms-s3-${opt:stage, self:custom.defaultStage}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+  LMSS3BucketStaticWeb:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: lms-s3-static-web-${opt:stage, self:custom.defaultStage}
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+  LMSS3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref LMSS3Bucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: 
+              CanonicalUser: !GetAtt LMSCloudFrontOriginAccessIdentity.S3CanonicalUserId
+            Action: "s3:GetObject"
+            Resource: !Join ["", [!GetAtt LMSS3Bucket.Arn, /*]]
+  LMSS3BucketPolicyStaticWeb:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref LMSS3BucketStaticWeb
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: "*"
+            Action: "s3:GetObject"
+            Resource: !Join ["", [!GetAtt LMSS3BucketStaticWeb.Arn, /*]]
+
+Outputs:
+  LMSS3BucketBucketName:
+    Value: !Ref LMSS3Bucket
+  LMSS3BucketStaticWebBucketName:
+    Value: !Ref LMSS3BucketStaticWeb

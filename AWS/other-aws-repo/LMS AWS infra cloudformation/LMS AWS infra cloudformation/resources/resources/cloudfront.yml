@@ -1,0 +1,86 @@
+Parameters:
+  LMSCloudFrontWebCertificateARN:
+    Description: The ARN of certificate in ACM (us-east-1) for cloud front web (e.g. arn:aws:acm:us-east-1:231898895154:certificate/cdadc4dc-86b7-4517-99d8-47f1d6dfb75e)
+    Type: String
+  LMSDomainName:
+    Description: The main domain name (ex - nichiboh.co.jp).
+    Type: String
+
+Resources:
+  LMSCloudFrontOriginAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: lms-cloudfront-origin-access-identity-${opt:stage, self:custom.defaultStage}
+  LMSCloudFrontDistributionWeb:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          - DomainName: !Join ["", [!Ref LMSS3BucketStaticWeb, .s3-website-ap-northeast-1.amazonaws.com]]
+            Id: !Join ["", [Custom-, !Ref LMSS3BucketStaticWeb, .s3-website-ap-northeast-1.amazonaws.com]]
+            CustomOriginConfig:
+              OriginProtocolPolicy: http-only
+              OriginSSLProtocols:
+                - TLSv1
+          - DomainName: !GetAtt LMSS3Bucket.DomainName
+            Id: !Join ["", [S3-, !Ref LMSS3Bucket]]
+            S3OriginConfig:
+              OriginAccessIdentity: !Join ["", [origin-access-identity/cloudfront/, !Ref LMSCloudFrontOriginAccessIdentity]]
+        DefaultCacheBehavior:
+          TargetOriginId: !Join ["", [Custom-, !Ref LMSS3BucketStaticWeb, .s3-website-ap-northeast-1.amazonaws.com]]
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          CachedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          ForwardedValues:
+            Headers:
+              - Access-Control-Request-Headers
+              - Access-Control-Request-Method
+              - Origin
+            QueryString: false
+        CacheBehaviors:
+          - PathPattern: public/*
+            TargetOriginId: !Join ["", [S3-, !Ref LMSS3Bucket]]
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            CachedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            ForwardedValues:
+              QueryString: false
+        IPV6Enabled: true
+        Comment: lms-cloudfront-web-${opt:stage, self:custom.defaultStage}
+        DefaultRootObject: index.html
+        Enabled: true
+        ViewerCertificate:
+          AcmCertificateArn: !Ref LMSCloudFrontWebCertificateARN
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1.2_2019
+        Aliases:
+          - !Sub app.${LMSDomainName}
+        HttpVersion: http2
+        CustomErrorResponses:
+          - ErrorCachingMinTTL: 0
+            ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+          - ErrorCachingMinTTL: 0
+            ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+
+Outputs:
+  LMSCloudFrontDistributionDomainNameWeb:
+    Value: !Join ["", [https://, !GetAtt LMSCloudFrontDistributionWeb.DomainName]]
+  LMSCloudFrontDistributionIdWeb:
+    Value: !Ref LMSCloudFrontDistributionWeb
