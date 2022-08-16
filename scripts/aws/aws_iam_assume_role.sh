@@ -33,10 +33,10 @@ SessionToken=$(jq -r ".Credentials .SessionToken" <<< "$response")
 printf "Request success!!\n\n"
 printf "AccessKeyId: $AccessKeyId \nSecretAccessKey: $SecretAccessKey \nSessionToken: $SessionToken\n"
 
-aws configure set aws_access_key_id "$AccessKeyId" --profile di2mfa
-aws configure set aws_secret_access_key "$SecretAccessKey" --profile di2mfa
-aws configure set aws_session_token  "$SessionToken" --profile di2mfa
-aws configure set region us-east-1 --profile di2mfa
-aws configure set output json --profile di2mfa
+aws configure set aws_access_key_id "$AccessKeyId" --profile mfa
+aws configure set aws_secret_access_key "$SecretAccessKey" --profile mfa
+aws configure set aws_session_token  "$SessionToken" --profile mfa
+aws configure set region us-east-1 --profile mfa
+aws configure set output json --profile mfa
 
 echo DONE
