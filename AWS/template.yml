@@ -1,0 +1,1944 @@
+{
+  "Resources": {
+    "StagingCluster310EB229": {
+      "Type": "AWS::ECS::Cluster",
+      "Properties": {
+        "ClusterName": "materially-Staging-App-Cluster"
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-Cluster/Resource"
+      }
+    },
+    "StagingAPIServiceLBFA592ABE": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "Properties": {
+        "LoadBalancerAttributes": [
+          {
+            "Key": "deletion_protection.enabled",
+            "Value": "false"
+          }
+        ],
+        "Scheme": "internet-facing",
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "StagingAPIServiceLBSecurityGroup721F6272",
+              "GroupId"
+            ]
+          }
+        ],
+        "Subnets": [
+          {
+            "Fn::ImportValue": "materially-Network-Stack:ExportsOutputRefmateriallyNetworkStackVpcPublicSubnet1Subnet8EEFF6BF67E3A99C"
+          },
+          {
+            "Fn::ImportValue": "materially-Network-Stack:ExportsOutputRefmateriallyNetworkStackVpcPublicSubnet2Subnet85B74E955C96EC2C"
+          },
+          {
+            "Fn::ImportValue": "materially-Network-Stack:ExportsOutputRefmateriallyNetworkStackVpcPublicSubnet3Subnet20C827481C554E3D"
+          }
+        ],
+        "Type": "application"
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-API-Service/LB/Resource"
+      }
+    },
+    "StagingAPIServiceLBSecurityGroup721F6272": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Automatically created Security Group for ELB materiallyStagingBackendStackStagingAPIServiceLB70EB7713",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow from anyone on port 443",
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow from anyone on port 80",
+            "FromPort": 80,
+            "IpProtocol": "tcp",
+            "ToPort": 80
+          }
+        ],
+        "VpcId": {
+          "Fn::ImportValue": "materially-Network-Stack:ExportsOutputRefmateriallyNetworkStackVpc3788131D8B1C4A1A"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-API-Service/LB/SecurityGroup/Resource"
+      }
+    },
+    "StagingAPIServiceLBSecurityGrouptomateriallyStagingBackendStackStagingAPIServiceSecurityGroup03FFB55B300035C37F50": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties": {
+        "GroupId": {
+          "Fn::GetAtt": [
+            "StagingAPIServiceLBSecurityGroup721F6272",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "Description": "Load balancer to target",
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
+            "StagingAPIServiceSecurityGroup1B4EDE91",
+            "GroupId"
+          ]
+        },
+        "FromPort": 3000,
+        "ToPort": 3000
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-API-Service/LB/SecurityGroup/to materiallyStagingBackendStackStagingAPIServiceSecurityGroup03FFB55B:3000"
+      }
+    },
+    "StagingAPIServiceLBPublicListenerF9DB14E9": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "Properties": {
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "StagingAPIServiceLBPublicListenerECSGroupBACDD926"
+            },
+            "Type": "forward"
+          }
+        ],
+        "LoadBalancerArn": {
+          "Ref": "StagingAPIServiceLBFA592ABE"
+        },
+        "Certificates": [
+          {
+            "CertificateArn": {
+              "Ref": "SsmParameterValuemateriallycertificatearnidC96584B6F00A464EAD1953AFF4B05118Parameter"
+            }
+          }
+        ],
+        "Port": 443,
+        "Protocol": "HTTPS"
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-API-Service/LB/PublicListener/Resource"
+      }
+    },
+    "StagingAPIServiceLBPublicListenerECSGroupBACDD926": {
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "Properties": {
+        "Port": 80,
+        "Protocol": "HTTP",
+        "TargetGroupAttributes": [
+          {
+            "Key": "stickiness.enabled",
+            "Value": "false"
+          }
+        ],
+        "TargetType": "ip",
+        "VpcId": {
+          "Fn::ImportValue": "materially-Network-Stack:ExportsOutputRefmateriallyNetworkStackVpc3788131D8B1C4A1A"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-API-Service/LB/PublicListener/ECSGroup/Resource"
+      }
+    },
+    "StagingAPIServiceLBPublicRedirectListenerF503D7D5": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "Properties": {
+        "DefaultActions": [
+          {
+            "RedirectConfig": {
+              "Port": "443",
+              "Protocol": "HTTPS",
+              "StatusCode": "HTTP_301"
+            },
+            "Type": "redirect"
+          }
+        ],
+        "LoadBalancerArn": {
+          "Ref": "StagingAPIServiceLBFA592ABE"
+        },
+        "Port": 80,
+        "Protocol": "HTTP"
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-API-Service/LB/PublicRedirectListener/Resource"
+      }
+    },
+    "StagingAPIServiceDNS80EDA79B": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "api-staging.materially.com.",
+        "Type": "A",
+        "AliasTarget": {
+          "DNSName": {
+            "Fn::Join": [
+              "",
+              [
+                "dualstack.",
+                {
+                  "Fn::GetAtt": [
+                    "StagingAPIServiceLBFA592ABE",
+                    "DNSName"
+                  ]
+                }
+              ]
+            ]
+          },
+          "HostedZoneId": {
+            "Fn::GetAtt": [
+              "StagingAPIServiceLBFA592ABE",
+              "CanonicalHostedZoneID"
+            ]
+          }
+        },
+        "HostedZoneId": {
+          "Ref": "SsmParameterValuemateriallyhostedzoneidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-API-Service/DNS/Resource"
+      }
+    },
+    "StagingAPIServiceTaskDefTaskRole8D60E4DC": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-API-Service/TaskDef/TaskRole/Resource"
+      }
+    },
+    "StagingAPIServiceTaskDefTaskRoleDefaultPolicyCEBAADFC": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:GetAuthorizationToken",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "StagingAPIServiceTaskDefTaskRoleDefaultPolicyCEBAADFC",
+        "Roles": [
+          {
+            "Ref": "StagingAPIServiceTaskDefTaskRole8D60E4DC"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-API-Service/TaskDef/TaskRole/DefaultPolicy/Resource"
+      }
+    },
+    "StagingAPIServiceTaskDef31593C2D": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Environment": [
+              {
+                "Name": "TOKEN_EXPIRES_IN",
+                "Value": {
+                  "Ref": "SsmParameterValueStagingmateriallytokenExpiresC96584B6F00A464EAD1953AFF4B05118Parameter"
+                }
+              },
+              {
+                "Name": "TOKEN_TTL",
+                "Value": {
+                  "Ref": "SsmParameterValueStagingmateriallytokenTtlC96584B6F00A464EAD1953AFF4B05118Parameter"
+                }
+              },
+              {
+                "Name": "PLATFORM_SENDER_EMAIL",
+                "Value": {
+                  "Ref": "SsmParameterValueStagingmateriallyplatformsenderemailC96584B6F00A464EAD1953AFF4B05118Parameter"
+                }
+              },
+              {
+                "Name": "AWS_SES_REGION",
+                "Value": {
+                  "Ref": "SsmParameterValueStagingmateriallyawsregionC96584B6F00A464EAD1953AFF4B05118Parameter"
+                }
+              },
+              {
+                "Name": "AWS_SES_ACCESS_KEY_ID",
+                "Value": {
+                  "Ref": "SsmParameterValueStagingmateriallyawsaccesskeyidC96584B6F00A464EAD1953AFF4B05118Parameter"
+                }
+              },
+              {
+                "Name": "AWS_SES_SECRET_ACCESS_KEY",
+                "Value": {
+                  "Ref": "SsmParameterValueStagingmateriallyawssecretaccesskeyC96584B6F00A464EAD1953AFF4B05118Parameter"
+                }
+              },
+              {
+                "Name": "AWS_S3_BUCKET_NAME",
+                "Value": {
+                  "Ref": "SsmParameterValueStagingmateriallyawss3bucketnameC96584B6F00A464EAD1953AFF4B05118Parameter"
+                }
+              },
+              {
+                "Name": "AWS_S3_SIGNED_URL_EXPIRED",
+                "Value": {
+                  "Ref": "SsmParameterValueStagingmateriallyawss3signedurlexpiredC96584B6F00A464EAD1953AFF4B05118Parameter"
+                }
+              },
+              {
+                "Name": "PLATFORM_ADMIN_EMAIL",
+                "Value": {
+                  "Ref": "SsmParameterValueStagingmateriallyplatformadminemailC96584B6F00A464EAD1953AFF4B05118Parameter"
+                }
+              },
+              {
+                "Name": "SENTRY_DNS",
+                "Value": {
+                  "Ref": "SsmParameterValueStagingmateriallysentrydnsC96584B6F00A464EAD1953AFF4B05118Parameter"
+                }
+              },
+              {
+                "Name": "ENV",
+                "Value": {
+                  "Ref": "SsmParameterValueStagingmateriallyenvC96584B6F00A464EAD1953AFF4B05118Parameter"
+                }
+              },
+              {
+                "Name": "FIREBASE_URL",
+                "Value": {
+                  "Ref": "SsmParameterValueStagingmateriallyfirebaseurlC96584B6F00A464EAD1953AFF4B05118Parameter"
+                }
+              },
+              {
+                "Name": "FIREBASE_PROJECT_ID",
+                "Value": {
+                  "Ref": "SsmParameterValueStagingmateriallyfirebaseprojectidC96584B6F00A464EAD1953AFF4B05118Parameter"
+                }
+              },
+              {
+                "Name": "FIREBASE_PRIVATE_KEY",
+                "Value": {
+                  "Ref": "SsmParameterValueStagingmateriallyfirebaseprivatekeyC96584B6F00A464EAD1953AFF4B05118Parameter"
+                }
+              },
+              {
+                "Name": "FIREBASE_CLIENT_EMAIL",
+                "Value": {
+                  "Ref": "SsmParameterValueStagingmateriallyfirebaseclientemailC96584B6F00A464EAD1953AFF4B05118Parameter"
+                }
+              },
+              {
+                "Name": "PLATFORM_URL",
+                "Value": {
+                  "Ref": "SsmParameterValueStagingmateriallyplatformurlC96584B6F00A464EAD1953AFF4B05118Parameter"
+                }
+              },
+              {
+                "Name": "GOOGLE_API_KEY",
+                "Value": {
+                  "Ref": "SsmParameterValueStagingmateriallygoogleapikeyC96584B6F00A464EAD1953AFF4B05118Parameter"
+                }
+              }
+            ],
+            "Essential": true,
+            "Image": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Fn::Select": [
+                      4,
+                      {
+                        "Fn::Split": [
+                          ":",
+                          {
+                            "Fn::ImportValue": "materiallyECRRepositoryStack:ExportsOutputFnGetAttmateriallyapi9E6ADB49ArnCD7DC22F"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  ".dkr.ecr.",
+                  {
+                    "Fn::Select": [
+                      3,
+                      {
+                        "Fn::Split": [
+                          ":",
+                          {
+                            "Fn::ImportValue": "materiallyECRRepositoryStack:ExportsOutputFnGetAttmateriallyapi9E6ADB49ArnCD7DC22F"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/",
+                  {
+                    "Fn::ImportValue": "materiallyECRRepositoryStack:ExportsOutputRefmateriallyapi9E6ADB49DCBB52D8"
+                  },
+                  ":",
+                  {
+                    "Ref": "SsmParameterValueStagingmateriallyimagetagC96584B6F00A464EAD1953AFF4B05118Parameter"
+                  }
+                ]
+              ]
+            },
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "StagingAPIServiceTaskDefStagingAPILogGroupCD3DC4CD"
+                },
+                "awslogs-stream-prefix": "Staging-API-Service",
+                "awslogs-region": "us-east-1"
+              }
+            },
+            "Name": "Staging-API",
+            "PortMappings": [
+              {
+                "ContainerPort": 3000,
+                "Protocol": "tcp"
+              }
+            ],
+            "Secrets": [
+              {
+                "Name": "POSTGRES_PASSWORD",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::ImportValue": "materially-Staging-Storage-Stack:ExportsOutputRefStagingdatabaseSecretAttachmentC300F4C58E9A2EEF"
+                      },
+                      ":password::"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Name": "POSTGRES_USER",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::ImportValue": "materially-Staging-Storage-Stack:ExportsOutputRefStagingdatabaseSecretAttachmentC300F4C58E9A2EEF"
+                      },
+                      ":username::"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Name": "POSTGRES_PORT",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::ImportValue": "materially-Staging-Storage-Stack:ExportsOutputRefStagingdatabaseSecretAttachmentC300F4C58E9A2EEF"
+                      },
+                      ":port::"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Name": "POSTGRES_HOST",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::ImportValue": "materially-Staging-Storage-Stack:ExportsOutputRefStagingdatabaseSecretAttachmentC300F4C58E9A2EEF"
+                      },
+                      ":host::"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Name": "POSTGRES_DB",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::ImportValue": "materially-Staging-Storage-Stack:ExportsOutputRefStagingdatabaseSecretAttachmentC300F4C58E9A2EEF"
+                      },
+                      ":dbname::"
+                    ]
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "Cpu": "512",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "StagingAPIServiceTaskDefExecutionRoleED1CB26B",
+            "Arn"
+          ]
+        },
+        "Family": "materiallyStagingBackendStackStagingAPIServiceTaskDefA3D5057C",
+        "Memory": "1024",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE"
+        ],
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "StagingAPIServiceTaskDefTaskRole8D60E4DC",
+            "Arn"
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-API-Service/TaskDef/Resource"
+      }
+    },
+    "StagingAPIServiceTaskDefStagingAPILogGroupCD3DC4CD": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-API-Service/TaskDef/Staging-API/LogGroup/Resource"
+      }
+    },
+    "StagingAPIServiceTaskDefExecutionRoleED1CB26B": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-API-Service/TaskDef/ExecutionRole/Resource"
+      }
+    },
+    "StagingAPIServiceTaskDefExecutionRoleDefaultPolicy3156D885": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::ImportValue": "materiallyECRRepositoryStack:ExportsOutputFnGetAttmateriallyapi9E6ADB49ArnCD7DC22F"
+              }
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "StagingAPIServiceTaskDefStagingAPILogGroupCD3DC4CD",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::ImportValue": "materially-Staging-Storage-Stack:ExportsOutputRefStagingdatabaseSecretAttachmentC300F4C58E9A2EEF"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "StagingAPIServiceTaskDefExecutionRoleDefaultPolicy3156D885",
+        "Roles": [
+          {
+            "Ref": "StagingAPIServiceTaskDefExecutionRoleED1CB26B"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-API-Service/TaskDef/ExecutionRole/DefaultPolicy/Resource"
+      }
+    },
+    "StagingAPIService9E16856F": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "Cluster": {
+          "Ref": "StagingCluster310EB229"
+        },
+        "DeploymentConfiguration": {
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50
+        },
+        "DesiredCount": 1,
+        "EnableECSManagedTags": false,
+        "HealthCheckGracePeriodSeconds": 200,
+        "LaunchType": "FARGATE",
+        "LoadBalancers": [
+          {
+            "ContainerName": "Staging-API",
+            "ContainerPort": 3000,
+            "TargetGroupArn": {
+              "Ref": "StagingAPIServiceLBPublicListenerECSGroupBACDD926"
+            }
+          }
+        ],
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "StagingAPIServiceSecurityGroup1B4EDE91",
+                  "GroupId"
+                ]
+              }
+            ],
+            "Subnets": [
+              {
+                "Fn::ImportValue": "materially-Network-Stack:ExportsOutputRefmateriallyNetworkStackVpcPrivateSubnet1Subnet53E0DA27C00078F8"
+              },
+              {
+                "Fn::ImportValue": "materially-Network-Stack:ExportsOutputRefmateriallyNetworkStackVpcPrivateSubnet2Subnet7205C56D0873A252"
+              },
+              {
+                "Fn::ImportValue": "materially-Network-Stack:ExportsOutputRefmateriallyNetworkStackVpcPrivateSubnet3Subnet5A55B83A214B8D96"
+              }
+            ]
+          }
+        },
+        "ServiceName": "Staging-materially-API",
+        "TaskDefinition": {
+          "Ref": "StagingAPIServiceTaskDef31593C2D"
+        }
+      },
+      "DependsOn": [
+        "StagingAPIServiceLBPublicListenerECSGroupBACDD926",
+        "StagingAPIServiceLBPublicListenerF9DB14E9"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-API-Service/Service/Service"
+      }
+    },
+    "StagingAPIServiceSecurityGroup1B4EDE91": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "materially-Staging-Backend-Stack/Staging-API-Service/Service/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Fn::ImportValue": "materially-Network-Stack:ExportsOutputRefmateriallyNetworkStackVpc3788131D8B1C4A1A"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-API-Service/Service/SecurityGroup/Resource"
+      }
+    },
+    "StagingAPIServiceSecurityGroupfrommateriallyStagingBackendStackStagingAPIServiceLBSecurityGroupC841901230001EB5B3DF": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "Load balancer to target",
+        "FromPort": 3000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "StagingAPIServiceSecurityGroup1B4EDE91",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "StagingAPIServiceLBSecurityGroup721F6272",
+            "GroupId"
+          ]
+        },
+        "ToPort": 3000
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-API-Service/Service/SecurityGroup/from materiallyStagingBackendStackStagingAPIServiceLBSecurityGroupC8419012:3000"
+      }
+    },
+    "StagingmateriallyPipelineProjectRoleB199CEA3": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "codebuild.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-materially-Pipeline-Project/Role/Resource"
+      }
+    },
+    "StagingmateriallyPipelineProjectRoleDefaultPolicy76EB1BAA": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "ec2:CreateNetworkInterfacePermission",
+              "Condition": {
+                "StringEquals": {
+                  "ec2:Subnet": [
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":ec2:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":subnet/",
+                          {
+                            "Fn::ImportValue": "materially-Network-Stack:ExportsOutputRefmateriallyNetworkStackVpcPrivateSubnet1Subnet53E0DA27C00078F8"
+                          }
+                        ]
+                      ]
+                    },
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":ec2:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":subnet/",
+                          {
+                            "Fn::ImportValue": "materially-Network-Stack:ExportsOutputRefmateriallyNetworkStackVpcPrivateSubnet2Subnet7205C56D0873A252"
+                          }
+                        ]
+                      ]
+                    },
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":ec2:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":subnet/",
+                          {
+                            "Fn::ImportValue": "materially-Network-Stack:ExportsOutputRefmateriallyNetworkStackVpcPrivateSubnet3Subnet5A55B83A214B8D96"
+                          }
+                        ]
+                      ]
+                    }
+                  ],
+                  "ec2:AuthorizedService": "codebuild.amazonaws.com"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ec2:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":network-interface/*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":logs:us-east-1:251623506909:log-group:/aws/codebuild/",
+                      {
+                        "Ref": "StagingmateriallyPipelineProject0F68838D"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":logs:us-east-1:251623506909:log-group:/aws/codebuild/",
+                      {
+                        "Ref": "StagingmateriallyPipelineProject0F68838D"
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "codebuild:CreateReportGroup",
+                "codebuild:CreateReport",
+                "codebuild:UpdateReport",
+                "codebuild:BatchPutTestCases",
+                "codebuild:BatchPutCodeCoverages"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":codebuild:us-east-1:251623506909:report-group/",
+                    {
+                      "Ref": "StagingmateriallyPipelineProject0F68838D"
+                    },
+                    "-*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "ssm:PutParameter",
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+                "cloudformation:GetTemplate",
+                "cloudformation:DescribeStacks",
+                "iam:GetRole",
+                "iam:PassRole"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "StagingPipelineArtifactsBucket8D819ED1",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "StagingPipelineArtifactsBucket8D819ED1",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "StagingPipelineArtifactsBucketEncryptionKey844AEB5A",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "StagingPipelineArtifactsBucketEncryptionKey844AEB5A",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "StagingmateriallyPipelineProjectRoleDefaultPolicy76EB1BAA",
+        "Roles": [
+          {
+            "Ref": "StagingmateriallyPipelineProjectRoleB199CEA3"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-materially-Pipeline-Project/Role/DefaultPolicy/Resource"
+      }
+    },
+    "StagingmateriallyPipelineProjectSecurityGroup37591BF3": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Automatic generated security group for CodeBuild materiallyStagingBackendStackStagingmateriallyPipelineProjectAB313121",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Fn::ImportValue": "materially-Network-Stack:ExportsOutputRefmateriallyNetworkStackVpc3788131D8B1C4A1A"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-materially-Pipeline-Project/SecurityGroup/Resource"
+      }
+    },
+    "StagingmateriallyPipelineProject0F68838D": {
+      "Type": "AWS::CodeBuild::Project",
+      "Properties": {
+        "Artifacts": {
+          "Type": "CODEPIPELINE"
+        },
+        "Environment": {
+          "ComputeType": "BUILD_GENERAL1_SMALL",
+          "EnvironmentVariables": [
+            {
+              "Name": "ECR_REPO",
+              "Type": "PLAINTEXT",
+              "Value": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::Select": [
+                        4,
+                        {
+                          "Fn::Split": [
+                            ":",
+                            {
+                              "Fn::ImportValue": "materiallyECRRepositoryStack:ExportsOutputFnGetAttmateriallyapi9E6ADB49ArnCD7DC22F"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    ".dkr.ecr.",
+                    {
+                      "Fn::Select": [
+                        3,
+                        {
+                          "Fn::Split": [
+                            ":",
+                            {
+                              "Fn::ImportValue": "materiallyECRRepositoryStack:ExportsOutputFnGetAttmateriallyapi9E6ADB49ArnCD7DC22F"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    ".",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    },
+                    "/",
+                    {
+                      "Fn::ImportValue": "materiallyECRRepositoryStack:ExportsOutputRefmateriallyapi9E6ADB49DCBB52D8"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "Name": "VERSION_TAG_NAME",
+              "Type": "PLAINTEXT",
+              "Value": "/Staging/materially/image_tag"
+            }
+          ],
+          "Image": "aws/codebuild/standard:4.0",
+          "ImagePullCredentialsType": "CODEBUILD",
+          "PrivilegedMode": true,
+          "Type": "LINUX_CONTAINER"
+        },
+        "ServiceRole": {
+          "Fn::GetAtt": [
+            "StagingmateriallyPipelineProjectRoleB199CEA3",
+            "Arn"
+          ]
+        },
+        "Source": {
+          "BuildSpec": "{\n  \"version\": 0.2,\n  \"phases\": {\n    \"install\": {\n      \"runtime-versions\": {\n        \"docker\": 18\n      },\n      \"commands\": [\n        \"nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&\",\n        \"timeout 15 sh -c \\\"until docker info; do echo .; sleep 1; done\\\"\"\n      ]\n    },\n    \"pre_build\": {\n      \"commands\": [\n        \"echo Logging in to Amazon ECR....\",\n        \"aws --version\",\n        \"$(aws ecr get-login --no-include-email --region $AWS_REGION)\",\n        \"VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\\\",]//g' | tr -d '[[:space:]]')\",\n        \"echo deploying app version=$VERSION\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"echo Build started on `date`\",\n        \"echo Building the Docker image...\",\n        \"docker build -t $ECR_REPO .\",\n        \"docker tag $ECR_REPO $ECR_REPO:$VERSION\",\n        \"echo pushing to repository\",\n        \"docker push $ECR_REPO:$VERSION\",\n        \"echo Build $VERSION completed on `date`\",\n        \"aws ssm put-parameter --overwrite --name $VERSION_TAG_NAME --value $VERSION\"\n      ]\n    },\n    \"post_build\": {\n      \"commands\": [\n        \"echo getting stack templates\",\n        \"aws cloudformation get-template --stack-name materially-Staging-Backend-Stack --query TemplateBody --output json > stack_template.json\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"files\": [\n      \"stack_template.json\"\n    ]\n  }\n}",
+          "Type": "CODEPIPELINE"
+        },
+        "EncryptionKey": {
+          "Fn::GetAtt": [
+            "StagingPipelineArtifactsBucketEncryptionKey844AEB5A",
+            "Arn"
+          ]
+        },
+        "Name": "Staging-materially-Backend-Pipeline",
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "StagingmateriallyPipelineProjectSecurityGroup37591BF3",
+                "GroupId"
+              ]
+            }
+          ],
+          "Subnets": [
+            {
+              "Fn::ImportValue": "materially-Network-Stack:ExportsOutputRefmateriallyNetworkStackVpcPrivateSubnet1Subnet53E0DA27C00078F8"
+            },
+            {
+              "Fn::ImportValue": "materially-Network-Stack:ExportsOutputRefmateriallyNetworkStackVpcPrivateSubnet2Subnet7205C56D0873A252"
+            },
+            {
+              "Fn::ImportValue": "materially-Network-Stack:ExportsOutputRefmateriallyNetworkStackVpcPrivateSubnet3Subnet5A55B83A214B8D96"
+            }
+          ],
+          "VpcId": {
+            "Fn::ImportValue": "materially-Network-Stack:ExportsOutputRefmateriallyNetworkStackVpc3788131D8B1C4A1A"
+          }
+        }
+      },
+      "DependsOn": [
+        "StagingmateriallyPipelineProjectPolicyDocument73611187"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-materially-Pipeline-Project/Resource"
+      }
+    },
+    "StagingmateriallyPipelineProjectPolicyDocument73611187": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ec2:CreateNetworkInterface",
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:DeleteNetworkInterface",
+                "ec2:DescribeSubnets",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeDhcpOptions",
+                "ec2:DescribeVpcs"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "StagingmateriallyPipelineProjectPolicyDocument73611187",
+        "Roles": [
+          {
+            "Ref": "StagingmateriallyPipelineProjectRoleB199CEA3"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-materially-Pipeline-Project/PolicyDocument/Resource"
+      }
+    },
+    "StagingPipelineArtifactsBucketEncryptionKey844AEB5A": {
+      "Type": "AWS::KMS::Key",
+      "Properties": {
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::251623506909:root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-Pipeline/ArtifactsBucketEncryptionKey/Resource"
+      }
+    },
+    "StagingPipelineArtifactsBucketEncryptionKeyAlias3A31B85D": {
+      "Type": "AWS::KMS::Alias",
+      "Properties": {
+        "AliasName": "alias/codepipeline-materiallystagingbackendstackstagingpipeline3cfefca2",
+        "TargetKeyId": {
+          "Fn::GetAtt": [
+            "StagingPipelineArtifactsBucketEncryptionKey844AEB5A",
+            "Arn"
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-Pipeline/ArtifactsBucketEncryptionKeyAlias/Resource"
+      }
+    },
+    "StagingPipelineArtifactsBucket8D819ED1": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "KMSMasterKeyID": {
+                  "Fn::GetAtt": [
+                    "StagingPipelineArtifactsBucketEncryptionKey844AEB5A",
+                    "Arn"
+                  ]
+                },
+                "SSEAlgorithm": "aws:kms"
+              }
+            }
+          ]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-Pipeline/ArtifactsBucket/Resource"
+      }
+    },
+    "StagingPipelineRole02B95D94": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "codepipeline.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-Pipeline/Role/Resource"
+      }
+    },
+    "StagingPipelineRoleDefaultPolicyA2B31857": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "StagingPipelineArtifactsBucket8D819ED1",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "StagingPipelineArtifactsBucket8D819ED1",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "StagingPipelineArtifactsBucketEncryptionKey844AEB5A",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "StagingPipelineBuildStagingBuildCodePipelineActionRoleAE3F0947",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "StagingPipelineDeployStagingDeployCodePipelineActionRole430D676A",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "StagingPipelineRoleDefaultPolicyA2B31857",
+        "Roles": [
+          {
+            "Ref": "StagingPipelineRole02B95D94"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-Pipeline/Role/DefaultPolicy/Resource"
+      }
+    },
+    "StagingPipelineA1D3A1FF": {
+      "Type": "AWS::CodePipeline::Pipeline",
+      "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "StagingPipelineRole02B95D94",
+            "Arn"
+          ]
+        },
+        "Stages": [
+          {
+            "Actions": [
+              {
+                "ActionTypeId": {
+                  "Category": "Source",
+                  "Owner": "ThirdParty",
+                  "Provider": "GitHub",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "Owner": "Materially-Org",
+                  "Repo": "materially-api",
+                  "Branch": "staging",
+                  "OAuthToken": "{{resolve:secretsmanager:materially/gh_oauth:SecretString:::}}",
+                  "PollForSourceChanges": false
+                },
+                "Name": "Staging-Source",
+                "OutputArtifacts": [
+                  {
+                    "Name": "Artifact_Source_Staging-Source"
+                  }
+                ],
+                "RunOrder": 1
+              }
+            ],
+            "Name": "Source"
+          },
+          {
+            "Actions": [
+              {
+                "ActionTypeId": {
+                  "Category": "Build",
+                  "Owner": "AWS",
+                  "Provider": "CodeBuild",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "ProjectName": {
+                    "Ref": "StagingmateriallyPipelineProject0F68838D"
+                  }
+                },
+                "InputArtifacts": [
+                  {
+                    "Name": "Artifact_Source_Staging-Source"
+                  }
+                ],
+                "Name": "Staging-Build",
+                "OutputArtifacts": [
+                  {
+                    "Name": "Artifact_Build_Staging-Build"
+                  }
+                ],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "StagingPipelineBuildStagingBuildCodePipelineActionRoleAE3F0947",
+                    "Arn"
+                  ]
+                },
+                "RunOrder": 1
+              }
+            ],
+            "Name": "Build"
+          },
+          {
+            "Actions": [
+              {
+                "ActionTypeId": {
+                  "Category": "Deploy",
+                  "Owner": "AWS",
+                  "Provider": "CloudFormation",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "StackName": "materially-Staging-Backend-Stack",
+                  "Capabilities": "CAPABILITY_NAMED_IAM",
+                  "RoleArn": {
+                    "Fn::GetAtt": [
+                      "StagingPipelineDeployStagingDeployRoleD1D6EB18",
+                      "Arn"
+                    ]
+                  },
+                  "ActionMode": "CREATE_UPDATE",
+                  "TemplatePath": "Artifact_Build_Staging-Build::stack_template.json"
+                },
+                "InputArtifacts": [
+                  {
+                    "Name": "Artifact_Build_Staging-Build"
+                  }
+                ],
+                "Name": "Staging-Deploy",
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "StagingPipelineDeployStagingDeployCodePipelineActionRole430D676A",
+                    "Arn"
+                  ]
+                },
+                "RunOrder": 1
+              }
+            ],
+            "Name": "Deploy"
+          }
+        ],
+        "ArtifactStore": {
+          "EncryptionKey": {
+            "Id": {
+              "Fn::GetAtt": [
+                "StagingPipelineArtifactsBucketEncryptionKey844AEB5A",
+                "Arn"
+              ]
+            },
+            "Type": "KMS"
+          },
+          "Location": {
+            "Ref": "StagingPipelineArtifactsBucket8D819ED1"
+          },
+          "Type": "S3"
+        },
+        "Name": "Staging-materially-Backend-Pipeline"
+      },
+      "DependsOn": [
+        "StagingPipelineRoleDefaultPolicyA2B31857",
+        "StagingPipelineRole02B95D94"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-Pipeline/Resource"
+      }
+    },
+    "StagingPipelineSourceStagingSourceWebhookResource4E7FD434": {
+      "Type": "AWS::CodePipeline::Webhook",
+      "Properties": {
+        "Authentication": "GITHUB_HMAC",
+        "AuthenticationConfiguration": {
+          "SecretToken": "{{resolve:secretsmanager:materially/gh_oauth:SecretString:::}}"
+        },
+        "Filters": [
+          {
+            "JsonPath": "$.ref",
+            "MatchEquals": "refs/heads/{Branch}"
+          }
+        ],
+        "TargetAction": "Staging-Source",
+        "TargetPipeline": {
+          "Ref": "StagingPipelineA1D3A1FF"
+        },
+        "TargetPipelineVersion": 1,
+        "RegisterWithThirdParty": true
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-Pipeline/Source/Staging-Source/WebhookResource"
+      }
+    },
+    "StagingPipelineBuildStagingBuildCodePipelineActionRoleAE3F0947": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::251623506909:root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-Pipeline/Build/Staging-Build/CodePipelineActionRole/Resource"
+      }
+    },
+    "StagingPipelineBuildStagingBuildCodePipelineActionRoleDefaultPolicy74FA0B82": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "codebuild:BatchGetBuilds",
+                "codebuild:StartBuild",
+                "codebuild:StopBuild"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "StagingmateriallyPipelineProject0F68838D",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "StagingPipelineBuildStagingBuildCodePipelineActionRoleDefaultPolicy74FA0B82",
+        "Roles": [
+          {
+            "Ref": "StagingPipelineBuildStagingBuildCodePipelineActionRoleAE3F0947"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-Pipeline/Build/Staging-Build/CodePipelineActionRole/DefaultPolicy/Resource"
+      }
+    },
+    "StagingPipelineDeployStagingDeployCodePipelineActionRole430D676A": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::251623506909:root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-Pipeline/Deploy/Staging-Deploy/CodePipelineActionRole/Resource"
+      }
+    },
+    "StagingPipelineDeployStagingDeployCodePipelineActionRoleDefaultPolicy60ED4E85": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "StagingPipelineDeployStagingDeployRoleD1D6EB18",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "StagingPipelineArtifactsBucket8D819ED1",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "StagingPipelineArtifactsBucket8D819ED1",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "StagingPipelineArtifactsBucketEncryptionKey844AEB5A",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "cloudformation:CreateStack",
+                "cloudformation:DescribeStack*",
+                "cloudformation:GetStackPolicy",
+                "cloudformation:GetTemplate*",
+                "cloudformation:SetStackPolicy",
+                "cloudformation:UpdateStack",
+                "cloudformation:ValidateTemplate"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":cloudformation:us-east-1:251623506909:stack/materially-Staging-Backend-Stack/*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "StagingPipelineDeployStagingDeployCodePipelineActionRoleDefaultPolicy60ED4E85",
+        "Roles": [
+          {
+            "Ref": "StagingPipelineDeployStagingDeployCodePipelineActionRole430D676A"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-Pipeline/Deploy/Staging-Deploy/CodePipelineActionRole/DefaultPolicy/Resource"
+      }
+    },
+    "StagingPipelineDeployStagingDeployRoleD1D6EB18": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "cloudformation.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-Pipeline/Deploy/Staging-Deploy/Role/Resource"
+      }
+    },
+    "StagingPipelineDeployStagingDeployRoleDefaultPolicy03BB9BA3": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "StagingPipelineArtifactsBucket8D819ED1",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "StagingPipelineArtifactsBucket8D819ED1",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "StagingPipelineArtifactsBucketEncryptionKey844AEB5A",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "*",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "StagingPipelineDeployStagingDeployRoleDefaultPolicy03BB9BA3",
+        "Roles": [
+          {
+            "Ref": "StagingPipelineDeployStagingDeployRoleD1D6EB18"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/Staging-Pipeline/Deploy/Staging-Deploy/Role/DefaultPolicy/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/31S207DMAz9Ft6z7CbEK9u4CDGJqp3Ec5Z6xWuaVLkMTVX+nSTtxhiIJx8fH+fYdad0Op/Ryc09+zQjXtbjjisNtCss4zVZ7WTGNGvAgiY5GOU0h8i+Ods6S1ZKGqsdt5E71T2Jb3XADe1WwpnYG8on+MR0xSxsmKkfYIcSLSoZBdeMkpahBH3BDb0F6AP2gwzQk2A3apkNDtLQRdsK5Cz2rBUrl0wwyaG8agfBjEUugmKbFCirw4x2f3enJX7klzoMu8lBc8IX9U1wBvuslWv7Vc9pnDx4FsCdRns8S/4nHisNxvyiX2TiPQmJhdt52CWHcNCyv09EBVhPkDW0y5VInzDFTIVRj+ngCXkiVBUOuFbVeYIT9oSrErYORUm7DFsQ4UyZVnvof4QB9rJ2qH8rk+QCv8P2Q6nak7oJhq+QpohhIZClHRPwxIR9lo7XkFx65L0nMtjQvRkfpnd0Qqc3e4M40k5abIDmffwCQrzoEugCAAA="
+      },
+      "Metadata": {
+        "aws:cdk:path": "materially-Staging-Backend-Stack/CDKMetadata/Default"
+      }
+    }
+  },
+  "Parameters": {
+    "SsmParameterValuemateriallyhostedzoneidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/materially/hosted_zone_id"
+    },
+    "SsmParameterValuemateriallycertificatearnidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/materially/certificate_arn_id"
+    },
+    "SsmParameterValueStagingmateriallyimagetagC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/Staging/materially/image_tag"
+    },
+    "SsmParameterValueStagingmateriallytokenExpiresC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/Staging/materially/tokenExpires"
+    },
+    "SsmParameterValueStagingmateriallytokenTtlC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/Staging/materially/tokenTtl"
+    },
+    "SsmParameterValueStagingmateriallyplatformsenderemailC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/Staging/materially/platform_sender_email"
+    },
+    "SsmParameterValueStagingmateriallyawsregionC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/Staging/materially/aws_region"
+    },
+    "SsmParameterValueStagingmateriallyawsaccesskeyidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/Staging/materially/aws_access_key_id"
+    },
+    "SsmParameterValueStagingmateriallyawssecretaccesskeyC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/Staging/materially/aws_secret_access_key"
+    },
+    "SsmParameterValueStagingmateriallyawss3bucketnameC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/Staging/materially/aws_s3_bucket_name"
+    },
+    "SsmParameterValueStagingmateriallyawss3signedurlexpiredC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/Staging/materially/aws_s3_signed_url_expired"
+    },
+    "SsmParameterValueStagingmateriallyplatformadminemailC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/Staging/materially/platform_admin_email"
+    },
+    "SsmParameterValueStagingmateriallysentrydnsC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/Staging/materially/sentry_dns"
+    },
+    "SsmParameterValueStagingmateriallyenvC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/Staging/materially/env"
+    },
+    "SsmParameterValueStagingmateriallyfirebaseurlC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/Staging/materially/firebase_url"
+    },
+    "SsmParameterValueStagingmateriallyfirebaseprojectidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/Staging/materially/firebase_project_id"
+    },
+    "SsmParameterValueStagingmateriallyfirebaseprivatekeyC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/Staging/materially/firebase_private_key"
+    },
+    "SsmParameterValueStagingmateriallyfirebaseclientemailC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/Staging/materially/firebase_client_email"
+    },
+    "SsmParameterValueStagingmateriallyplatformurlC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/Staging/materially/platform_url"
+    },
+    "SsmParameterValueStagingmateriallygoogleapikeyC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/Staging/materially/google_api_key"
+    },
+    "BootstrapVersion": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+    }
+  },
+  "Outputs": {
+    "StagingAPIServiceLoadBalancerDNS4BB03789": {
+      "Value": {
+        "Fn::GetAtt": [
+          "StagingAPIServiceLBFA592ABE",
+          "DNSName"
+        ]
+      }
+    },
+    "StagingAPIServiceServiceURLA4C02EBB": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "StagingAPIServiceDNS80EDA79B"
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                  ],
+                  {
+                    "Ref": "BootstrapVersion"
+                  }
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+        }
+      ]
+    }
+  }
+}
