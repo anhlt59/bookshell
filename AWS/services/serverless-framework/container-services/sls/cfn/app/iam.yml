@@ -1,0 +1,135 @@
+ECSRole:
+  Type: AWS::IAM::Role
+  Properties:
+    RoleName: ${self:service}-${self:provider.stage}-ECSRole
+    AssumeRolePolicyDocument:
+      Version: '2012-10-17'
+      Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+              - ecs.amazonaws.com
+              - ecs-tasks.amazonaws.com
+          Action:
+            - 'sts:AssumeRole'
+    Path: /
+    ManagedPolicyArns:
+      - !Ref ECSPolicy
+  Metadata: /${self:provider.stackName}/IAM/Resource
+
+
+ECSPolicy:
+  Type: AWS::IAM::ManagedPolicy
+  Properties:
+    PolicyDocument:
+      Version: '2012-10-17'
+      Statement:
+        - Effect: Allow
+          Action:
+            - ecs:*
+            - ecr:*
+            - s3:*
+            - cloudwatch:PutMetricData
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:DescribeLogGroups
+            - logs:DescribeLogStreams
+            - logs:PutLogEvents
+            - ec2:CreateNetworkInterface
+            - ec2:DescribeNetworkInterfaces
+            - ec2:DeleteNetworkInterface
+            - ec2:AssignPrivateIpAddresses
+            - ec2:UnassignPrivateIpAddresses
+            - iam:PassRole
+          Resource: "*"
+  Metadata: /${self:provider.stackName}/IAM/Resource
+
+
+ECSTaskRole:
+  Type: AWS::IAM::Role
+  Properties:
+    RoleName: ${self:service}-${self:provider.stage}-ECSTaskRole
+    AssumeRolePolicyDocument:
+      Version: '2012-10-17'
+      Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+              - ecs-tasks.amazonaws.com
+              - ecs.amazonaws.com
+          Action:
+            - 'sts:AssumeRole'
+    Path: /
+    ManagedPolicyArns:
+      - !Ref ECSTaskPolicy
+  Metadata: /${self:provider.stackName}/IAM/Resource
+
+
+ECSTaskPolicy:
+  Type: AWS::IAM::ManagedPolicy
+  Properties:
+    PolicyDocument:
+      Version: "2012-10-17"
+      Statement:
+        - Effect: Allow
+          Action:
+            - ecr:*
+            - s3:*
+            - cloudwatch:PutMetricData
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:DescribeLogGroups
+            - logs:DescribeLogStreams
+            - logs:PutLogEvents
+            - iam:PassRole
+          Resource: "*"
+        - Sid: AllowAccessDynamoDB
+          Effect: Allow
+          Action:
+            - dynamodb:List*
+            - dynamodb:BatchGet*
+            - dynamodb:Get*
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:BatchWrite*
+            - dynamodb:DeleteItem
+            - dynamodb:UpdateItem
+            - dynamodb:PutItem
+          Resource:
+            - !Sub "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*"
+        - Sid: AllowAccessOpenSearch
+          Effect: Allow
+          Action:
+            - es:ESHttp*
+            - es:Get*
+            - es:List*
+            - es:Describe*
+          Resource: !Sub "arn:${AWS::Partition}:es:${AWS::Region}:${AWS::AccountId}:*"
+  Metadata: /${self:provider.stackName}/IAM/Resource
+
+
+AutoScalingRole:
+  Type: AWS::IAM::Role
+  Properties:
+    RoleName: ${self:service}-${self:provider.stage}-AutoScalingRole
+    AssumeRolePolicyDocument:
+      Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+              - application-autoscaling.amazonaws.com
+          Action: sts:AssumeRole
+    Path: /
+    Policies:
+      - PolicyName: ECSScalingPolicy
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Action:
+                - ecs:UpdateService
+                - ecs:DescribeServices
+                - cloudwatch:DescribeAlarms
+                - cloudwatch:GetMetricStatistics
+                - application-autoscaling:*
+              Resource: "*"
+  Metadata: /${self:provider.stackName}/IAM/Resource

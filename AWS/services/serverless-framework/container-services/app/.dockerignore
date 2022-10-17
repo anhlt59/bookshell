@@ -1,0 +1,15 @@
+.flaskenv
+.pre-commit-config.yaml
+.cfnlintrc.yml
+.gitignore
+.github
+.idea
+
+Dockerfile
+Makefile
+docker-compose.yml
+
+venv
+node_modules
+data
+tests

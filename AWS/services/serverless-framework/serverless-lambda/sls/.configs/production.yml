@@ -1,0 +1,4 @@
+default:
+  stage: production
+  region: us-east-1
+  log_level: ERROR

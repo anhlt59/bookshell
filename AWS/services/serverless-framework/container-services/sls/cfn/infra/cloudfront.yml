@@ -1,0 +1,289 @@
+CloudFrontLogBucketPolicy:
+  Type: AWS::S3::BucketPolicy
+  Condition: CreateCloudfrontResource
+  Properties:
+    Bucket: ${self:custom.s3.cloudfront_log_bucket}
+    PolicyDocument:
+      Version: '2012-10-17'
+      Statement:
+        - Action:
+            - s3:GetObject
+            - s3:ListBucket
+          Effect: Allow
+          Resource:
+            - !Sub 'arn:${AWS::Partition}:s3:::${self:custom.s3.cloudfront_log_bucket}/*'
+            - !Sub 'arn:${AWS::Partition}:s3:::${self:custom.s3.cloudfront_log_bucket}'
+          Principal:
+            AWS: !Sub 'arn:${AWS::Partition}:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontOriginAccessIdentity}'
+          Condition:
+            Bool:
+              'aws:SecureTransport': true
+        - Sid: ForceSSLOnlyAccess
+          Action: 's3:*'
+          Effect: Deny
+          Resource:
+            - !Sub 'arn:${AWS::Partition}:s3:::${self:custom.s3.cloudfront_log_bucket}/*'
+            - !Sub 'arn:${AWS::Partition}:s3:::${self:custom.s3.cloudfront_log_bucket}'
+          Principal:
+            AWS: '*'
+          Condition:
+            Bool:
+              'aws:SecureTransport': false
+
+WebBucketPolicy:
+  Type: AWS::S3::BucketPolicy
+  Condition: CreateCloudfrontResource
+  Properties:
+    Bucket: ${self:custom.s3.web_bucket}
+    PolicyDocument:
+      Version: "2012-10-17"
+      Statement:
+        - Action:
+            - s3:GetObject
+            - s3:ListBucket
+          Effect: Allow
+          Resource:
+            - !Sub 'arn:${AWS::Partition}:s3:::${self:custom.s3.web_bucket}/*'
+            - !Sub 'arn:${AWS::Partition}:s3:::${self:custom.s3.web_bucket}'
+          Principal:
+            AWS: !Sub 'arn:${AWS::Partition}:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontOriginAccessIdentity}'
+          Condition:
+            Bool:
+              'aws:SecureTransport': true
+        - Sid: ForceSSLOnlyAccess
+          Action: 's3:*'
+          Effect: Deny
+          Resource:
+            - !Sub 'arn:${AWS::Partition}:s3:::${self:custom.s3.web_bucket}/*'
+            - !Sub 'arn:${AWS::Partition}:s3:::${self:custom.s3.web_bucket}'
+          Principal:
+            AWS: "*"
+          Condition:
+            Bool:
+              'aws:SecureTransport': false
+
+UserBucketPolicy:
+  Type: AWS::S3::BucketPolicy
+  Properties:
+    Bucket: ${self:custom.s3.user_bucket}
+    PolicyDocument:
+      Version: "2012-10-17"
+      Statement:
+        - Action:
+            - s3:GetObject
+            - s3:ListBucket
+          Effect: Allow
+          Resource:
+            - !Sub 'arn:${AWS::Partition}:s3:::${self:custom.s3.user_bucket}/*'
+            - !Sub 'arn:${AWS::Partition}:s3:::${self:custom.s3.user_bucket}'
+          Principal:
+            AWS: !Sub 'arn:${AWS::Partition}:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontOriginAccessIdentity}'
+          Condition:
+            Bool:
+              'aws:SecureTransport': true
+        - Action:
+            - s3:PutObject
+          Effect: Allow
+          Resource:
+            - !Sub 'arn:${AWS::Partition}:s3:::${self:custom.s3.user_bucket}/*'
+          Principal:
+            AWS: !Sub 'arn:${AWS::Partition}:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontOriginAccessIdentity}'
+          Condition:
+            Bool:
+              'aws:SecureTransport': true
+        - Sid: AllowLambdaAccess
+          Action:
+            - s3:GetObject
+            - s3:ListBucket
+          Effect: Allow
+          Resource:
+            - !Sub 'arn:${AWS::Partition}:s3:::${self:custom.s3.user_bucket}/*'
+            - !Sub 'arn:${AWS::Partition}:s3:::${self:custom.s3.user_bucket}'
+          Principal:
+            AWS: "*"
+          Condition:
+            StringEquals:
+              aws:PrincipalArn:
+                - !GetAtt [LambdaFunctionRole, Arn]
+        - Sid: ForceSSLOnlyAccess
+          Action: 's3:*'
+          Effect: Deny
+          Resource:
+            - !Sub 'arn:${AWS::Partition}:s3:::${self:custom.s3.user_bucket}/*'
+            - !Sub 'arn:${AWS::Partition}:s3:::${self:custom.s3.user_bucket}'
+          Principal:
+            AWS: "*"
+          Condition:
+            Bool:
+              'aws:SecureTransport': false
+
+CloudFrontOriginAccessIdentity:
+  Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+  Condition: CreateCloudfrontResource
+  Properties:
+    CloudFrontOriginAccessIdentityConfig:
+      Comment: ${self:provider.tags.Owner}
+
+WebsiteCloudFront:
+  Type: AWS::CloudFront::Distribution
+  Condition: CreateCloudfrontResource
+  DeletionPolicy: Retain
+  UpdateReplacePolicy: Retain
+  DependsOn:
+    - APIGatewayOriginRequestPolicy
+  Properties:
+    DistributionConfig:
+      WebACLId: ${self:custom.cloudfront.web_acl_id}
+      HttpVersion: http2
+      CacheBehaviors:
+        - TargetOriginId: '${self:custom.s3.web_bucket}/resources'
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+          PathPattern: '/resources/*'
+          Compress: true
+          DefaultTTL: 86400
+          ForwardedValues:
+            QueryString: false
+          MaxTTL: 31536000
+          MinTTL: 86400
+          LambdaFunctionAssociations:
+            - EventType: origin-response
+              LambdaFunctionARN: ${self:custom.edgeFunction.origin_resp_func_arn}
+        - TargetOriginId: ${self:custom.s3.user_bucket}
+          TrustedKeyGroups:
+            - ${self:custom.cloudfront.key_group_id}
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+          PathPattern: '/users/*'
+          Compress: true
+          DefaultTTL: 86400
+          ForwardedValues:
+            QueryString: true
+            Headers:
+              - CloudFront-Viewer-Country
+          MaxTTL: 31536000
+          LambdaFunctionAssociations:
+            - EventType: origin-response
+              LambdaFunctionARN: ${self:custom.edgeFunction.origin_resp_func_arn}
+        - TargetOriginId: ${self:custom.s3.user_bucket}
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+          PathPattern: '/getcookies'
+          Compress: true
+          DefaultTTL: 86400
+          OriginRequestPolicyId: ${self:custom.cloudfront.origin_request_policy_id}
+          CachePolicyId: ${self:custom.cloudfront.cache_policy_id}
+          MaxTTL: 31536000
+          LambdaFunctionAssociations:
+            - EventType: origin-request
+              LambdaFunctionARN: ${self:custom.edgeFunction.create_signed_cookies}
+        - TargetOriginId: ${self:custom.s3.user_bucket}
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+          PathPattern: '/clearcookies'
+          Compress: true
+          DefaultTTL: 86400
+          OriginRequestPolicyId: ${self:custom.cloudfront.origin_request_policy_id}
+          CachePolicyId: ${self:custom.cloudfront.cache_policy_id}
+          MaxTTL: 31536000
+          LambdaFunctionAssociations:
+            - EventType: origin-request
+              LambdaFunctionARN: ${self:custom.edgeFunction.clear_signed_cookies}
+        - TargetOriginId: ApiGateway
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [HEAD, DELETE, POST, GET, OPTIONS, PUT, PATCH]
+          PathPattern: '/ccs/*'
+          Compress: true
+          DefaultTTL: 0
+          CachePolicyId: ${self:custom.cloudfront.cache_policy_id}
+          OriginRequestPolicyId: !Ref APIGatewayOriginRequestPolicy
+      Comment: ${self:provider.tags.Owner}
+      CustomErrorResponses:
+        - ErrorCachingMinTTL: 10
+          ErrorCode: 404
+          ResponseCode: 404
+          ResponsePagePath: /index.html
+      DefaultCacheBehavior:
+        TargetOriginId: ${self:custom.s3.web_bucket}
+        ViewerProtocolPolicy: redirect-to-https
+        Compress: true
+        DefaultTTL: 86400
+        ForwardedValues:
+          QueryString: true
+          Headers:
+            - CloudFront-Viewer-Country
+        MaxTTL: 31536000
+        LambdaFunctionAssociations:
+          - EventType: origin-response
+            LambdaFunctionARN: ${self:custom.edgeFunction.origin_resp_func_arn}
+      DefaultRootObject: index.html
+      Enabled: true
+      IPV6Enabled: false
+      Logging:
+        Bucket: "${self:custom.s3.cloudfront_log_bucket}.s3.amazonaws.com"
+        IncludeCookies: true
+        Prefix: cloudfront
+      Origins:
+        - Id: ${self:custom.s3.web_bucket}
+          OriginPath: /ui
+          DomainName: ${self:custom.s3.web_bucket}.s3.${self:provider.region}.amazonaws.com
+          S3OriginConfig:
+            OriginAccessIdentity:
+              !Sub 'origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}'
+        - Id: '${self:custom.s3.web_bucket}/resources'
+          DomainName: ${self:custom.s3.web_bucket}.s3.${self:provider.region}.amazonaws.com
+          S3OriginConfig:
+            OriginAccessIdentity:
+              !Sub 'origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}'
+        - Id: ${self:custom.s3.user_bucket}
+          DomainName: ${self:custom.s3.user_bucket}.s3.${self:provider.region}.amazonaws.com
+          S3OriginConfig:
+            OriginAccessIdentity:
+              !Sub 'origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}'
+        - Id: ApiGateway
+          DomainName: !Sub ${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com
+          OriginPath: /${self:provider.stage}
+          CustomOriginConfig:
+            HTTPSPort: 443
+            OriginProtocolPolicy: https-only
+      Restrictions:
+        GeoRestriction:
+          Locations:
+            - CU
+            - IR
+            - KP
+            - SY
+          RestrictionType: blacklist
+      Aliases:
+        - ${self:provider.stage}.***.com
+      ViewerCertificate:
+        AcmCertificateArn: ${self:custom.cloudfront.acm_certificate_arn}
+        MinimumProtocolVersion: TLSv1.2_2019
+        SslSupportMethod: sni-only
+    Tags:
+      - Key: Owner
+        Value: ${self:provider.tags.Owner}
+
+APIGatewayOriginRequestPolicy:
+  Type: AWS::CloudFront::OriginRequestPolicy
+  Condition: CreateCloudfrontResource
+  Properties:
+    OriginRequestPolicyConfig:
+      Name: ${self:provider.tags.Owner}-AGW-OriginRequestPolicy
+      Comment: ${self:provider.tags.Owner} API Gateway Request Policy
+      CookiesConfig:
+        CookieBehavior: all
+      HeadersConfig:
+        HeaderBehavior: whitelist
+        Headers:
+          - CloudFront-Viewer-Country
+      QueryStringsConfig:
+        QueryStringBehavior: all

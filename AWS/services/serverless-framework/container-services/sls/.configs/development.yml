@@ -1,0 +1,24 @@
+default:
+  stage: staging
+  region: us-east-1
+  log_level: DEBUG
+
+# AWS Services -------------------------------------------------------------------------------------------------------
+S3:
+  deployment_bucket:
+    name: demo-deployment-bucket
+
+VPC:
+  cidrBlock: 10.189.0.0/16
+  createNatGateway: true
+  createNetworkAcl: true
+  createDbSubnet: true
+  zones:
+    - us-east-1a
+    - us-east-1b
+  subnetGroups:
+    - rds
+
+Route53:
+  # create HostedZone manually
+  HostedZoneId: '***'

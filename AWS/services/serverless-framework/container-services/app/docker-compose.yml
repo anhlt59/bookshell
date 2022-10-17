@@ -1,0 +1,17 @@
+# WARNING: this file is not suitable for production, please use with caution
+version: '3'
+
+services:
+  web:
+    image: myapi
+    build: .
+    command: gunicorn -b 0.0.0.0:5000 myapi.wsgi:app
+    env_file:
+      - ./.flaskenv
+    environment:
+      - DATABASE_URI=sqlite:////db/myapi.db
+    volumes:
+      - ./myapi:/code/myapi
+      - ./db/:/db/
+    ports:
+      - "5000:5000"

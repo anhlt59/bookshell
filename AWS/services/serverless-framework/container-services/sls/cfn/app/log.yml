@@ -1,0 +1,6 @@
+CloudwatchLogGroup:
+  Type: AWS::Logs::LogGroup
+  Properties:
+    LogGroupName: "/ecs/${self:service}-${self:provider.stage}"
+    RetentionInDays: 90
+  Metadata: /${self:provider.stackName}/Log/Resource

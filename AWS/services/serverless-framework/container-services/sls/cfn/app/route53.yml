@@ -1,0 +1,87 @@
+# Load balancer record set
+AppRecordSet:
+  Type: AWS::Route53::RecordSet
+  Properties:
+    HostedZoneId: ${self:custom.Route53.HostedZoneID}
+    Name: ${self:custom.Route53.AppDomainName}
+    Type: A
+    AliasTarget:
+      DNSName: !GetAtt LoadBalancer.DNSName
+      HostedZoneId: !GetAtt LoadBalancer.CanonicalHostedZoneID
+  Metadata: /${self:provider.stackName}/Route53/Resource
+
+
+# AWS OpenSearch
+OpenSearchRecordSet:
+  Type: AWS::Route53::RecordSet
+  Properties:
+    HostedZoneId: ${self:custom.Route53.HostedZoneID}
+    Name: ${self:custom.Route53.OpenSearchDomainName}
+    Type: CNAME
+    TTL: 300
+    ResourceRecords:
+      - !GetAtt OpenSearchDomain.DomainEndpoint
+  Metadata: /${self:provider.stackName}/Route53/Resource
+
+
+# Multi region --------------------------------------------------------------------------------------------------------
+EUAppsyncRecordSet:
+  Type: AWS::Route53::RecordSet
+  Properties:
+    HostedZoneId: ${self:custom.route53.API.HostedZoneID}
+    Name: ${self:custom.route53.API.DomainName}
+    Type: A
+    AliasTarget:
+      DNSName: !GetAtt AGWCustomDomain.RegionalDomainName
+      HostedZoneId: !GetAtt AGWCustomDomain.RegionalHostedZoneId
+    GeoLocation:
+      CountryCode: "*"
+    SetIdentifier: ${self:service}-${self:provider.stage}-EU
+  Metadata: /${self:provider.stackName}/Route53/Resource
+
+
+ASAppsyncRecordSet:
+  Type: AWS::Route53::RecordSet
+  Condition: ASLocation
+  Properties:
+    HostedZoneId: ${self:custom.route53.API.HostedZoneID}
+    Name: ${self:custom.route53.API.DomainName}
+    Type: A
+    AliasTarget:
+      DNSName: !GetAtt AGWCustomDomain.RegionalDomainName
+      HostedZoneId: !GetAtt AGWCustomDomain.RegionalHostedZoneId
+    GeoLocation:
+      ContinentCode: AS
+    SetIdentifier: ${self:service}-${self:provider.stage}-AS
+  Metadata: /${self:provider.stackName}/Route53/Resource
+
+
+NAAppsyncRecordSet:
+  Type: AWS::Route53::RecordSet
+  Condition: USLocation
+  Properties:
+    HostedZoneId: ${self:custom.route53.API.HostedZoneID}
+    Name: ${self:custom.route53.API.DomainName}
+    Type: A
+    AliasTarget:
+      DNSName: !GetAtt AGWCustomDomain.RegionalDomainName
+      HostedZoneId: !GetAtt AGWCustomDomain.RegionalHostedZoneId
+    GeoLocation:
+      ContinentCode: NA
+    SetIdentifier: ${self:service}-${self:provider.stage}-NA
+  Metadata: /${self:provider.stackName}/Route53/Resource
+
+
+SAAppsyncRecordSet:
+  Type: AWS::Route53::RecordSet
+  Properties:
+    HostedZoneId: ${self:custom.route53.API.HostedZoneID}
+    Name: ${self:custom.route53.API.DomainName}
+    Type: A
+    AliasTarget:
+      DNSName: !GetAtt AGWCustomDomain.RegionalDomainName
+      HostedZoneId: !GetAtt AGWCustomDomain.RegionalHostedZoneId
+    GeoLocation:
+      ContinentCode: SA
+    SetIdentifier: ${self:service}-${self:provider.stage}-SA
+  Metadata: /${self:provider.stackName}/Route53/Resource

@@ -1,0 +1,33 @@
+BridgeAppDLQQueue:
+  Type: AWS::SQS::Queue
+  Properties:
+    QueueName: ${self:service}-${self:provider.stage}-BridgeAppDLQQueue
+
+
+BridgeAppQueue:
+  Type: AWS::SQS::Queue
+  Properties:
+    QueueName: ${self:service}-${self:provider.stage}-BridgeAppQueue
+    RedrivePolicy:
+      - deadLetterTargetArn: !GetAtt BridgeAppDLQQueue.Arn
+        maxReceiveCount: 1
+
+
+BridgeAppQueuePolicy:
+  Type: AWS::SQS::QueuePolicy
+  Properties:
+    PolicyDocument:
+      Version: '2012-10-17'
+      Id: BridgeAppQueuePolicy
+      Statement:
+        - Sid: AllowSNSSendMessage
+          Effect: Allow
+          Principal: "*"
+          Action:
+            - sqs:*
+          Resource: !GetAtt BridgeAppQueue.Arn
+          Condition:
+            ArnEquals:
+              aws:SourceArn: !Ref BridgeAppTopic
+    Queues:
+      - !Ref BridgeAppQueue

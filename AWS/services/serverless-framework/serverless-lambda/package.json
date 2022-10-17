@@ -1,0 +1,19 @@
+{
+    "author": "AnhLT",
+    "name": "lambda",
+    "license": "ISC",
+    "version": "0.1.0",
+    "main": "index.js",
+    "scripts": {
+        "test": "pytest .",
+        "start": "npx sls offline start --stage local",
+        "invoke": "npx sls invoke local",
+        "deploy": "bash scripts/deploy.sh",
+        "package": "bash scripts/package.sh"
+    },
+    "devDependencies": {
+        "serverless": "3.10.0",
+        "serverless-python-requirements": "5.4.0",
+        "serverless-offline": "^6.9.0"
+    }
+}

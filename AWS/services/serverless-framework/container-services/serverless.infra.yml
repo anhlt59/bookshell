@@ -1,0 +1,88 @@
+# __author__ = "AnhLT59"
+# __version__ = "1.0"
+# __created_date__ = "2021/03/03"
+#
+# Defined AWS Services
+# - ECR
+# - DynamoDB
+# - RDS
+# - S3
+# - SNS
+# - SQS
+
+service: demo-infra
+
+provider:
+  name: aws
+  stage: ${opt:stage, "development"}
+  region: ${opt:region, self:custom.default.region}
+  stackName: ${self:service}-${self:provider.stage}
+
+  # default tags for all infra
+  tags:
+    Owner: ${self:service}
+    Stage: ${self:provider.stage}
+  stackTags:
+    Owner: ${self:service}
+    Stage: ${self:provider.stage}
+
+  # S3 bucket where the artifact is stored
+  deploymentBucket: ${file(./cfn/.configs/${self:provider.stage}.yml):S3.deployment_bucket}
+
+plugins:
+  - serverless-vpc-plugin
+
+custom:
+  default: ${file(./cfn/.configs/${self:provider.stage}.yml):default}
+  # config plugin
+  vpcConfig: ${file(./cfn/.configs/${self:provider.stage}.yml):VPC}
+
+infra:
+  Parameters:
+    VpcId:
+      Default: ${cf:${self:custom.NetworkStack}.VpcId}
+      Description: VPC Id
+      Type: AWS::EC2::VPC::Id
+    VpcAppSubnetIds:
+      Default: ${cf:${self:custom.NetworkStack}.AppSubnet1Id},${cf:${self:custom.NetworkStack}.AppSubnet2Id}
+      Description: VPC Subnet Ids
+      Type: List<AWS::EC2::Subnet::Id>
+    VpcPublicSubnetIds:
+      Default: ${cf:${self:custom.NetworkStack}.PublicSubnet1Id},${cf:${self:custom.NetworkStack}.PublicSubnet2Id}
+      Description: VPC Subnet Ids
+      Type: List<AWS::EC2::Subnet::Id>
+    EcrName:
+      Default: ${cf:${self:custom.NetworkStack}.EcrName}
+      Description: ECR repository name
+      Type: String
+    ImageTag:
+      Default: ${ssm:/${self:service}/${self:provider.stage}/ImageTag}
+      Description: Image tag to deploy
+      Type: String
+
+  Resources:
+    # ECR
+    EcrRepository: ${file(./cfn/infra/ecr.yml):EcrRepository}
+    # DynamoDB
+    DynamoDBTable: ${file(./cfn/infra/dynamodb.yml):DynamoDBTable}
+    ScalingRole: ${file(./cfn/infra/dynamodb.yml):ScalingRole}
+    WriteScalingPolicy: ${file(./cfn/infra/dynamodb.yml):WriteScalingPolicy}
+    ReadScalingPolicy: ${file(./cfn/infra/dynamodb.yml):ReadScalingPolicy}
+    WriteCapacityScalableTarget: ${file(./cfn/infra/dynamodb.yml):WriteCapacityScalableTarget}
+    ReadCapacityScalableTarget: ${file(./cfn/infra/dynamodb.yml):ReadCapacityScalableTarget}
+    # Queue
+    DLQQueue: ${file(./cfn/infra/sqs.yml):DLQQueue}
+    Queue: ${file(./cfn/infra/sqs.yml):Queue}
+    QueuePolicy: ${file(./cfn/infra/sqs.yml):QueuePolicy}
+    # SNS
+    SnsTopic: ${file(./cfn/infra/sns.yml):SnsTopic}
+    SnsSubscription: ${file(./cfn/infra/sns.yml):SnsSubscription}
+    SnsTopicPolicy: ${file(./cfn/infra/sns.yml):SnsTopicPolicy}
+
+  Outputs:
+    # ECR
+    EcrRepositoryName:
+      Value: !Ref EcrRepository
+    # DynamoDB
+    DynamoDBTableName:
+      Value: !Ref DynamoDBTable

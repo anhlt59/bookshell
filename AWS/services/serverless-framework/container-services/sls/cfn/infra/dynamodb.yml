@@ -1,0 +1,212 @@
+# Tables
+# ------------------------------------------------------------------------------
+DynamoDBObjectTable:
+  Type: AWS::DynamoDB::Table
+  DeletionPolicy: Retain
+  UpdateReplacePolicy: Retain
+  Properties:
+    AttributeDefinitions:
+      - AttributeName: hashKey
+        AttributeType: S
+      - AttributeName: rangeKey
+        AttributeType: S
+    KeySchema:
+      - AttributeName: hashKey
+        KeyType: HASH
+      - AttributeName: rangeKey
+        KeyType: RANGE
+    BillingMode: !Ref UserBillingMode
+    ProvisionedThroughput:
+      ReadCapacityUnits: ${self:custom.db.user.rcu}
+      WriteCapacityUnits: ${self:custom.db.user.wcu}
+    SSESpecification:
+      SSEEnabled: true
+      SSEType: KMS
+    TableName: ${self:custom.db.user.name}
+
+
+DynamoDBMasterTable:
+  Type: AWS::DynamoDB::Table
+  DeletionPolicy: Retain
+  UpdateReplacePolicy: Retain
+  Properties:
+    AttributeDefinitions:
+      - AttributeName: hashKey
+        AttributeType: S
+      - AttributeName: rangeKey
+        AttributeType: S
+    KeySchema:
+      - AttributeName: hashKey
+        KeyType: HASH
+      - AttributeName: rangeKey
+        KeyType: RANGE
+    BillingMode: !Ref MasterBillingMode
+    ProvisionedThroughput:
+      ReadCapacityUnits: ${self:custom.db.master.rcu}
+      WriteCapacityUnits: ${self:custom.db.master.wcu}
+    SSESpecification:
+      SSEEnabled: true
+      SSEType: KMS
+    TableName: ${self:custom.db.master.name}
+
+# Auto Scaling: Master
+# ------------------------------------------------------------------------------
+MasterScalingRole:
+  Type: AWS::IAM::Role
+  Condition: MasterAutoScaleCondition
+  Properties:
+    AssumeRolePolicyDocument:
+      Version: "2012-10-17"
+      Statement:
+        - Effect: "Allow"
+          Principal:
+            Service:
+              - application-autoscaling.amazonaws.com
+          Action:
+            - "sts:AssumeRole"
+    Path: "/"
+    Policies:
+      - PolicyName: "root"
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Action:
+                - "dynamodb:DescribeTable"
+                - "dynamodb:UpdateTable"
+                - "cloudwatch:PutMetricAlarm"
+                - "cloudwatch:DescribeAlarms"
+                - "cloudwatch:GetMetricStatistics"
+                - "cloudwatch:SetAlarmState"
+                - "cloudwatch:DeleteAlarms"
+              Resource: "*"
+    Tags:
+      - Key: Owner
+        Value: ${self:provider.tags.Owner}
+
+MasterWriteScalingPolicy:
+  Type: AWS::ApplicationAutoScaling::ScalingPolicy
+  Condition: MasterAutoScaleCondition
+  Properties:
+    PolicyName: ${self:provider.tags.Owner}-WriteAutoScalingPolicy
+    PolicyType: TargetTrackingScaling
+    ScalingTargetId: !Ref MasterWriteCapacityScalableTarget
+    TargetTrackingScalingPolicyConfiguration:
+      TargetValue: ${self:custom.db.master.target_scale}
+      PredefinedMetricSpecification:
+        PredefinedMetricType: DynamoDBWriteCapacityUtilization
+
+MasterReadScalingPolicy:
+  Type: AWS::ApplicationAutoScaling::ScalingPolicy
+  Condition: MasterAutoScaleCondition
+  Properties:
+    PolicyName: ${self:provider.tags.Owner}-ReadAutoScalingPolicy
+    PolicyType: TargetTrackingScaling
+    ScalingTargetId: !Ref MasterReadCapacityScalableTarget
+    TargetTrackingScalingPolicyConfiguration:
+      TargetValue: ${self:custom.db.master.target_scale}
+      PredefinedMetricSpecification:
+        PredefinedMetricType: DynamoDBReadCapacityUtilization
+
+MasterWriteCapacityScalableTarget:
+  Type: AWS::ApplicationAutoScaling::ScalableTarget
+  Condition: MasterAutoScaleCondition
+  Properties:
+    MaxCapacity: ${self:custom.db.master.max_wcu}
+    MinCapacity: ${self:custom.db.master.min_wcu}
+    ResourceId: !Sub table/${DynamoDBMasterTable}
+    RoleARN: !GetAtt MasterScalingRole.Arn
+    ScalableDimension: dynamodb:table:WriteCapacityUnits
+    ServiceNamespace: dynamodb
+
+MasterReadCapacityScalableTarget:
+  Type: AWS::ApplicationAutoScaling::ScalableTarget
+  Condition: MasterAutoScaleCondition
+  Properties:
+    MaxCapacity: ${self:custom.db.master.max_rcu}
+    MinCapacity: ${self:custom.db.master.min_wcu}
+    ResourceId: !Sub table/${DynamoDBMasterTable}
+    RoleARN: !GetAtt MasterScalingRole.Arn
+    ScalableDimension: dynamodb:table:ReadCapacityUnits
+    ServiceNamespace: dynamodb
+
+# Auto Scaling User
+# ------------------------------------------------------------------------------
+UserScalingRole:
+  Type: AWS::IAM::Role
+  Condition: UserAutoScaleCondition
+  Properties:
+    AssumeRolePolicyDocument:
+      Version: "2012-10-17"
+      Statement:
+        - Effect: "Allow"
+          Principal:
+            Service:
+              - application-autoscaling.amazonaws.com
+          Action:
+            - "sts:AssumeRole"
+    Path: "/"
+    Policies:
+      - PolicyName: "root"
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Action:
+                - "dynamodb:DescribeTable"
+                - "dynamodb:UpdateTable"
+                - "cloudwatch:PutMetricAlarm"
+                - "cloudwatch:DescribeAlarms"
+                - "cloudwatch:GetMetricStatistics"
+                - "cloudwatch:SetAlarmState"
+                - "cloudwatch:DeleteAlarms"
+              Resource: "*"
+    Tags:
+      - Key: Owner
+        Value: ${self:provider.tags.Owner}
+
+UserWriteScalingPolicy:
+  Type: AWS::ApplicationAutoScaling::ScalingPolicy
+  Condition: UserAutoScaleCondition
+  Properties:
+    PolicyName: ${self:provider.tags.Owner}-WriteAutoScalingPolicy
+    PolicyType: TargetTrackingScaling
+    ScalingTargetId: !Ref UserWriteCapacityScalableTarget
+    TargetTrackingScalingPolicyConfiguration:
+      TargetValue: ${self:custom.db.user.target_scale}
+      PredefinedMetricSpecification:
+        PredefinedMetricType: DynamoDBWriteCapacityUtilization
+
+UserReadScalingPolicy:
+  Type: AWS::ApplicationAutoScaling::ScalingPolicy
+  Condition: UserAutoScaleCondition
+  Properties:
+    PolicyName: ${self:provider.tags.Owner}-ReadAutoScalingPolicy
+    PolicyType: TargetTrackingScaling
+    ScalingTargetId: !Ref UserReadCapacityScalableTarget
+    TargetTrackingScalingPolicyConfiguration:
+      TargetValue: ${self:custom.db.user.target_scale}
+      PredefinedMetricSpecification:
+        PredefinedMetricType: DynamoDBReadCapacityUtilization
+
+UserWriteCapacityScalableTarget:
+  Type: AWS::ApplicationAutoScaling::ScalableTarget
+  Condition: UserAutoScaleCondition
+  Properties:
+    MaxCapacity: ${self:custom.db.user.max_wcu}
+    MinCapacity: ${self:custom.db.user.min_wcu}
+    ResourceId: !Sub table/${DynamoDBObjectTable}
+    RoleARN: !GetAtt UserScalingRole.Arn
+    ScalableDimension: dynamodb:table:WriteCapacityUnits
+    ServiceNamespace: dynamodb
+
+UserReadCapacityScalableTarget:
+  Type: AWS::ApplicationAutoScaling::ScalableTarget
+  Condition: UserAutoScaleCondition
+  Properties:
+    MaxCapacity: ${self:custom.db.user.max_rcu}
+    MinCapacity: ${self:custom.db.user.min_wcu}
+    ResourceId: !Sub table/${DynamoDBObjectTable}
+    RoleARN: !GetAtt UserScalingRole.Arn
+    ScalableDimension: dynamodb:table:ReadCapacityUnits
+    ServiceNamespace: dynamodb

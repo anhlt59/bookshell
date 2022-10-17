@@ -1,0 +1,65 @@
+FileSystemResource:
+  Type: AWS::EFS::FileSystem
+  DeletionPolicy: Delete
+  UpdateReplacePolicy: Delete
+  Properties:
+    PerformanceMode: maxIO
+    FileSystemTags:
+        - Key: Name
+          Value: ${self:provider.tags.Owner}-filesystem
+    FileSystemPolicy:
+      Version: "2012-10-17"
+      Statement:
+        - Effect: Allow
+          Action:
+             - 'elasticfilesystem:*'
+          Principal: '*'
+    Encrypted: True
+
+AccessPointResource:
+  Type: AWS::EFS::AccessPoint
+  DependsOn:
+    - MountTargetResourceA
+    - MountTargetResourceB
+    - MountTargetResourceC
+  Properties:
+    AccessPointTags:
+      - Key: Name
+        Value: ${self:provider.tags.Owner}-ap
+    FileSystemId: !Ref FileSystemResource
+    PosixUser:
+      Uid: 1000
+      Gid: 1000
+    RootDirectory:
+      CreationInfo:
+        OwnerGid: 1000
+        OwnerUid: 1000
+        Permissions: 777
+      Path: "/lambda"
+
+
+MountTargetResourceA:
+  Type: AWS::EFS::MountTarget
+  Properties:
+    FileSystemId: !Ref FileSystemResource
+    SubnetId: !Ref PrivateSubnetA
+    SecurityGroups:
+    - { Ref: SecurityGroup }
+
+
+MountTargetResourceB:
+  Type: AWS::EFS::MountTarget
+  Properties:
+    FileSystemId: !Ref FileSystemResource
+    SubnetId: !Ref PrivateSubnetB
+    SecurityGroups:
+    - { Ref: SecurityGroup }
+
+
+MountTargetResourceC:
+  Type: AWS::EFS::MountTarget
+  Properties:
+    FileSystemId: !Ref FileSystemResource
+    SubnetId: !Ref PrivateSubnetC
+    SecurityGroups:
+    - { Ref: SecurityGroup }

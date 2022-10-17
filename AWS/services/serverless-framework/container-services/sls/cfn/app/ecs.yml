@@ -1,0 +1,159 @@
+ECSCluster:
+  Type: AWS::ECS::Cluster
+  DependsOn: ECRRepository
+  Properties:
+    CapacityProviders: ${self:custom.ECS.CapacityProviders}
+    ClusterName: ${self:service}-${self:provider.stage}-cluster
+  Metadata: /${self:provider.stackName}/ECS/Resource
+
+
+ECSTaskDefinition:
+  Type: AWS::ECS::TaskDefinition
+  Properties:
+    RequiresCompatibilities:
+      - FARGATE
+    ExecutionRoleArn: !GetAtt ECSRole.Arn
+    Family: ${self:service}-${self:provider.stage}
+    TaskRoleArn: !GetAtt ECSTaskRole.Arn
+    ContainerDefinitions:
+      - PortMappings:
+          - ContainerPort: 3000
+            Protocol: tcp
+        Environment:
+          - Name: APP_PORT
+            Value: ${self:custom.ECS.Environments.APP_PORT}
+          # AWS
+          - Name: AWS_ACCESS_KEY
+            Value: ${ssm:/${self:service}/${self:provider.stage}/AWS_ACCESS_KEY_ID}
+          - Name: AWS_SECRET_ACCESS_KEY
+            Value: ${ssm:/${self:service}/${self:provider.stage}/AWS_SECRET_ACCESS_KEY}
+          - Name: AWS_DEPLOY_REGION
+            Value: ${self:custom.ECS.Environments.AWS_REGION}
+          - Name: AWS_REGION
+            Value: ${self:custom.ECS.Environments.AWS_REGION}
+          # S3
+          - Name: AWS_S3_ACCESS_KEY_ID
+            Value: ${ssm:/${self:service}/${self:provider.stage}/AWS_ACCESS_KEY_ID}
+          - Name: AWS_S3_SECRET_ACCESS_KEY
+            Value: ${ssm:/${self:service}/${self:provider.stage}/AWS_SECRET_ACCESS_KEY}
+          - Name: AWS_S3_BUCKET_NAME
+            Value: ${self:custom.ECS.Environments.AWS_S3_BUCKET_NAME}
+          - Name: AWS_S3_REGION
+            Value: ${self:custom.ECS.Environments.AWS_REGION}
+          - Name: AWS_S3_SIGNED_URL_EXPIRED
+            Value: ${self:custom.ECS.Environments.AWS_S3_SIGNED_URL_EXPIRED}
+          # AWS DynamoDB
+          - Name: DYNAMODB_ENDPOINT
+            Value: ${self:custom.ECS.Environments.DYNAMODB_ENDPOINT}
+          - Name: DYNAMODB_TABLE_NAME
+            Value: ${self:custom.ECS.Environments.DYNAMODB_TABLE_NAME}
+          # FireBase
+          - Name: FIREBASE_CLIENT_EMAIL
+            Value: ${self:custom.ECS.Environments.FIREBASE_CLIENT_EMAIL}
+          - Name: FIREBASE_PROJECT_ID
+            Value: ${self:custom.ECS.Environments.FIREBASE_PROJECT_ID}
+          - Name: FIREBASE_URL
+            Value: ${self:custom.ECS.Environments.FIREBASE_URL}
+          - Name: FIREBASE_PRIVATE_KEY
+            Value: ${ssm:/${self:service}/${self:provider.stage}/FIREBASE_PRIVATE_KEY}
+          # Email
+          - Name: PLATFORM_ADMIN_EMAIL
+            Value: ${self:custom.ECS.Environments.PLATFORM_ADMIN_EMAIL}
+          - Name: PLATFORM_SENDER_EMAIL
+            Value: ${self:custom.ECS.Environments.PLATFORM_SENDER_EMAIL}
+          - Name: PLATFORM_URL
+            Value: ${self:custom.ECS.Environments.PLATFORM_URL}
+          # SNS
+          - Name: AWS_SNS_ENDPOINT
+            Value: ${self:custom.ECS.Environments.AWS_SNS_ENDPOINT}
+          - Name: AWS_SNS_REGION
+            Value: ${self:custom.ECS.Environments.AWS_REGION}
+          - Name: AWS_SNS_OPENSEARCH_QUEUE
+            Value: !Ref OpenSearchIndex
+          - Name: AWS_SNS_ACCESS_KEY
+            Value: ${ssm:/${self:service}/${self:provider.stage}/AWS_ACCESS_KEY_ID}
+          - Name: AWS_SNS_SECRET_ACCESS_KEY
+            Value: ${ssm:/${self:service}/${self:provider.stage}/AWS_SECRET_ACCESS_KEY}
+          # SES
+          - Name: AWS_SES_REGION
+            Value: ${self:custom.ECS.Environments.AWS_REGION}
+          - Name: AWS_SES_ACCESS_KEY_ID
+            Value: ${ssm:/${self:service}/${self:provider.stage}/AWS_ACCESS_KEY_ID}
+          - Name: AWS_SES_SECRET_ACCESS_KEY
+            Value: ${ssm:/${self:service}/${self:provider.stage}/AWS_SECRET_ACCESS_KEY}
+          # JWT
+          - Name: JWT_SECRET
+            Value: ${ssm:/${self:service}/${self:provider.stage}/JWT_SECRET}
+          - Name: JWT_EXPIRES_IN
+            Value: ${self:custom.ECS.Environments.JWT_EXPIRES_IN}
+          - Name: JWT_EXPIRES_IN_30
+            Value: ${self:custom.ECS.Environments.JWT_EXPIRES_IN_30}
+          # OpenSearch
+          - Name: OPEN_SEARCH_QUEUE_URL
+            Value: !GetAtt OpenSearchQueue.Arn
+          - Name: OPENSEARCH_AUTH
+            Value: ${ssm:/${self:service}/${self:provider.stage}/OPENSEARCH_AUTH}
+          - Name: OPENSEARCH_HOST
+            Value: ${self:custom.ECS.Environments.OPENSEARCH_HOST}
+          - Name: OPENSEARCH_PORT
+            Value: ${self:custom.ECS.Environments.OPENSEARCH_PORT}
+          - Name: OPENSEARCH_INDEX_NAME
+            Value: ${self:custom.ECS.Environments.OPENSEARCH_INDEX_NAME}
+        Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/${ECRRepository}:${ImageTag}"
+        Name: ${self:service}-${self:provider.stage}
+        WorkingDirectory: /usr/src/app
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: /ecs/${self:service}-${self:provider.stage}
+            awslogs-region: ${self:provider.region}
+            awslogs-stream-prefix: !Ref ImageTag
+    Cpu: 1024
+    Memory: 2048
+    NetworkMode: awsvpc
+  Metadata: /${self:provider.stackName}/ECS/Resource
+
+
+ECSService:
+  Type: AWS::ECS::Service
+  Properties:
+    Cluster: !Ref ECSCluster
+    LaunchType: FARGATE
+    DesiredCount: 1
+    DeploymentConfiguration:
+      MaximumPercent: 200
+      MinimumHealthyPercent: 70
+    HealthCheckGracePeriodSeconds: 60
+    LoadBalancers:
+      - ContainerName: "${self:service}-${self:provider.stage}"
+        ContainerPort: 3000
+        TargetGroupArn: !Ref ListenerTargetGroup
+    NetworkConfiguration:
+      AwsvpcConfiguration:
+        AssignPublicIp: DISABLED
+        SecurityGroups:
+          - !GetAtt ECSInstanceSecurityGroup.GroupId
+        Subnets: !Ref VpcPrivateSubnetIds
+    TaskDefinition: !Ref ECSTaskDefinition
+    EnableECSManagedTags: true
+    PropagateTags: TASK_DEFINITION
+  Metadata: /${self:provider.stackName}/ECS/Resource
+
+
+ECSInstanceSecurityGroup:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+    GroupDescription: Security group for ECS instances
+    GroupName: ECSInstanceSecurityGroup
+    SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        Description: Allow anyone
+        IpProtocol: tcp
+        FromPort: 3000
+        ToPort: 3000
+    SecurityGroupEgress:
+      - CidrIp: 0.0.0.0/0
+        Description: Allow anyone
+        IpProtocol: -1
+    VpcId: !Ref VpcId
+  Metadata: /${self:provider.stackName}/ECS/Resource

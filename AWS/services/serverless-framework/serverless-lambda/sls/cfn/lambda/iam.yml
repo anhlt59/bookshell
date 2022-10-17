@@ -1,0 +1,77 @@
+LambdaFunctionRole:
+  Type: AWS::IAM::Role
+  Properties:
+    RoleName: ${self:service}-${self:provider.stage}-LambdaFunctionRole
+    AssumeRolePolicyDocument:
+      Version: "2012-10-17"
+      Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+              - lambda.amazonaws.com
+          Action:
+            - sts:AssumeRole
+    Path: /
+    ManagedPolicyArns:
+      - !Ref LambdaFunctionPolicy
+
+
+LambdaFunctionPolicy:
+  Type: AWS::IAM::ManagedPolicy
+  Properties:
+    PolicyDocument:
+      Version: "2012-10-17"
+      Statement:
+        - Sid: AllowCloudwatchLogs
+          Effect: Allow
+          Action:
+            - logs:CreateLogStream
+            - logs:CreateLogGroup
+            - logs:PutLogEvents
+          Resource: !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*:*"
+        - Sid: AllowAssignVPC
+          Effect: Allow
+          Action:
+            - ec2:CreateNetworkInterface
+            - ec2:DescribeNetworkInterfaces
+            - ec2:DeleteNetworkInterface
+            - ec2:AssignPrivateIpAddresses
+            - ec2:UnassignPrivateIpAddresses
+          Resource: "*"
+        - Sid: AllowAccessS3
+          Effect: Allow
+          Action:
+            - s3:GetObject
+            - s3:PutObject
+            - s3:ListBucket
+            - s3:PutBucketNotification
+            - s3:GetBucketNotification
+            - s3:DeleteObject
+          Resource:
+            - !Sub "arn:${AWS::Partition}:s3:::*"
+        - Sid: AllowAccessDynamoDB
+          Effect: Allow
+          Action:
+            - dynamodb:List*
+            - dynamodb:BatchGet*
+            - dynamodb:DescribeStream
+            - dynamodb:DescribeTable
+            - dynamodb:Get*
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:BatchWrite*
+            - dynamodb:DeleteItem
+            - dynamodb:UpdateItem
+            - dynamodb:PutItem
+          Resource:
+            - !Sub "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*"
+        - Sid: AllowAccessSQS
+          Effect: Allow
+          Action:
+            - sqs:*
+          Resource: !Sub "arn:${AWS::Partition}:sqs:${AWS::Region}:${AWS::AccountId}:*"
+        - Sid: AllowAccessSNS
+          Effect: Allow
+          Action:
+            - sns:*
+          Resource: !Sub "arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:*"
