@@ -89,7 +89,7 @@ Resources:
             - |
               #!/bin/bash -xe
             - |
-            - "/opt/aws/bin/cfn-init -v "
+            - "/opt/aws/bin/resources-init -v "
             - "         --stack "
             - !Ref "AWS::StackName"
             - "         --resource EC2Instance "

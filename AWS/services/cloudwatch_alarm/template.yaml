@@ -1,0 +1,28 @@
+# Cloudwatch ------------------------------------------------------------------------
+HealthCheckDatabaseErrorCount:
+  Type: AWS::Logs::MetricFilter
+  Properties:
+    LogGroupName: !Ref HealthCheckDatabaseLogGroup
+    FilterPattern: '?ConnectionError'
+    MetricTransformations:
+      - MetricNamespace: LambdaMetrics
+        MetricName: HealthCheckDatabaseErrorCount
+        MetricValue: 1
+
+HealthCheckDatabaseErrorAlarm:
+  Type: AWS::CloudWatch::Alarm
+  Properties:
+    AlarmName: ${self:service}-${self:provider.stage}-HealthCheckDatabaseErrorAlarm
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    MetricName: HealthCheckDatabaseErrorCount
+    Namespace: LambdaMetrics
+    Period: 300
+    EvaluationPeriods: 1
+    Statistic: Sum
+    Threshold: 3
+
+# SNS ------------------------------------------------------------------------
+NotificationTopic:
+  Type: AWS::SNS::Topic
+  Properties:
+    TopicName: ${self:service}-${self:provider.stage}-NotificationTopic

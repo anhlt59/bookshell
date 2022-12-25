@@ -25,14 +25,14 @@ provider:
     Stage: ${self:provider.stage}
 
   # S3 bucket where the artifact is stored
-  deploymentBucket: ${file(./cfn/.configs/${self:provider.stage}.yml):S3.deployment_bucket}
+  deploymentBucket: ${file(./resources/.configs/${self:provider.stage}.yml):S3.deployment_bucket}
 
 plugins:
   - serverless-vpc-plugin
 
 custom:
   # config plugin
-  vpcConfig: ${file(./cfn/.configs/${self:provider.stage}.yml):VPC}
+  vpcConfig: ${file(./resources/.configs/${self:provider.stage}.yml):VPC}
 
 resources:
   Outputs:

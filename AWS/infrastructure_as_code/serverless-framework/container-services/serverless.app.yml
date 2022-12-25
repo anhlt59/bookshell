@@ -1,0 +1,125 @@
+# __author__ = "AnhLT59"
+# __version__ = "1.0"
+# __created_date__ = "2021/03/03"
+#
+# Defined AWS Services
+# - IAM
+# - ECS
+# - AutoScale
+# - ALB
+# - Route53
+
+service: demo-app
+
+provider:
+  name: aws
+  stage: ${opt:stage, "development"}
+  region: ${opt:region, self:custom.default.region}
+  stackName: ${self:service}-${self:provider.stage}
+
+  # default tags for all resources
+  tags:
+    Owner: ${self:service}
+    Stage: ${self:provider.stage}
+  stackTags:
+    Owner: ${self:service}
+    Stage: ${self:provider.stage}
+
+  # S3 bucket where the artifact is stored
+  deploymentBucket: ${file(./resources/.configs/${self:provider.stage}.yml):S3.deployment_bucket}
+
+custom:
+  default: ${file(./resources/.configs/${self:provider.stage}.yml):default}
+  ECS: ${file(./resources/.configs/${self:provider.stage}.yml):ECS}
+  NetworkStack: demo-network-${self:provider.stage}
+  ResourcesStack: demo-resources-${self:provider.stage}
+
+resources:
+  Parameters:
+    VpcId:
+      Default: ${cf:${self:custom.NetworkStack}.VpcId}
+      Description: VPC Id
+      Type: String
+    VpcAppSubnetIds:
+      Default: ${cf:${self:custom.NetworkStack}.AppSubnet1Id},${cf:${self:custom.NetworkStack}.AppSubnet2Id}
+      Description: VPC Subnet Ids
+      Type: CommaDelimitedList
+    VpcPublicSubnetIds:
+      Default: ${cf:${self:custom.NetworkStack}.PublicSubnet1Id},${cf:${self:custom.NetworkStack}.PublicSubnet2Id}
+      Description: VPC Subnet Ids
+      Type: CommaDelimitedList
+    EcrRepositoryName:
+      Default: ${cf:${self:custom.ResourcesStack}.EcrRepositoryName}
+      Description: Image tag to deploy
+      Type: String
+    ImageTag:
+      Default: ${ssm:/${self:service}/${self:provider.stage}/ImageTag}
+      Description: Image tag to deploy
+      Type: String
+
+  Resources:
+    # IAM
+    ECSRole: ${file(./resources/app/iam.yml):ECSRole}
+    ECSPolicy: ${file(./resources/app/iam.yml):ECSPolicy}
+    ECSTaskRole: ${file(./resources/app/iam.yml):ECSTaskRole}
+    ECSTaskPolicy: ${file(./resources/app/iam.yml):ECSTaskPolicy}
+    AutoScalingRole: ${file(./resources/app/iam.yml):AutoScalingRole}
+
+    # ECS
+    ECSCluster: ${file(./resources/app/ecs.yml):ECSCluster}
+    ECSTaskDefinition: ${file(./resources/app/ecs.yml):ECSTaskDefinition}
+    ECSService: ${file(./resources/app/ecs.yml):ECSService}
+    ECSInstanceSecurityGroup: ${file(./resources/app/ecs.yml):ECSInstanceSecurityGroup}
+
+    # cloudwatch log
+    CloudwatchLogGroup: ${file(./resources/app/log.yml):CloudwatchLogGroup}
+
+    # ALB
+    LoadBalancer: ${file(./resources/app/alb.yml):LoadBalancer}
+    LoadBalancerSecurityGroup: ${file(./resources/app/alb.yml):LoadBalancerSecurityGroup}
+    ListenerTargetGroup: ${file(./resources/app/alb.yml):ListenerTargetGroup}
+    HTTPListener: ${file(./resources/app/alb.yml):HTTPListener}
+    HTTPSListener: ${file(./resources/app/alb.yml):HTTPSListener}
+
+    # auto scaling
+    AutoScalingTarget: ${file(./resources/app/scale.yml):AutoScalingTarget}
+    AutoScalingPolicy: ${file(./resources/app/scale.yml):AutoScalingPolicy}
+
+    # route53
+    AppRecordSet: ${file(./resources/app/route53.yml):AppRecordSet}
+
+  Outputs:
+    EcsClusterArn:
+      Value: !GetAtt ECSCluster.Arn
+
+  extensions:
+    # IAM
+    ECSRole:
+      Metadata: /${self:provider.stackName}/IAM/Resource
+    ECSPolicy: ${file(./resources/app/iam.yml):ECSPolicy}
+    ECSTaskRole: ${file(./resources/app/iam.yml):ECSTaskRole}
+    ECSTaskPolicy: ${file(./resources/app/iam.yml):ECSTaskPolicy}
+    AutoScalingRole: ${file(./resources/app/iam.yml):AutoScalingRole}
+
+    # ECS
+    ECSCluster: ${file(./resources/app/ecs.yml):ECSCluster}
+    ECSTaskDefinition: ${file(./resources/app/ecs.yml):ECSTaskDefinition}
+    ECSService: ${file(./resources/app/ecs.yml):ECSService}
+    ECSInstanceSecurityGroup: ${file(./resources/app/ecs.yml):ECSInstanceSecurityGroup}
+
+    # cloudwatch log
+    CloudwatchLogGroup: ${file(./resources/app/log.yml):CloudwatchLogGroup}
+
+    # ALB
+    LoadBalancer: ${file(./resources/app/alb.yml):LoadBalancer}
+    LoadBalancerSecurityGroup: ${file(./resources/app/alb.yml):LoadBalancerSecurityGroup}
+    ListenerTargetGroup: ${file(./resources/app/alb.yml):ListenerTargetGroup}
+    HTTPListener: ${file(./resources/app/alb.yml):HTTPListener}
+    HTTPSListener: ${file(./resources/app/alb.yml):HTTPSListener}
+
+    # auto scaling
+    AutoScalingTarget: ${file(./resources/app/scale.yml):AutoScalingTarget}
+    AutoScalingPolicy: ${file(./resources/app/scale.yml):AutoScalingPolicy}
+
+    # route53
+    AppRecordSet: ${file(./resources/app/route53.yml):AppRecordSet}

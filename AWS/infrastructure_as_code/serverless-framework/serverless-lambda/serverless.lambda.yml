@@ -23,7 +23,7 @@ provider:
     Stage: ${self:provider.stage}
 
   # S3 bucket where the artifact is stored
-  deploymentBucket: ${file(./cfn/.configs/${self:provider.stage}.yml):S3.deployment_bucket}
+  deploymentBucket: ${file(./resources/.configs/${self:provider.stage}.yml):S3.deployment_bucket}
 
   # config lambda functions
   runtime: python3.8
@@ -40,7 +40,7 @@ plugins:
   - serverless-offline
 
 custom:
-  default: ${file(./cfn/.configs/${self:provider.stage}.yml):default}
+  default: ${file(./resources/.configs/${self:provider.stage}.yml):default}
 
 package:
   individually: true
@@ -69,5 +69,5 @@ resources:
 
   Resources:
     # IAM
-    LambdaFunctionRole: ${file(./cfn/lambda/iam.yml):LambdaFunctionRole}
-    LambdaFunctionPolicy: ${file(./cfn/lambda/iam.yml):LambdaFunctionPolicy}
+    LambdaFunctionRole: ${file(./resources/lambda/iam.yml):LambdaFunctionRole}
+    LambdaFunctionPolicy: ${file(./resources/lambda/iam.yml):LambdaFunctionPolicy}

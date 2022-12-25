@@ -1,0 +1,57 @@
+name: End to end test
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  e2e:
+    name: End to end test
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Check AWS identity
+        run: aws sts get-caller-identity
+      - name: Check Terraform version
+        uses: dflook/terraform-version@v1.12.0
+        id: terraform-version
+        with:
+          path: '.'
+      - name: Set outputs
+        id: vars
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+      - name: Deploy complete example
+        uses: dflook/terraform-apply@v1.12.0
+        id: test-infra
+        with:
+          path: examples/complete
+          auto_approve: true
+          variables: |
+            deployment_id = "ci-${{ steps.vars.outputs.sha_short }}"
+      # - name: Run tests
+      #   run: |
+      #     TODO
+      - name: terraform destroy
+        if: ${{ always() }}
+        uses: dflook/terraform-destroy@v1.12.0
+        with:
+          path: examples/complete
+          variables: |
+            deployment_id = "ci-${{ steps.vars.outputs.sha_short }}"
+      - name: terraform destroy (again, sometimes helps cleanup of a failed destroy)
+        if: ${{ always() }}
+        uses: dflook/terraform-destroy@v1.12.0
+        with:
+          path: examples/complete
+          variables: |
+            deployment_id = "ci-${{ steps.vars.outputs.sha_short }}"
