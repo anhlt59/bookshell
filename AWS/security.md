@@ -34,7 +34,7 @@
 
 #### Content Security Policy (CSP)
   - CSP limit:
-    - what can be opened in an iframe
+    - what urls can be opened in an iframe
     - what stylesheets can be loaded
     - where requests can be made, etc.
   
