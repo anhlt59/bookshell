@@ -7,7 +7,7 @@
 #   -t, --target: the target stage (default: production)
 #
 # example: backup production
-# $ ./scripts/backup_dynamodb.sh -s production
+# $ ./scripts/dynamodb_backup.sh -s production
 
 set -o errexit
 set -o pipefail

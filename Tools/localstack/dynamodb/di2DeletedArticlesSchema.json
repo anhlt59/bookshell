@@ -1,0 +1,73 @@
+{
+  "TableName": "di2DeletedArticles",
+  "KeySchema": [
+    {
+      "AttributeName": "UUID",
+      "KeyType": "HASH"
+    }
+  ],
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "UUID",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "ExecutedTimezone",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "ProviderCode",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "ModifiedAt",
+      "AttributeType": "N"
+    }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 5,
+    "WriteCapacityUnits": 5
+  },
+  "GlobalSecondaryIndexes": [
+    {
+      "IndexName": "ExecutedTimezone-ModifiedAt-index",
+      "KeySchema": [
+        {
+          "AttributeName": "ExecutedTimezone",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "ModifiedAt",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      },
+      "ProvisionedThroughput": {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5
+      }
+    },
+    {
+      "IndexName": "ProviderCode-ModifiedAt-index",
+      "KeySchema": [
+        {
+          "AttributeName": "ProviderCode",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "ModifiedAt",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      },
+      "ProvisionedThroughput": {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5
+      }
+    }
+  ]
+}

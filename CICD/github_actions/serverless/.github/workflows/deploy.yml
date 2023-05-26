@@ -1,0 +1,33 @@
+name: Code Deployment
+on:
+  push:
+    branches: [ develop, staging, testing, main ]
+    paths-ignore: [ "localstack/**", "scripts/**", "tests/**" ]
+
+jobs:
+  build-dev:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: ${{ github.base_ref }}
+    steps:
+      - name: setup environment variables
+        run: |
+          if [ ${GITHUB_REF##*/} = develop ]; then echo "STAGE=development" >> $GITHUB_ENV; fi
+          if [ ${GITHUB_REF##*/} = staging ]; then echo "STAGE=staging" >> $GITHUB_ENV; fi
+          if [ ${GITHUB_REF##*/} = testing ]; then echo "STAGE=testing" >> $GITHUB_ENV; fi
+          if [ ${GITHUB_REF##*/} = main ]; then echo "STAGE=production" >> $GITHUB_ENV; fi
+      - uses: actions/checkout@v3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: npm
+      - run: npm install
+      - name: Deploy lambda
+        run: npx sls deploy -s $STAGE

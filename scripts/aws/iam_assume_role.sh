@@ -30,7 +30,7 @@ AccessKeyId=$(jq -r ".Credentials .AccessKeyId" <<< "$response")
 SecretAccessKey=$(jq -r ".Credentials .SecretAccessKey" <<< "$response")
 SessionToken=$(jq -r ".Credentials .SessionToken" <<< "$response")
 
-printf "Request success!!\n\n"
+printf "Request successfully!!\n\n"
 printf "AccessKeyId: $AccessKeyId \nSecretAccessKey: $SecretAccessKey \nSessionToken: $SessionToken\n"
 
 aws configure set aws_access_key_id "$AccessKeyId" --profile mfa

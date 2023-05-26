@@ -8,7 +8,7 @@
 #   -t, --target: target stage (default: testing)
 #
 # example: restore testing from a production snapshot
-# $ ./scripts/restore_opensearch.sh -t testing -s production
+# $ ./scripts/opensearch_restore.sh -t testing -s production
 
 set -o errexit
 set -o pipefail

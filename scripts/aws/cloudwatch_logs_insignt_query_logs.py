@@ -29,7 +29,7 @@ def query_logs(query: str, log_groups: List[str], start_time: int, end_time: int
                 raise Exception("Query timed out")
             print("Waiting for query to complete ...")
             time.sleep(delay)
-            return _get_query_results(query_id, timeout - delay)
+            return _get_query_results()
         return response.get("results")
 
     start_query_response = client.start_query(
@@ -51,7 +51,8 @@ def list_log_groups(prefix: str):
 
 
 def main():
-    log_groups = list(list_log_groups(LAMBDA_PREFIX))
+    # log_groups = list(list_log_groups(LAMBDA_PREFIX))
+    log_groups = ["/aws/lambda/materially-development-BMG-LoaderTickets"]
     pprint(log_groups)
     result = query_logs(
         QUERY,
@@ -60,6 +61,10 @@ def main():
         end_time=int(datetime.now().timestamp()),
     )
     pprint(result)
+    import json
+
+    with open("/Users/anhlt/Desktop/logs.json", "w") as f:
+        json.dump(result, f, indent=4)
 
 
 if __name__ == "__main__":

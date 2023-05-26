@@ -7,7 +7,7 @@
 #   -t, --target: target stage (default: production)
 #
 # example: backup production
-# $ ./scripts/backup_opensearch.sh -s production
+# $ ./scripts/opensearch_backup.sh -s production
 
 set -o errexit
 set -o pipefail

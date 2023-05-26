@@ -1,0 +1,141 @@
+{
+  "TableName": "di2OriginArticles",
+  "KeySchema": [
+    {
+      "AttributeName": "UniqueRecord",
+      "KeyType": "HASH"
+    }
+  ],
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "UniqueRecord",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "ExecutedTimezone",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "ProviderArticleId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "ProviderCode",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "UUID",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "Visible",
+      "AttributeType": "N"
+    },
+    {
+      "AttributeName": "ModifiedAt",
+      "AttributeType": "N"
+    }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 5,
+    "WriteCapacityUnits": 5
+  },
+  "GlobalSecondaryIndexes": [
+    {
+      "IndexName": "ExecutedTimezone-ModifiedAt-index",
+      "KeySchema": [
+        {
+          "AttributeName": "ExecutedTimezone",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "ModifiedAt",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      },
+      "ProvisionedThroughput": {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5
+      }
+    },
+    {
+      "IndexName": "ProviderArticleId-ModifiedAt-index",
+      "KeySchema": [
+        {
+          "AttributeName": "ProviderArticleId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "ModifiedAt",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      },
+      "ProvisionedThroughput": {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5
+      }
+    },
+    {
+      "IndexName": "ProviderCode-ModifiedAt-index",
+      "KeySchema": [
+        {
+          "AttributeName": "ProviderCode",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "ModifiedAt",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      },
+      "ProvisionedThroughput": {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5
+      }
+    },
+    {
+      "IndexName": "UUID-index",
+      "KeySchema": [
+        {
+          "AttributeName": "UUID",
+          "KeyType": "HASH"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      },
+      "ProvisionedThroughput": {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5
+      }
+    },
+    {
+      "IndexName": "Visible-ModifiedAt-index",
+      "KeySchema": [
+        {
+          "AttributeName": "Visible",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "ModifiedAt",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      },
+      "ProvisionedThroughput": {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5
+      }
+    }
+  ]
+}

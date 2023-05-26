@@ -8,9 +8,9 @@
 #   -t, --target: the target stage (default: testing)
 #
 # example: restore production > testing
-# $ ./scripts/restore_dynamodb.sh -t testing -s production
+# $ ./scripts/dynamodb_restore.sh -t testing -s production
 # or
-# $ ./scripts/restore_dynamodb.sh # default arguments
+# $ ./scripts/dynamodb_restore.sh # default arguments
 
 set -o errexit
 set -o pipefail

@@ -1,0 +1,49 @@
+{
+  "TableName": "di2OriginMonitors",
+  "KeySchema": [
+    {
+      "AttributeName": "UniqueRecord",
+      "KeyType": "HASH"
+    }
+  ],
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "UniqueRecord",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "ProviderCode",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "Datetime",
+      "AttributeType": "N"
+    }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 5,
+    "WriteCapacityUnits": 5
+  },
+  "GlobalSecondaryIndexes": [
+    {
+      "IndexName": "ProviderCode-Datetime-index",
+      "KeySchema": [
+        {
+          "AttributeName": "ProviderCode",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "Datetime",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      },
+      "ProvisionedThroughput": {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5
+      }
+    }
+  ]
+}

@@ -2,14 +2,14 @@ import concurrent.futures
 
 import boto3
 
-PROFILE = "jenkins"
-BUCKET = "paw-deploy-package"
+# PROFILE = "jenkins"
+BUCKET = "materially-production-apex"
 PREFIXES = (
-    "backup_tr0-1/paw-tr0-1-users",
-    "backup_tr0-1/paw-tr0-1-web",
+    "apex-Plants",
+    "apex-Products",
 )
 
-boto3.setup_default_session(profile_name=PROFILE)
+# boto3.setup_default_session(profile_name=PROFILE)
 resource = boto3.resource("s3")
 bucket = resource.Bucket(BUCKET)
 
