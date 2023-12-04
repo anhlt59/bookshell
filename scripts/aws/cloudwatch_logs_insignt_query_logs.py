@@ -6,17 +6,17 @@ from typing import List
 
 import boto3
 
-STAGE = "development"
-DELTA_TIME = 0.5  # hours
-LAMBDA_PREFIX = f"/aws/lambda/materially-{STAGE}"
-QUERY = """
-fields @timestamp, @message
-| filter @message like /(?i)(exception|error|fail)/
-| sort @timestamp desc
-| limit 100
-"""
+boto3.setup_default_session(profile_name="mfa")
 
-client = boto3.client("logs")
+# STAGE = "development"
+# DELTA_TIME = 0.5  # hours
+# LAMBDA_PREFIX = f"/aws/lambda/materially-{STAGE}"
+QUERY = """
+fields @timestamp, @message, @logStream, @log\n| filter @message like /(?i)(insert)/\n| sort @timestamp desc\n| limit 500\n
+"""
+LOG_GROUPS = ["/aws/lambda/di2_govhk_xml_file_parser"]
+
+client = boto3.client("logs", region_name="ap-northeast-1")
 
 
 def query_logs(query: str, log_groups: List[str], start_time: int, end_time: int, timeout: int = 15, delay: int = 1):
@@ -51,19 +51,16 @@ def list_log_groups(prefix: str):
 
 
 def main():
-    # log_groups = list(list_log_groups(LAMBDA_PREFIX))
-    log_groups = ["/aws/lambda/materially-development-BMG-LoaderTickets"]
-    pprint(log_groups)
     result = query_logs(
         QUERY,
-        log_groups,
-        start_time=int((datetime.today() - timedelta(hours=DELTA_TIME)).timestamp()),
-        end_time=int(datetime.now().timestamp()),
+        LOG_GROUPS,
+        start_time=1687305600,
+        end_time=1687333199,
     )
     pprint(result)
     import json
 
-    with open("/Users/anhlt/Desktop/logs.json", "w") as f:
+    with open("./logs.json", "w") as f:
         json.dump(result, f, indent=4)
 
 
