@@ -24,7 +24,9 @@ elif [ "$input" == 2 ]; then
   MFA=true
 elif [ "$input" == 3 ]; then
   ARN=arn:aws:iam::251123607109:role/di2-least-privileged-ci-github-actions-dev
+  # ARN=arn:aws:iam::251123607109:mfa/anhlt
   PROFILE=neos
+  MFA=false
 elif [ "$input" == 4 ]; then
   ARN=arn:aws:iam::691802122630:role/denaribot-deployment
   PROFILE=nbdb

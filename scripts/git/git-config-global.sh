@@ -8,5 +8,6 @@ read -r email
 
 git config --global user.name "$name"
 git config --global user.email "$email"
+git config --global help.autocorrect 10
 
 echo -e "GIT config global done!"

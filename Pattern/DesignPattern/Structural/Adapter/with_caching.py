@@ -5,10 +5,11 @@ class Point:
 
 
 def draw_point(p):
-    print('.', end='')
+    print(".", end="")
 
 
 # ^^ you are given this
+
 
 # vv you are working with this
 class Line:
@@ -18,7 +19,7 @@ class Line:
 
 
 class Rectangle(list):
-    """ Represented as a list of lines. """
+    """Represented as a list of lines."""
 
     def __init__(self, x, y, width, height):
         super().__init__()
@@ -39,8 +40,10 @@ class LineToPointAdapter:
 
         super().__init__()
         self.count += 1
-        print(f'{self.count}: Generating points for line ' +
-              f'[{line.start.x},{line.start.y}]→[{line.end.x},{line.end.y}]')
+        print(
+            f"{self.count}: Generating points for line "
+            + f"[{line.start.x},{line.start.y}]→[{line.end.x},{line.end.y}]"
+        )
 
         left = min(line.start.x, line.end.x)
         right = max(line.start.x, line.end.x)
@@ -61,21 +64,19 @@ class LineToPointAdapter:
     def __iter__(self):
         return iter(self.cache[self.h])
 
+
 def draw(rcs):
-    print('Drawing some rectangles...')
+    print("Drawing some rectangles...")
     for rc in rcs:
         for line in rc:
             adapter = LineToPointAdapter(line)
             for p in adapter:
                 draw_point(p)
-    print('\n')
+    print("\n")
 
 
-if __name__ == '__main__':
-    rs = [
-        Rectangle(1, 1, 10, 10),
-        Rectangle(3, 3, 6, 6)
-    ]
+if __name__ == "__main__":
+    rs = [Rectangle(1, 1, 10, 10), Rectangle(3, 3, 6, 6)]
 
     draw(rs)
     draw(rs)
