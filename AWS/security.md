@@ -37,7 +37,7 @@
     - what urls can be opened in an iframe
     - what stylesheets can be loaded
     - where requests can be made, etc.
-  
+
   ```js
   {
     "headers": {
